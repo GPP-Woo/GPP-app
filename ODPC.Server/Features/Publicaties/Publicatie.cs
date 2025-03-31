@@ -14,6 +14,7 @@ namespace ODPC.Features.Publicaties
         public string? Publicatiestatus { get; set; }
         public DateTime Registratiedatum { get; set; }
         public List<string>? InformatieCategorieen { get; set; }
+        public List<string>? Onderwerpen { get => []; }
     }
 
     public class Eigenaar

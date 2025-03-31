@@ -13,6 +13,7 @@
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
         :mijn-organisaties="mijnOrganisaties || []"
         :mijn-informatiecategorieen="mijnInformatiecategorieen || []"
+        :mijn-onderwerpen="mijnOnderwerpen || []"
       />
 
       <alert-inline v-if="documentenError"
@@ -134,6 +135,7 @@ const {
 const {
   mijnOrganisaties,
   mijnInformatiecategorieen,
+  mijnOnderwerpen,
   mijnWaardelijstenUuids,
   loadingWaardelijstenUser,
   waardelijstenUserError
@@ -150,6 +152,10 @@ const forbidden = computed(
       !mijnWaardelijstenUuids.value.includes(publicatie.value.publisher)) ||
     // Not assigned to every informatiecategorie of publicatie
     !publicatie.value.informatieCategorieen.every((uuid: string) =>
+      mijnWaardelijstenUuids.value.includes(uuid)
+    ) ||
+    // Not assigned to every onderwerp of publicatie
+    !publicatie.value.onderwerpen.every((uuid: string) =>
       mijnWaardelijstenUuids.value.includes(uuid)
     )
 );
