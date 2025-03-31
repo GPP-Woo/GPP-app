@@ -8,19 +8,15 @@
   <fieldset v-else>
     <legend>Waardelijsten</legend>
 
-    <option-group
-      v-if="organisaties.length"
-      :title="WAARDELIJSTEN.ORGANISATIE"
-      :options="organisaties"
-      v-model="model"
-    />
+    <option-group :title="WAARDELIJSTEN.ORGANISATIE" :options="organisaties" v-model="model" />
 
     <option-group
-      v-if="informatiecategorieen.length"
       :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
       :options="informatiecategorieen"
       v-model="model"
     />
+
+    <option-group :title="WAARDELIJSTEN.ONDERWERP" :options="onderwerpen" v-model="model" />
   </fieldset>
 </template>
 
@@ -48,29 +44,36 @@ const {
   loading: informatiecategorieenLoading
 } = useAllPages<WaardelijstItem>("/api/v1/informatiecategorieen");
 
+const {
+  data: onderwerpen,
+  error: onderwerpenError,
+  loading: onderwerpenLoading
+} = useAllPages<WaardelijstItem>("/api/v1/onderwerpen");
+
 const error = computed(
   () =>
     organisatiesError.value ||
     !organisaties.value.length ||
     informatiecategorieenError.value ||
-    !informatiecategorieen.value.length
+    !informatiecategorieen.value.length ||
+    onderwerpenError.value ||
+    !onderwerpen.value.length
 );
 
-const loading = computed(() => informatiecategorieenLoading.value || organisatiesLoading.value);
-
-const loaded = computed(
-  () => !!model.value.length && !!organisaties.value.length && !!informatiecategorieen.value.length
+const loading = computed(
+  () => informatiecategorieenLoading.value || organisatiesLoading.value || onderwerpenLoading.value
 );
 
-const waardelijstUuids = computed(() => [
+const allListsLoaded = computed(() => !!model.value.length && !error.value);
+
+const uuids = computed(() => [
   ...organisaties.value.map((item) => item.uuid),
-  ...informatiecategorieen.value.map((item) => item.uuid)
+  ...informatiecategorieen.value.map((item) => item.uuid),
+  ...onderwerpen.value.map((item) => item.uuid)
 ]);
 
 // Remove uuids from model that are not present/active anymore in ODRC
-watch(loaded, (value) => {
-  if (value) {
-    model.value = model.value.filter((uuid: string) => waardelijstUuids.value.includes(uuid));
-  }
+watch(allListsLoaded, (value) => {
+  if (value) model.value = model.value.filter((uuid: string) => uuids.value.includes(uuid));
 });
 </script>

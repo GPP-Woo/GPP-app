@@ -15,21 +15,35 @@ export const useWaardelijstenUser = () => {
     error: mijnInformatiecategorieenError
   } = useFetchApi(() => `/api/v1/mijn-informatiecategorieen`).json<OptionProps[]>();
 
+  const {
+    data: mijnOnderwerpen,
+    isFetching: loadingMijnOnderwerpen,
+    error: mijnOnderwerpenError
+  } = useFetchApi(() => `/api/v1/mijn-onderwerpen`).json<OptionProps[]>();
+
   const loadingWaardelijstenUser = computed(
-    () => loadingMijnOrganisaties.value || loadingMijnInformatiecategorieen.value
+    () =>
+      loadingMijnOrganisaties.value ||
+      loadingMijnInformatiecategorieen.value ||
+      loadingMijnOnderwerpen.value
   );
   const waardelijstenUserError = computed(
-    () => mijnOrganisatiesError.value || mijnInformatiecategorieenError.value
+    () =>
+      mijnOrganisatiesError.value ||
+      mijnInformatiecategorieenError.value ||
+      mijnOnderwerpenError.value
   );
 
   const mijnWaardelijstenUuids = computed(() => [
     ...(mijnOrganisaties.value?.map((item) => item.uuid) || []),
-    ...(mijnInformatiecategorieen.value?.map((item) => item.uuid) || [])
+    ...(mijnInformatiecategorieen.value?.map((item) => item.uuid) || []),
+    ...(mijnOnderwerpen.value?.map((item) => item.uuid) || [])
   ]);
 
   return {
     mijnOrganisaties,
     mijnInformatiecategorieen,
+    mijnOnderwerpen,
     mijnWaardelijstenUuids,
     loadingWaardelijstenUser,
     waardelijstenUserError
