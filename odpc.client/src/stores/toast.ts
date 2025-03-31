@@ -32,6 +32,6 @@ export default {
   },
   remove(m: Message) {
     const index = _messages.indexOf(m);
-    index !== -1 && _messages.splice(index, 1);
+    if (index !== -1) _messages.splice(index, 1);
   }
 };
