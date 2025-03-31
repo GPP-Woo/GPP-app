@@ -28,9 +28,11 @@ export const useGebruikersgroep = (uuid?: string) => {
   watch(gebruikersgroepData, (value) => (gebruikersgroep.value = value || gebruikersgroep.value));
 
   const submitGebruikersgroep = async () => {
-    uuid
-      ? await putGebruikersgroep(gebruikersgroep).execute()
-      : await postGebruikersgroep(gebruikersgroep).execute();
+    if (uuid) {
+      await putGebruikersgroep(gebruikersgroep).execute();
+    } else {
+      await postGebruikersgroep(gebruikersgroep).execute();
+    }
 
     if (gebruikersgroepError.value) {
       toast.add({
