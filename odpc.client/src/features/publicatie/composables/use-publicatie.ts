@@ -13,7 +13,8 @@ export const usePublicatie = (uuid?: string) => {
     verkorteTitel: "",
     omschrijving: "",
     publicatiestatus: "gepubliceerd",
-    informatieCategorieen: []
+    informatieCategorieen: [],
+    onderwerpen: []
   });
 
   const {
