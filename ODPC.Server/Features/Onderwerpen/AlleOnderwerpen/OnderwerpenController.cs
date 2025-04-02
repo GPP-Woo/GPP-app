@@ -12,7 +12,7 @@ namespace ODPC.Features.Onderwerpen.AlleOnderwerpen
         {
             // onderwerpen ophalen uit het ODRC
             using var client = clientFactory.Create("Onderwerpen ophalen");
-            var url = $"/api/{version}/onderwerpen?page={page}";
+            var url = $"/api/{version}/onderwerpen?page={page}&publicatiestatus=concept,gepubliceerd";
 
             using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 

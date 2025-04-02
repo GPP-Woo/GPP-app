@@ -16,12 +16,7 @@
       v-model="model"
     />
 
-    <option-group
-      v-if="onderwerpen.length"
-      :title="WAARDELIJSTEN.ONDERWERP"
-      :options="onderwerpen"
-      v-model="model"
-    />
+    <option-group :title="WAARDELIJSTEN.ONDERWERP" :options="onderwerpen" v-model="model" />
   </fieldset>
 </template>
 
@@ -69,14 +64,15 @@ const error = computed(
     !organisaties.value.length ||
     informatiecategorieenError.value ||
     !informatiecategorieen.value.length ||
-    onderwerpenError.value
+    onderwerpenError.value ||
+    !onderwerpen.value.length
 );
 
 const loading = computed(
   () => informatiecategorieenLoading.value || organisatiesLoading.value || onderwerpenLoading.value
 );
 
-const allListsLoaded = computed(() => !!model.value.length && !error.value);
+const listsLoaded = computed(() => !!model.value.length && !error.value);
 
 const uuids = computed(() => [
   ...organisaties.value.map((item) => item.uuid),
@@ -85,7 +81,7 @@ const uuids = computed(() => [
 ]);
 
 // Remove uuids from model that are not present/active anymore in ODRC
-watch(allListsLoaded, (bool) => {
+watch(listsLoaded, (bool) => {
   if (bool) model.value = model.value.filter((uuid: string) => uuids.value.includes(uuid));
 });
 </script>

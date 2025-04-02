@@ -15,7 +15,7 @@ namespace ODPC.Features.Onderwerpen.MijnOnderwerpen
             if (onderwerpen.Count == 0) yield break;
 
             using var client = clientFactory.Create("Eigen onderwerpen ophalen");
-            var url = $"/api/{version}/onderwerpen";
+            var url = $"/api/{version}/onderwerpen?publicatiestatus=concept,gepubliceerd";
 
             // omdat we zelf moeten filteren obv van de waardelijstitems waar de gebruiker toegang toe heeft,
             // kunnen we geen paginering gebruiker. we lopen door alle pagina's van de ODRC
