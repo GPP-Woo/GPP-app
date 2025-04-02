@@ -81,6 +81,7 @@
     />
 
     <option-group
+      v-if="mijnOnderwerpen.length"
       type="checkbox"
       title="Onderwerpen"
       :options="mijnOnderwerpen"

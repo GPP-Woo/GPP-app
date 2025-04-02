@@ -16,7 +16,12 @@
       v-model="model"
     />
 
-    <option-group :title="WAARDELIJSTEN.ONDERWERP" :options="onderwerpen" v-model="model" />
+    <option-group
+      v-if="onderwerpen.length"
+      :title="WAARDELIJSTEN.ONDERWERP"
+      :options="onderwerpen"
+      v-model="model"
+    />
   </fieldset>
 </template>
 
@@ -45,10 +50,18 @@ const {
 } = useAllPages<WaardelijstItem>("/api/v1/informatiecategorieen");
 
 const {
-  data: onderwerpen,
+  data,
   error: onderwerpenError,
   loading: onderwerpenLoading
-} = useAllPages<WaardelijstItem>("/api/v1/onderwerpen");
+} = useAllPages<{
+  uuid: string;
+  officieleTitel: string;
+}>("/api/v1/onderwerpen");
+
+// map Onderwerp to WaardelijstItem
+const onderwerpen = computed<WaardelijstItem[]>(
+  () => data.value.map((o) => ({ uuid: o.uuid, naam: o.officieleTitel })) ?? []
+);
 
 const error = computed(
   () =>
@@ -56,8 +69,7 @@ const error = computed(
     !organisaties.value.length ||
     informatiecategorieenError.value ||
     !informatiecategorieen.value.length ||
-    onderwerpenError.value ||
-    !onderwerpen.value.length
+    onderwerpenError.value
 );
 
 const loading = computed(
@@ -73,7 +85,7 @@ const uuids = computed(() => [
 ]);
 
 // Remove uuids from model that are not present/active anymore in ODRC
-watch(allListsLoaded, (value) => {
-  if (value) model.value = model.value.filter((uuid: string) => uuids.value.includes(uuid));
+watch(allListsLoaded, (bool) => {
+  if (bool) model.value = model.value.filter((uuid: string) => uuids.value.includes(uuid));
 });
 </script>

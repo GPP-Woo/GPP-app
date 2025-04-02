@@ -1,6 +1,7 @@
 import { computed } from "vue";
 import { useFetchApi } from "@/api";
 import type { OptionProps } from "@/components/option-group/types";
+import type { Onderwerp } from "../types";
 
 export const useWaardelijstenUser = () => {
   const {
@@ -16,10 +17,15 @@ export const useWaardelijstenUser = () => {
   } = useFetchApi(() => `/api/v1/mijn-informatiecategorieen`).json<OptionProps[]>();
 
   const {
-    data: mijnOnderwerpen,
+    data,
     isFetching: loadingMijnOnderwerpen,
     error: mijnOnderwerpenError
-  } = useFetchApi(() => `/api/v1/mijn-onderwerpen`).json<OptionProps[]>();
+  } = useFetchApi(() => `/api/v1/mijn-onderwerpen`).json<Onderwerp[]>();
+
+  // map Onderwerp to OptionProps
+  const mijnOnderwerpen = computed<OptionProps[] | null>(() =>
+    data.value?.map((o) => ({ uuid: o.uuid, naam: o.officieleTitel })) || null
+  );
 
   const loadingWaardelijstenUser = computed(
     () =>

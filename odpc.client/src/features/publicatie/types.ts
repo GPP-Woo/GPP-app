@@ -25,13 +25,22 @@ export type PublicatieDocument = {
   officieleTitel: string;
   verkorteTitel?: string;
   omschrijving?: string;
-  // eigenaar?: Eigenaar;
   publicatiestatus: keyof typeof PublicatieStatus;
   creatiedatum: string;
   bestandsnaam: string;
   bestandsformaat: string;
   bestandsomvang: number;
   bestandsdelen?: Bestandsdeel[];
+};
+
+export type Onderwerp = {
+  uuid: string;
+  publicaties: string[];
+  officieleTitel: string;
+  omschrijving: string;
+  publicatiestatus: keyof typeof PublicatieStatus;
+  promoot: boolean;
+  registratiedatum: string;
 };
 
 type Eigenaar = {
