@@ -6,7 +6,7 @@ export default {
 
       invalidInputs.forEach((input) => {
         const details = input.closest("details");
-        details && (details.open = true);
+        if (details) details.open = true;
       });
     };
 

@@ -8,17 +8,18 @@
   <fieldset v-else>
     <legend>Waardelijsten</legend>
 
+    <option-group :title="WAARDELIJSTEN.ORGANISATIE" :options="organisaties" v-model="model" />
+
     <option-group
-      v-if="organisaties.length"
-      :title="WAARDELIJSTEN.ORGANISATIE"
-      :options="organisaties"
+      :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
+      :options="informatiecategorieen"
       v-model="model"
     />
 
     <option-group
-      v-if="informatiecategorieen.length"
-      :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
-      :options="informatiecategorieen"
+      v-if="onderwerpen.length"
+      :title="WAARDELIJSTEN.ONDERWERP"
+      :options="onderwerpen"
       v-model="model"
     />
   </fieldset>
@@ -48,29 +49,45 @@ const {
   loading: informatiecategorieenLoading
 } = useAllPages<WaardelijstItem>("/api/v1/informatiecategorieen");
 
+const {
+  data,
+  error: onderwerpenError,
+  loading: onderwerpenLoading
+} = useAllPages<{
+  uuid: string;
+  officieleTitel: string;
+}>("/api/v1/onderwerpen");
+
+// map Onderwerp to WaardelijstItem
+const onderwerpen = computed<WaardelijstItem[]>(
+  () => data.value.map((o) => ({ uuid: o.uuid, naam: o.officieleTitel })) ?? []
+);
+
+const uuids = computed(() => [
+  ...organisaties.value.map((item) => item.uuid),
+  ...informatiecategorieen.value.map((item) => item.uuid),
+  ...onderwerpen.value.map((item) => item.uuid)
+]);
+
+const loading = computed(
+  () => informatiecategorieenLoading.value || organisatiesLoading.value || onderwerpenLoading.value
+);
+
 const error = computed(
   () =>
     organisatiesError.value ||
-    !organisaties.value.length ||
     informatiecategorieenError.value ||
+    onderwerpenError.value ||
+    // at least one organisatie
+    !organisaties.value.length ||
+    // at least one informatiecategorie
     !informatiecategorieen.value.length
 );
 
-const loading = computed(() => informatiecategorieenLoading.value || organisatiesLoading.value);
-
-const loaded = computed(
-  () => !!model.value.length && !!organisaties.value.length && !!informatiecategorieen.value.length
-);
-
-const waardelijstUuids = computed(() => [
-  ...organisaties.value.map((item) => item.uuid),
-  ...informatiecategorieen.value.map((item) => item.uuid)
-]);
+const loaded = computed(() => !loading.value && !error.value);
 
 // Remove uuids from model that are not present/active anymore in ODRC
-watch(loaded, (value) => {
-  if (value) {
-    model.value = model.value.filter((uuid: string) => waardelijstUuids.value.includes(uuid));
-  }
+watch(loaded, (bool) => {
+  if (bool) model.value = model.value.filter((uuid: string) => uuids.value.includes(uuid));
 });
 </script>

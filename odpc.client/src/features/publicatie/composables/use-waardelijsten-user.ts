@@ -1,6 +1,7 @@
 import { computed } from "vue";
 import { useFetchApi } from "@/api";
 import type { OptionProps } from "@/components/option-group/types";
+import type { Onderwerp } from "../types";
 
 export const useWaardelijstenUser = () => {
   const {
@@ -15,21 +16,40 @@ export const useWaardelijstenUser = () => {
     error: mijnInformatiecategorieenError
   } = useFetchApi(() => `/api/v1/mijn-informatiecategorieen`).json<OptionProps[]>();
 
+  const {
+    data,
+    isFetching: loadingMijnOnderwerpen,
+    error: mijnOnderwerpenError
+  } = useFetchApi(() => `/api/v1/mijn-onderwerpen`).json<Onderwerp[]>();
+
+  // map Onderwerp to OptionProps
+  const mijnOnderwerpen = computed<OptionProps[] | null>(() =>
+    data.value?.map((o) => ({ uuid: o.uuid, naam: o.officieleTitel })) || null
+  );
+
   const loadingWaardelijstenUser = computed(
-    () => loadingMijnOrganisaties.value || loadingMijnInformatiecategorieen.value
+    () =>
+      loadingMijnOrganisaties.value ||
+      loadingMijnInformatiecategorieen.value ||
+      loadingMijnOnderwerpen.value
   );
   const waardelijstenUserError = computed(
-    () => mijnOrganisatiesError.value || mijnInformatiecategorieenError.value
+    () =>
+      mijnOrganisatiesError.value ||
+      mijnInformatiecategorieenError.value ||
+      mijnOnderwerpenError.value
   );
 
   const mijnWaardelijstenUuids = computed(() => [
     ...(mijnOrganisaties.value?.map((item) => item.uuid) || []),
-    ...(mijnInformatiecategorieen.value?.map((item) => item.uuid) || [])
+    ...(mijnInformatiecategorieen.value?.map((item) => item.uuid) || []),
+    ...(mijnOnderwerpen.value?.map((item) => item.uuid) || [])
   ]);
 
   return {
     mijnOrganisaties,
     mijnInformatiecategorieen,
+    mijnOnderwerpen,
     mijnWaardelijstenUuids,
     loadingWaardelijstenUser,
     waardelijstenUserError

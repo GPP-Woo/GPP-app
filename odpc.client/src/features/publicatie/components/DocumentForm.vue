@@ -150,9 +150,11 @@ const filesSelected = (event: Event | DragEvent) => {
   const emptyFile = selectedFiles.some((file) => !file.size);
 
   if (!selectedFiles.length || unknownType || emptyFile) {
-    event instanceof DragEvent
-      ? event.dataTransfer?.clearData()
-      : ((event.target as HTMLInputElement).value = "");
+    if (event instanceof DragEvent) {
+      event.dataTransfer?.clearData();
+    } else {
+      (event.target as HTMLInputElement).value = "";
+    }
 
     toast.add({
       text: "Onbekend formaat of leeg bestand.",
@@ -193,7 +195,7 @@ const addDocumenten = () => {
 const removeDocument = async (index: number) => {
   const { isCanceled } = await dialog.reveal();
 
-  !isCanceled && documenten.value.splice(index, 1);
+  if (!isCanceled) documenten.value.splice(index, 1);
 };
 </script>
 

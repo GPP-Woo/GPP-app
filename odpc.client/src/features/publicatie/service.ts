@@ -21,9 +21,9 @@ const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
 
       const body = new FormData();
       const blob = file.slice(blobStart, blobStart + omvang);
-      
+
       body.append("inhoud", blob);
-      
+
       const { ok } = await fetch(pathname + search, {
         method: "PUT",
         body,

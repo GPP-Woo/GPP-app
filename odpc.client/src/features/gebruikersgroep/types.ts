@@ -10,9 +10,8 @@ export type Gebruikersgroep = {
 
 export const WAARDELIJSTEN = {
   ORGANISATIE: "Organisatie",
-  INFORMATIECATEGORIE: "Informatiecategorie"
-  // THEMA: "Thema"
-  // DOCUMENTSOORT: 'Documentsoort'
+  INFORMATIECATEGORIE: "Informatiecategorie",
+  ONDERWERP: "Onderwerp"
 } as const;
 
 export type WaardelijstItem = OptionProps &

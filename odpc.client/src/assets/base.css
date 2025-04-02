@@ -2,8 +2,9 @@
 :root,
 ::backdrop {
   /* Set sans-serif & mono fonts */
-  --sans-font: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Nimbus Sans L", Roboto,
-    "Noto Sans", "Segoe UI", Arial, Helvetica, "Helvetica Neue", sans-serif;
+  --sans-font:
+    -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Nimbus Sans L", Roboto, "Noto Sans",
+    "Segoe UI", Arial, Helvetica, "Helvetica Neue", sans-serif;
   --mono-font: Consolas, Menlo, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
   --standard-border-radius: 5px;
 
@@ -458,7 +459,8 @@ textarea:not([cols]) {
 
 /* Add arrow to drop-down */
 select:not([multiple]) {
-  background-image: linear-gradient(45deg, transparent 49%, var(--text) 51%),
+  background-image:
+    linear-gradient(45deg, transparent 49%, var(--text) 51%),
     linear-gradient(135deg, var(--text) 51%, transparent 49%);
   background-position: calc(100% - 15px), calc(100% - 10px);
   background-size:
