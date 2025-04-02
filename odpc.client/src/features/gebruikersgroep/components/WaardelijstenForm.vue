@@ -16,7 +16,12 @@
       v-model="model"
     />
 
-    <option-group :title="WAARDELIJSTEN.ONDERWERP" :options="onderwerpen" v-model="model" />
+    <option-group
+      v-if="onderwerpen.length"
+      :title="WAARDELIJSTEN.ONDERWERP"
+      :options="onderwerpen"
+      v-model="model"
+    />
   </fieldset>
 </template>
 
@@ -58,30 +63,31 @@ const onderwerpen = computed<WaardelijstItem[]>(
   () => data.value.map((o) => ({ uuid: o.uuid, naam: o.officieleTitel })) ?? []
 );
 
-const error = computed(
-  () =>
-    organisatiesError.value ||
-    !organisaties.value.length ||
-    informatiecategorieenError.value ||
-    !informatiecategorieen.value.length ||
-    onderwerpenError.value ||
-    !onderwerpen.value.length
-);
-
-const loading = computed(
-  () => informatiecategorieenLoading.value || organisatiesLoading.value || onderwerpenLoading.value
-);
-
-const listsLoaded = computed(() => !!model.value.length && !error.value);
-
 const uuids = computed(() => [
   ...organisaties.value.map((item) => item.uuid),
   ...informatiecategorieen.value.map((item) => item.uuid),
   ...onderwerpen.value.map((item) => item.uuid)
 ]);
 
+const loading = computed(
+  () => informatiecategorieenLoading.value || organisatiesLoading.value || onderwerpenLoading.value
+);
+
+const error = computed(
+  () =>
+    organisatiesError.value ||
+    informatiecategorieenError.value ||
+    onderwerpenError.value ||
+    // at least one organisatie
+    !organisaties.value.length ||
+    // at least one informatiecategorie
+    !informatiecategorieen.value.length
+);
+
+const loaded = computed(() => !loading.value && !error.value);
+
 // Remove uuids from model that are not present/active anymore in ODRC
-watch(listsLoaded, (bool) => {
+watch(loaded, (bool) => {
   if (bool) model.value = model.value.filter((uuid: string) => uuids.value.includes(uuid));
 });
 </script>
