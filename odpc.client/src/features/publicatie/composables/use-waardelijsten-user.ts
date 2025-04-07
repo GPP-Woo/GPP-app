@@ -1,55 +1,66 @@
-import { computed } from "vue";
-import { useFetchApi } from "@/api";
+import { computed, onMounted, reactive, ref } from "vue";
 import type { OptionProps } from "@/components/option-group/types";
 import type { Onderwerp } from "../types";
 
 export const useWaardelijstenUser = () => {
-  const {
-    data: mijnOrganisaties,
-    isFetching: loadingMijnOrganisaties,
-    error: mijnOrganisatiesError
-  } = useFetchApi(() => `/api/v1/mijn-organisaties`).json<OptionProps[]>();
+  const loadingWaardelijstenUser = ref(false);
+  const waardelijstenUserError = ref(false);
 
-  const {
-    data: mijnInformatiecategorieen,
-    isFetching: loadingMijnInformatiecategorieen,
-    error: mijnInformatiecategorieenError
-  } = useFetchApi(() => `/api/v1/mijn-informatiecategorieen`).json<OptionProps[]>();
+  const urls = {
+    mijnOrganisaties: "/api/v1/mijn-organisaties",
+    mijnInformatiecategorieen: "/api/v1/mijn-informatiecategorieen",
+    mijnOnderwerpen: "/api/v1/mijn-onderwerpen"
+  } as const;
 
-  const {
-    data: mijnOnderwerpenData,
-    isFetching: loadingMijnOnderwerpen,
-    error: mijnOnderwerpenError
-  } = useFetchApi(() => `/api/v1/mijn-onderwerpen`).json<Onderwerp[]>();
+  const mijnWaardelijsten = reactive<Record<keyof typeof urls, OptionProps[]>>({
+    mijnOrganisaties: [],
+    mijnInformatiecategorieen: [],
+    mijnOnderwerpen: []
+  });
 
-  // map Onderwerp to OptionProps
-  const mijnOnderwerpen = computed<OptionProps[] | null>(
-    () => mijnOnderwerpenData.value?.map((o) => ({ uuid: o.uuid, naam: o.officieleTitel })) || null
+  const getMijnLijsten = async () => {
+    loadingWaardelijstenUser.value = true;
+
+    try {
+      const results = await Promise.allSettled(
+        Object.entries(urls).map(async ([key, url]) => {
+          const response = await fetch(url);
+
+          const data: OptionProps[] | Onderwerp[] = await response.json();
+
+          return {
+            [key]: data.map(
+              (option) =>
+                (("officieleTitel" in option && {
+                  uuid: option.uuid,
+                  naam: option.officieleTitel
+                }) ||
+                  option) as OptionProps
+            )
+          };
+        })
+      );
+
+      results.forEach((result) =>
+        result.status === "fulfilled"
+          ? Object.assign(mijnWaardelijsten, result.value)
+          : (waardelijstenUserError.value = true)
+      );
+    } catch {
+      waardelijstenUserError.value = true;
+    } finally {
+      loadingWaardelijstenUser.value = false;
+    }
+  };
+
+  const mijnWaardelijstenUuids = computed(() =>
+    Object.values(mijnWaardelijsten).flatMap((items) => items.map((item) => item.uuid) || [])
   );
 
-  const loadingWaardelijstenUser = computed(
-    () =>
-      loadingMijnOrganisaties.value ||
-      loadingMijnInformatiecategorieen.value ||
-      loadingMijnOnderwerpen.value
-  );
-  const waardelijstenUserError = computed(
-    () =>
-      mijnOrganisatiesError.value ||
-      mijnInformatiecategorieenError.value ||
-      mijnOnderwerpenError.value
-  );
-
-  const mijnWaardelijstenUuids = computed(() => [
-    ...(mijnOrganisaties.value?.map((item) => item.uuid) || []),
-    ...(mijnInformatiecategorieen.value?.map((item) => item.uuid) || []),
-    ...(mijnOnderwerpen.value?.map((item) => item.uuid) || [])
-  ]);
+  onMounted(() => getMijnLijsten());
 
   return {
-    mijnOrganisaties,
-    mijnInformatiecategorieen,
-    mijnOnderwerpen,
+    mijnWaardelijsten,
     mijnWaardelijstenUuids,
     loadingWaardelijstenUser,
     waardelijstenUserError

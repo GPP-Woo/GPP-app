@@ -11,9 +11,9 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
-        :mijn-organisaties="mijnOrganisaties || []"
-        :mijn-informatiecategorieen="mijnInformatiecategorieen || []"
-        :mijn-onderwerpen="mijnOnderwerpen || []"
+        :mijn-organisaties="mijnWaardelijsten.mijnOrganisaties || []"
+        :mijn-informatiecategorieen="mijnWaardelijsten.mijnInformatiecategorieen || []"
+        :mijn-onderwerpen="mijnWaardelijsten.mijnOnderwerpen || []"
       />
 
       <alert-inline v-if="documentenError"
@@ -133,9 +133,7 @@ const {
 
 // Waardelijsten user
 const {
-  mijnOrganisaties,
-  mijnInformatiecategorieen,
-  mijnOnderwerpen,
+  mijnWaardelijsten,
   mijnWaardelijstenUuids,
   loadingWaardelijstenUser,
   waardelijstenUserError
@@ -144,9 +142,9 @@ const {
 const forbidden = computed(
   () =>
     // Not assigned to any organisatie
-    !mijnOrganisaties.value?.length ||
+    !mijnWaardelijsten.mijnOrganisaties.length ||
     // Not assigned to any informatiecategorie
-    !mijnInformatiecategorieen.value?.length ||
+    !mijnWaardelijsten.mijnInformatiecategorieen.length ||
     // Not assigned to publisher organisatie
     (publicatie.value.publisher &&
       !mijnWaardelijstenUuids.value.includes(publicatie.value.publisher)) ||
