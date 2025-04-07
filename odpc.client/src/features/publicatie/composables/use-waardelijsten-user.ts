@@ -17,14 +17,14 @@ export const useWaardelijstenUser = () => {
   } = useFetchApi(() => `/api/v1/mijn-informatiecategorieen`).json<OptionProps[]>();
 
   const {
-    data,
+    data: mijnOnderwerpenData,
     isFetching: loadingMijnOnderwerpen,
     error: mijnOnderwerpenError
   } = useFetchApi(() => `/api/v1/mijn-onderwerpen`).json<Onderwerp[]>();
 
   // map Onderwerp to OptionProps
-  const mijnOnderwerpen = computed<OptionProps[] | null>(() =>
-    data.value?.map((o) => ({ uuid: o.uuid, naam: o.officieleTitel })) || null
+  const mijnOnderwerpen = computed<OptionProps[] | null>(
+    () => mijnOnderwerpenData.value?.map((o) => ({ uuid: o.uuid, naam: o.officieleTitel })) || null
   );
 
   const loadingWaardelijstenUser = computed(

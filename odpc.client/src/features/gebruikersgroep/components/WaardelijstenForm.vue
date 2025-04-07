@@ -1,93 +1,92 @@
 <template>
   <simple-spinner v-if="loading" />
 
-  <alert-inline v-else-if="error"
+  <alert-inline v-else-if="error || !data.organisaties.length || !data.informatiecategorieen.length"
     >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
   >
 
   <fieldset v-else>
     <legend>Waardelijsten</legend>
 
-    <option-group :title="WAARDELIJSTEN.ORGANISATIE" :options="organisaties" v-model="model" />
+    <option-group :title="WAARDELIJSTEN.ORGANISATIE" :options="data.organisaties" v-model="model" />
 
     <option-group
       :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
-      :options="informatiecategorieen"
+      :options="data.informatiecategorieen"
       v-model="model"
     />
 
     <option-group
-      v-if="onderwerpen.length"
+      v-if="data.onderwerpen.length"
       :title="WAARDELIJSTEN.ONDERWERP"
-      :options="onderwerpen"
+      :options="data.onderwerpen"
       v-model="model"
     />
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { computed, useModel, watch } from "vue";
+import { onMounted, reactive, ref, useModel, watch } from "vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import { WAARDELIJSTEN, type WaardelijstItem } from "../types";
-import { useAllPages } from "@/composables/use-all-pages";
+import { WAARDELIJSTEN } from "../types";
+import { fetchAllPages } from "@/composables/use-all-pages";
+import type { OptionProps } from "@/components/option-group/types";
+
+type Onderwerp = {
+  uuid: string;
+  officieleTitel: string;
+};
 
 const props = defineProps<{ modelValue: string[] }>();
 
 const model = useModel(props, "modelValue");
 
-const {
-  data: organisaties,
-  loading: organisatiesLoading,
-  error: organisatiesError
-} = useAllPages<WaardelijstItem>("/api/v1/organisaties");
+const lijsten = ["organisaties", "informatiecategorieen", "onderwerpen"] as const;
 
-const {
-  data: informatiecategorieen,
-  error: informatiecategorieenError,
-  loading: informatiecategorieenLoading
-} = useAllPages<WaardelijstItem>("/api/v1/informatiecategorieen");
+const loading = ref(false);
+const error = ref(false);
 
-const {
-  data,
-  error: onderwerpenError,
-  loading: onderwerpenLoading
-} = useAllPages<{
-  uuid: string;
-  officieleTitel: string;
-}>("/api/v1/onderwerpen");
-
-// map Onderwerp to WaardelijstItem
-const onderwerpen = computed<WaardelijstItem[]>(
-  () => data.value.map((o) => ({ uuid: o.uuid, naam: o.officieleTitel })) ?? []
+const data = reactive(
+  lijsten.reduce(
+    (acc, key) => ({ ...acc, [key]: [] }),
+    {} as Record<(typeof lijsten)[number], OptionProps[]>
+  )
 );
 
-const uuids = computed(() => [
-  ...organisaties.value.map((item) => item.uuid),
-  ...informatiecategorieen.value.map((item) => item.uuid),
-  ...onderwerpen.value.map((item) => item.uuid)
-]);
+const getLijsten = async () => {
+  loading.value = true;
 
-const loading = computed(
-  () => informatiecategorieenLoading.value || organisatiesLoading.value || onderwerpenLoading.value
-);
+  try {
+    const results = await Promise.allSettled(
+      lijsten.map((lijst) =>
+        fetchAllPages<OptionProps | Onderwerp>(`/api/v1/${lijst}`).then((data) =>
+          data.map(
+            (option) =>
+              (("officieleTitel" in option && { uuid: option.uuid, naam: option.officieleTitel }) ||
+                option) as OptionProps
+          )
+        )
+      )
+    );
 
-const error = computed(
-  () =>
-    organisatiesError.value ||
-    informatiecategorieenError.value ||
-    onderwerpenError.value ||
-    // at least one organisatie
-    !organisaties.value.length ||
-    // at least one informatiecategorie
-    !informatiecategorieen.value.length
-);
+    results.forEach((result, index) =>
+      result.status === "fulfilled" ? (data[lijsten[index]] = result.value) : (error.value = true)
+    );
+  } catch {
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
 
-const loaded = computed(() => !loading.value && !error.value);
+// After loading remove uuids from model that are not present/active anymore in ODRC
+watch(loading, () => {
+  const uuids = lijsten.flatMap((key) => data[key].map((item) => item.uuid));
 
-// Remove uuids from model that are not present/active anymore in ODRC
-watch(loaded, (bool) => {
-  if (bool) model.value = model.value.filter((uuid: string) => uuids.value.includes(uuid));
+  model.value = model.value.filter((uuid: string) => uuids.includes(uuid));
 });
+
+onMounted(() => getLijsten());
 </script>
