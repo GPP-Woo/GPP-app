@@ -24,20 +24,20 @@ export const useWaardelijstenUser = () => {
     try {
       const results = await Promise.allSettled(
         Object.entries(urls).map(async ([key, url]) => {
-          const response = await fetch(url);
+          const response = await fetch(url, { headers: { "is-api": "true" } });
 
           const data: OptionProps[] | Onderwerp[] = await response.json();
 
-          return {
-            [key]: data.map(
-              (option) =>
-                (("officieleTitel" in option && {
-                  uuid: option.uuid,
-                  naam: option.officieleTitel
-                }) ||
-                  option) as OptionProps
-            )
-          };
+          const mappedData = data.map(
+            (option) =>
+              ("officieleTitel" in option && {
+                uuid: option.uuid,
+                naam: option.officieleTitel
+              }) ||
+              option
+          ) as OptionProps[];
+
+          return { [key]: mappedData };
         })
       );
 

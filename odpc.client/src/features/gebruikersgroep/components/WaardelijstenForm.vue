@@ -61,13 +61,18 @@ const getLijsten = async () => {
   try {
     const results = await Promise.allSettled(
       lijsten.map((lijst) =>
-        fetchAllPages<OptionProps | Onderwerp>(`/api/v1/${lijst}`).then((data) =>
-          data.map(
+        fetchAllPages<OptionProps | Onderwerp>(`/api/v1/${lijst}`).then((data) => {
+          const mappedData = data.map(
             (option) =>
-              (("officieleTitel" in option && { uuid: option.uuid, naam: option.officieleTitel }) ||
-                option) as OptionProps
-          )
-        )
+              ("officieleTitel" in option && {
+                uuid: option.uuid,
+                naam: option.officieleTitel
+              }) ||
+              option
+          ) as OptionProps[];
+
+          return mappedData;
+        })
       )
     );
 
