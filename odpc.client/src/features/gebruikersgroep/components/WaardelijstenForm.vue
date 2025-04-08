@@ -1,25 +1,30 @@
 <template>
   <simple-spinner v-if="loading" />
 
-  <alert-inline v-else-if="error || !data.organisaties.length || !data.informatiecategorieen.length"
+  <alert-inline
+    v-else-if="error || !lijsten.organisaties.length || !lijsten.informatiecategorieen.length"
     >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
   >
 
   <fieldset v-else>
     <legend>Waardelijsten</legend>
 
-    <option-group :title="WAARDELIJSTEN.ORGANISATIE" :options="data.organisaties" v-model="model" />
-
     <option-group
-      :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
-      :options="data.informatiecategorieen"
+      :title="WAARDELIJSTEN.ORGANISATIE"
+      :options="lijsten.organisaties"
       v-model="model"
     />
 
     <option-group
-      v-if="data.onderwerpen.length"
+      :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
+      :options="lijsten.informatiecategorieen"
+      v-model="model"
+    />
+
+    <option-group
+      v-if="lijsten.onderwerpen.length"
       :title="WAARDELIJSTEN.ONDERWERP"
-      :options="data.onderwerpen"
+      :options="lijsten.onderwerpen"
       v-model="model"
     />
   </fieldset>
@@ -43,25 +48,28 @@ const props = defineProps<{ modelValue: string[] }>();
 
 const model = useModel(props, "modelValue");
 
-const lijsten = ["organisaties", "informatiecategorieen", "onderwerpen"] as const;
-
 const loading = ref(false);
 const error = ref(false);
 
-const data = reactive(
-  lijsten.reduce(
-    (acc, key) => ({ ...acc, [key]: [] }),
-    {} as Record<(typeof lijsten)[number], OptionProps[]>
-  )
-);
+const urls = {
+  organisaties: "/api/v1/organisaties",
+  informatiecategorieen: "/api/v1/informatiecategorieen",
+  onderwerpen: "/api/v1/onderwerpen"
+} as const;
+
+const lijsten = reactive<Record<keyof typeof urls, OptionProps[]>>({
+  organisaties: [],
+  informatiecategorieen: [],
+  onderwerpen: []
+});
 
 const getLijsten = async () => {
   loading.value = true;
 
   try {
     const results = await Promise.allSettled(
-      lijsten.map((lijst) =>
-        fetchAllPages<OptionProps | Onderwerp>(`/api/v1/${lijst}`).then((data) => {
+      Object.entries(urls).map(async ([key, url]) =>
+        fetchAllPages<OptionProps | Onderwerp>(url).then((data) => {
           const mappedData = data.map(
             (option) =>
               ("officieleTitel" in option && {
@@ -71,13 +79,13 @@ const getLijsten = async () => {
               option
           ) as OptionProps[];
 
-          return mappedData;
+          return { [key]: mappedData };
         })
       )
     );
 
-    results.forEach((result, index) =>
-      result.status === "fulfilled" ? (data[lijsten[index]] = result.value) : (error.value = true)
+    results.forEach((result) =>
+      result.status === "fulfilled" ? Object.assign(lijsten, result.value) : (error.value = true)
     );
   } catch {
     error.value = true;
@@ -88,7 +96,7 @@ const getLijsten = async () => {
 
 // After loading remove uuids from model that are not present/active anymore in ODRC
 watch(loading, () => {
-  const uuids = lijsten.flatMap((key) => data[key].map((item) => item.uuid));
+  const uuids = Object.values(lijsten).flatMap((items) => items.map((item) => item.uuid) || []);
 
   model.value = model.value.filter((uuid: string) => uuids.includes(uuid));
 });

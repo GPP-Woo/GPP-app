@@ -151,6 +151,10 @@ const forbidden = computed(
     // Not assigned to every informatieCategorie of publicatie
     !publicatie.value.informatieCategorieen.every((uuid: string) =>
       mijnWaardelijstenUuids.value.includes(uuid)
+    ) ||
+    // Not assigned to every onderwerp of publicatie
+    !publicatie.value.onderwerpen.every((uuid: string) =>
+      mijnWaardelijstenUuids.value.includes(uuid)
     )
 );
 
@@ -173,16 +177,6 @@ const submit = async () => {
       return;
     }
   }
-
-  // Remove uuids from onderwerpen that user is not assigned to (anymore)
-  publicatie.value = {
-    ...publicatie.value,
-    ...{
-      onderwerpen: publicatie.value.onderwerpen.filter((uuid: string) =>
-        mijnWaardelijstenUuids.value.includes(uuid)
-      )
-    }
-  };
 
   try {
     await submitPublicatie();
