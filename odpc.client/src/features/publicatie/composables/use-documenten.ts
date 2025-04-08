@@ -32,7 +32,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
 
           await postDocument({ ...doc, publicatie: pubUUID.value }).execute();
 
-          !documentError.value && (await uploadDocument(index));
+          if (!documentError.value) await uploadDocument(index);
         } else {
           docUUID.value = doc.uuid;
 

@@ -97,7 +97,7 @@ const gekoppeldeGebruikers = useModelProperty("gekoppeldeGebruikers");
 const addGebruiker = () => {
   if (!gebruiker.value.trim().length) return;
 
-  detailsRef.value && (detailsRef.value.open = true);
+  if (detailsRef.value) detailsRef.value.open = true;
 
   if (gekoppeldeGebruikers.value.includes(gebruiker.value)) {
     toast.add({

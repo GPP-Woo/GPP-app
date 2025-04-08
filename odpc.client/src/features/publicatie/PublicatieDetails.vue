@@ -11,8 +11,9 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
-        :mijn-organisaties="mijnOrganisaties || []"
-        :mijn-informatiecategorieen="mijnInformatiecategorieen || []"
+        :mijn-organisaties="mijnWaardelijsten.mijnOrganisaties || []"
+        :mijn-informatiecategorieen="mijnWaardelijsten.mijnInformatiecategorieen || []"
+        :mijn-onderwerpen="mijnWaardelijsten.mijnOnderwerpen || []"
       />
 
       <alert-inline v-if="documentenError"
@@ -132,8 +133,7 @@ const {
 
 // Waardelijsten user
 const {
-  mijnOrganisaties,
-  mijnInformatiecategorieen,
+  mijnWaardelijsten,
   mijnWaardelijstenUuids,
   loadingWaardelijstenUser,
   waardelijstenUserError
@@ -142,14 +142,18 @@ const {
 const forbidden = computed(
   () =>
     // Not assigned to any organisatie
-    !mijnOrganisaties.value?.length ||
+    !mijnWaardelijsten.mijnOrganisaties.length ||
     // Not assigned to any informatiecategorie
-    !mijnInformatiecategorieen.value?.length ||
+    !mijnWaardelijsten.mijnInformatiecategorieen.length ||
     // Not assigned to publisher organisatie
     (publicatie.value.publisher &&
       !mijnWaardelijstenUuids.value.includes(publicatie.value.publisher)) ||
-    // Not assigned to every informatiecategorie of publicatie
+    // Not assigned to every informatieCategorie of publicatie
     !publicatie.value.informatieCategorieen.every((uuid: string) =>
+      mijnWaardelijstenUuids.value.includes(uuid)
+    ) ||
+    // Not assigned to every onderwerp of publicatie
+    !publicatie.value.onderwerpen.every((uuid: string) =>
       mijnWaardelijstenUuids.value.includes(uuid)
     )
 );
@@ -179,8 +183,8 @@ const submit = async () => {
 
     // As soon as a publicatie gets status 'ingetrokken' in ODRC, the associated documents will
     // be automatically set to 'ingetrokken' as well and can no longer be updated from ODPC
-    publicatie.value.publicatiestatus !== PublicatieStatus.ingetrokken &&
-      (await submitDocumenten());
+    if (publicatie.value.publicatiestatus !== PublicatieStatus.ingetrokken)
+      await submitDocumenten();
   } catch {
     return;
   }

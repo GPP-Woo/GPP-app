@@ -79,6 +79,14 @@
       v-model="model.informatieCategorieen"
       :required="true"
     />
+
+    <option-group
+      v-if="mijnOnderwerpen.length"
+      type="checkbox"
+      title="Onderwerpen"
+      :options="mijnOnderwerpen"
+      v-model="model.onderwerpen"
+    />
   </fieldset>
 </template>
 
@@ -94,6 +102,7 @@ const props = defineProps<{
   disabled: boolean;
   mijnOrganisaties: OptionProps[];
   mijnInformatiecategorieen: OptionProps[];
+  mijnOnderwerpen: OptionProps[];
 }>();
 
 const model = useModel(props, "modelValue");

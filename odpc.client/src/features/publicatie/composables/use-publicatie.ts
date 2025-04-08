@@ -13,7 +13,8 @@ export const usePublicatie = (uuid?: string) => {
     verkorteTitel: "",
     omschrijving: "",
     publicatiestatus: "gepubliceerd",
-    informatieCategorieen: []
+    informatieCategorieen: [],
+    onderwerpen: []
   });
 
   const {
@@ -34,12 +35,16 @@ export const usePublicatie = (uuid?: string) => {
     publicatie.value = {
       ...publicatie.value,
       ...{
-        verantwoordelijke: publicatie.value.publisher,
+        verantwoordelijke: publicatie.value.publisher
         // opsteller: publicatie.value.publisher
       }
     };
 
-    uuid ? await putPublicatie(publicatie).execute() : await postPublicatie(publicatie).execute();
+    if (uuid) {
+      await putPublicatie(publicatie).execute();
+    } else {
+      await postPublicatie(publicatie).execute();
+    }
 
     if (publicatieError.value) {
       toast.add({

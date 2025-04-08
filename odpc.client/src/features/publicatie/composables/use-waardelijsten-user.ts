@@ -1,35 +1,66 @@
-import { computed } from "vue";
-import { useFetchApi } from "@/api";
+import { computed, onMounted, reactive, ref } from "vue";
 import type { OptionProps } from "@/components/option-group/types";
+import type { Onderwerp } from "../types";
 
 export const useWaardelijstenUser = () => {
-  const {
-    data: mijnOrganisaties,
-    isFetching: loadingMijnOrganisaties,
-    error: mijnOrganisatiesError
-  } = useFetchApi(() => `/api/v1/mijn-organisaties`).json<OptionProps[]>();
+  const loadingWaardelijstenUser = ref(false);
+  const waardelijstenUserError = ref(false);
 
-  const {
-    data: mijnInformatiecategorieen,
-    isFetching: loadingMijnInformatiecategorieen,
-    error: mijnInformatiecategorieenError
-  } = useFetchApi(() => `/api/v1/mijn-informatiecategorieen`).json<OptionProps[]>();
+  const urls = {
+    mijnOrganisaties: "/api/v1/mijn-organisaties",
+    mijnInformatiecategorieen: "/api/v1/mijn-informatiecategorieen",
+    mijnOnderwerpen: "/api/v1/mijn-onderwerpen"
+  } as const;
 
-  const loadingWaardelijstenUser = computed(
-    () => loadingMijnOrganisaties.value || loadingMijnInformatiecategorieen.value
+  const mijnWaardelijsten = reactive<Record<keyof typeof urls, OptionProps[]>>({
+    mijnOrganisaties: [],
+    mijnInformatiecategorieen: [],
+    mijnOnderwerpen: []
+  });
+
+  const getMijnLijsten = async () => {
+    loadingWaardelijstenUser.value = true;
+
+    try {
+      const results = await Promise.allSettled(
+        Object.entries(urls).map(async ([key, url]) => {
+          const response = await fetch(url, { headers: { "is-api": "true" } });
+
+          const data: OptionProps[] | Onderwerp[] = await response.json();
+
+          const mappedData = data.map(
+            (option) =>
+              ("officieleTitel" in option && {
+                uuid: option.uuid,
+                naam: option.officieleTitel
+              }) ||
+              option
+          ) as OptionProps[];
+
+          return { [key]: mappedData };
+        })
+      );
+
+      results.forEach((result) =>
+        result.status === "fulfilled"
+          ? Object.assign(mijnWaardelijsten, result.value)
+          : (waardelijstenUserError.value = true)
+      );
+    } catch {
+      waardelijstenUserError.value = true;
+    } finally {
+      loadingWaardelijstenUser.value = false;
+    }
+  };
+
+  const mijnWaardelijstenUuids = computed(() =>
+    Object.values(mijnWaardelijsten).flatMap((items) => items.map((item) => item.uuid) || [])
   );
-  const waardelijstenUserError = computed(
-    () => mijnOrganisatiesError.value || mijnInformatiecategorieenError.value
-  );
 
-  const mijnWaardelijstenUuids = computed(() => [
-    ...(mijnOrganisaties.value?.map((item) => item.uuid) || []),
-    ...(mijnInformatiecategorieen.value?.map((item) => item.uuid) || [])
-  ]);
+  onMounted(() => getMijnLijsten());
 
   return {
-    mijnOrganisaties,
-    mijnInformatiecategorieen,
+    mijnWaardelijsten,
     mijnWaardelijstenUuids,
     loadingWaardelijstenUser,
     waardelijstenUserError
