@@ -1,6 +1,6 @@
-import type { PagedResult } from "@/api";
-import { asyncComputed } from "@vueuse/core";
 import { ref } from "vue";
+import { asyncComputed } from "@vueuse/core";
+import type { PagedResult } from "@/api";
 
 const fetchPage = <T>(url: string, signal?: AbortSignal | undefined) =>
   fetch(url, { headers: { "is-api": "true" }, signal })
@@ -22,25 +22,30 @@ export const fetchAllPages = async <T>(
 };
 
 export const useAllPages = <T>(url: string) => {
+  const isFetching = ref(true);
   const error = ref(false);
-  const loading = ref(true);
+
   const data = asyncComputed(
-    (onCancel) => {
+    async (onCancel) => {
       const abortController = new AbortController();
 
       onCancel(() => abortController.abort());
 
-      return fetchAllPages<T>(url, abortController.signal).catch(() => {
+      return await fetchAllPages<T>(url, abortController.signal).catch((e: Response) => {
+        console.log(e.status);
+
         error.value = true;
+
         return [] as T[];
       });
     },
     [],
-    loading
+    isFetching
   );
+
   return {
-    error,
-    loading,
-    data
+    data,
+    isFetching,
+    error
   };
 };
