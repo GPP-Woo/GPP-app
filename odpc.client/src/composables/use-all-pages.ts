@@ -1,10 +1,10 @@
-import { isRef, ref, type Ref } from "vue";
+import { ref, toValue, type MaybeRefOrGetter } from "vue";
 import { asyncComputed } from "@vueuse/core";
 import { handleFetchError, type PagedResult } from "@/api";
 
 const fetchPage = <T>(url: string, signal?: AbortSignal | undefined) =>
   fetch(url, { headers: { "is-api": "true" }, signal })
-    .then((r) => (r.ok ? r : Promise.reject(r)))
+    .then((r) => (r.ok ? r : (handleFetchError(r.status), Promise.reject(r))))
     .then((r) => r.json() as Promise<PagedResult<T>>);
 
 export const fetchAllPages = async <T>(
@@ -22,29 +22,25 @@ export const fetchAllPages = async <T>(
   return results;
 };
 
-export const useAllPages = <T>(url: string | Ref<string | null>) => {
+export const useAllPages = <T>(url: string | MaybeRefOrGetter<string | null>) => {
   const loading = ref(true);
   const error = ref(false);
 
-  const currentUrl = isRef(url) ? url : ref(url);
+  const currentUrl = toValue(url);
 
   const data = asyncComputed(
     async (onCancel) => {
-      if (!currentUrl.value) return [] as T[];
+      if (!currentUrl) return [] as T[];
 
       const abortController = new AbortController();
 
       onCancel(() => abortController.abort());
 
-      return await fetchAllPages<T>(currentUrl.value, abortController.signal).catch(
-        (e: Response) => {
-          handleFetchError(e.status);
+      return await fetchAllPages<T>(currentUrl, abortController.signal).catch(() => {
+        error.value = true;
 
-          error.value = true;
-
-          return [] as T[];
-        }
-      );
+        return [] as T[];
+      });
     },
     [] as T[],
     loading

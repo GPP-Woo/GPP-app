@@ -1,23 +1,13 @@
 import { ref, computed, onMounted } from "vue";
-import { until } from "@vueuse/core";
-import { useFetchApi } from "@/api";
-import { useAllPages } from "./use-all-pages";
+import { handleFetchError } from "@/api";
+import { promiseAll } from "@/utils";
 
-type FetcherFn<T> = (url: string) => Promise<{ data: T[]; error: boolean }>;
+type FetcherFn<T> = (url: string) => Promise<T[]>;
 
-export const defaultFetcher = async <T>(url: string) => {
-  const { data, error } = await useFetchApi(url).json<T[]>();
-
-  return { data: data.value ?? [], error: !!error.value };
-};
-
-export const allPagesFetcher = async <T>(url: string) => {
-  const { data, loading, error } = useAllPages<T>(url);
-
-  await until(loading).toBe(false);
-
-  return { data: data.value, error: error.value };
-};
+const defaultFetcher = async <T>(url: string) =>
+  fetch(url, { headers: { "is-api": "true" } })
+    .then((r) => (r.ok ? r : (handleFetchError(r.status), Promise.reject(r))))
+    .then((r) => r.json() as Promise<T[]>);
 
 export const useFetchLists = <K extends string, T extends { uuid: string }>(
   urls: Record<K, string>,
@@ -34,21 +24,19 @@ export const useFetchLists = <K extends string, T extends { uuid: string }>(
     loading.value = true;
     error.value = false;
 
-    const promises = (Object.entries(urls) as [K, string][]).map(async ([key, url]) => {
-      try {
-        const { data, error: fetchError } = await fetcher(url);
+    const promises = Object.fromEntries(
+      (Object.entries(urls) as [K, string][]).map(([key, url]) => [key, fetcher(url)])
+    );
 
-        if (fetchError) throw fetchError;
+    try {
+      const results = await promiseAll(promises);
 
-        lists.value[key] = data;
-      } catch {
-        error.value = true;
-      }
-    });
-
-    await Promise.all(promises);
-
-    loading.value = false;
+      lists.value = results;
+    } catch {
+      error.value = true;
+    } finally {
+      loading.value = false;
+    }
   };
 
   const uuids = computed(() =>
