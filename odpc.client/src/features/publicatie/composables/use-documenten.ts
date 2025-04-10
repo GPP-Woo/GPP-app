@@ -23,31 +23,27 @@ export const useDocumenten = (pubUUID: Ref<string | undefined>) => {
   const submitDocumenten = async () => {
     if (!pubUUID.value || !documenten.value) return;
 
-    try {
-      for (const [index, doc] of documenten.value.entries()) {
-        if (!doc.uuid) {
-          docUUID.value = undefined;
+    for (const [index, doc] of documenten.value.entries()) {
+      if (!doc.uuid) {
+        docUUID.value = undefined;
 
-          await postDocument({ ...doc, publicatie: pubUUID.value }).execute();
+        await postDocument({ ...doc, publicatie: pubUUID.value }).execute();
 
-          if (!documentError.value) await uploadDocument(index);
-        } else {
-          docUUID.value = doc.uuid;
+        if (!documentError.value) await uploadDocument(index);
+      } else {
+        docUUID.value = doc.uuid;
 
-          await putDocument(doc).execute();
-        }
-
-        if (documentError.value) {
-          toast.add({
-            text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
-            type: "error"
-          });
-
-          throw new Error();
-        }
+        await putDocument(doc).execute();
       }
-    } catch {
-      throw new Error();
+
+      if (documentError.value) {
+        toast.add({
+          text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
+          type: "error"
+        });
+
+        throw new Error(`submitDocumenten`);
+      }
     }
   };
 
@@ -71,18 +67,18 @@ export const useDocumenten = (pubUUID: Ref<string | undefined>) => {
 
       try {
         await uploadFile(files.value[index], documentData.value.bestandsdelen);
-      } catch {
+      } catch (err) {
         toast.add({
           text: "Het document kon niet worden geupload, probeer het nogmaals...",
           type: "error"
         });
 
-        throw new Error();
+        throw err;
       } finally {
         uploadingFile.value = false;
       }
     } else {
-      throw new Error();
+      throw new Error(`uploadDocument`);
     }
   };
 

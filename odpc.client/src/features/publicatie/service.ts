@@ -37,7 +37,7 @@ const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
       blobStart += omvang;
     }
   } catch {
-    throw new Error();
+    throw new Error(`uploadFile`);
   }
 };
 

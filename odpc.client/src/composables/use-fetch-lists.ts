@@ -38,7 +38,7 @@ export const useFetchLists = <K extends string, T extends { uuid: string }>(
       try {
         const { data, error: fetchError } = await fetcher(url);
 
-        if (fetchError) throw new Error();
+        if (fetchError) throw new Error(`fetchLists`);
 
         lists.value[key] = data;
       } catch {

@@ -53,7 +53,7 @@ export const usePublicatie = (uuid?: string) => {
 
       publicatieError.value = null;
 
-      throw new Error();
+      throw new Error(`submitPublicatie`);
     }
   };
 

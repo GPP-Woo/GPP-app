@@ -13,7 +13,6 @@ export const useFetchApi = createFetch({
       return { options };
     },
     afterFetch(ctx) {
-      // console.log(ctx);
       return ctx;
     },
     onFetchError(ctx) {

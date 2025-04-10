@@ -42,7 +42,7 @@ export const useGebruikersgroep = (uuid?: string) => {
 
       gebruikersgroepError.value = null;
 
-      throw new Error();
+      throw new Error(`submitGebruikersgroep`);
     }
   };
 
@@ -57,7 +57,7 @@ export const useGebruikersgroep = (uuid?: string) => {
 
       gebruikersgroepError.value = null;
 
-      throw new Error();
+      throw new Error(`removeGebruikersgroep`);
     }
   };
 
