@@ -13,9 +13,15 @@ namespace ODPC.Features
     {
         public async Task<IReadOnlyList<string>> GetAsync(CancellationToken token)
         {
+            var lowerCaseId = user.Id?.ToLowerInvariant();
+
+            if (lowerCaseId == null) return [];
+
+#pragma warning disable CA1862 // Needed by ef core: Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
             var groepIds = context.GebruikersgroepGebruikers
-                .Where(x => x.GebruikerId == user.Id)
+                .Where(x => x.GebruikerId.ToLower() == lowerCaseId)
                 .Select(x => x.GebruikersgroepUuid);
+#pragma warning restore CA1862 // Needed by ef core: Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 
             return await context.GebruikersgroepWaardelijsten
                 .Where(x => groepIds.Contains(x.GebruikersgroepUuid))
