@@ -1,5 +1,5 @@
 import { createFetch } from "@vueuse/core";
-import { handleFetchError } from "./api-error";
+import { handleFetchError } from "./error";
 
 export const useFetchApi = createFetch({
   options: {
