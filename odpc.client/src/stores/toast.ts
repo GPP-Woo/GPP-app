@@ -26,12 +26,12 @@ export default {
     };
 
     _messages.push(m);
-    const defaultTimeout = params.type === "error" ? 4000 : 2000;
+    const defaultTimeout = params.type === "error" ? 30000 : 2000;
 
     setTimeout(() => this.remove(m), params.timeout || defaultTimeout);
   },
   remove(m: Message) {
     const index = _messages.indexOf(m);
-    index !== -1 && _messages.splice(index, 1);
+    if (index !== -1) _messages.splice(index, 1);
   }
 };

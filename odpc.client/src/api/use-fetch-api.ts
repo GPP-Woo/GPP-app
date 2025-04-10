@@ -1,25 +1,23 @@
 import { createFetch } from "@vueuse/core";
+import { handleFetchError } from "./error";
 
 export const useFetchApi = createFetch({
   options: {
     beforeFetch({ options }) {
-      // const token = "token";
-
       options.headers = {
         ...options.headers,
         "content-type": "application/json",
         "is-api": "true"
-        // Authorization: `Bearer ${token}`
       };
 
       return { options };
     },
     afterFetch(ctx) {
-      // console.log(ctx);
       return ctx;
     },
     onFetchError(ctx) {
-      // console.log(ctx);
+      handleFetchError(ctx.response?.status);
+
       return ctx;
     }
   }

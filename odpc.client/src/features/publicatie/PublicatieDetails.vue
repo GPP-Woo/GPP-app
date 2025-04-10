@@ -2,7 +2,11 @@
   <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-if="!loading" @submit.prevent="submit" v-form-invalid-handler>
-    <section v-if="!forbidden">
+    <alert-inline v-if="mijnWaardelijstenError"
+      >Er is iets misgegaan bij het ophalen van uw gegevens...</alert-inline
+    >
+
+    <section v-else-if="!forbidden">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
       >
@@ -11,8 +15,8 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
-        :mijn-organisaties="mijnOrganisaties || []"
-        :mijn-informatiecategorieen="mijnInformatiecategorieen || []"
+        :mijn-organisaties="mijnWaardelijsten.mijnOrganisaties || []"
+        :mijn-informatiecategorieen="mijnWaardelijsten.mijnInformatiecategorieen || []"
       />
 
       <alert-inline v-if="documentenError"
@@ -78,8 +82,9 @@ import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
-import { useWaardelijstenUser } from "./composables/use-waardelijsten-user";
 import { PublicatieStatus } from "./types";
+import { useFetchLists } from "@/composables/use-fetch-lists";
+import type { OptionProps } from "@/components/option-group/types";
 
 const router = useRouter();
 
@@ -91,7 +96,7 @@ const loading = computed(
   () =>
     loadingPublicatie.value ||
     loadingDocumenten.value ||
-    loadingWaardelijstenUser.value ||
+    loadingMijnWaardelijsten.value ||
     loadingDocument.value ||
     uploadingFile.value
 );
@@ -101,7 +106,7 @@ const error = computed(
     !!publicatieError.value ||
     !!documentenError.value ||
     !!documentError.value ||
-    !!waardelijstenUserError.value ||
+    !!mijnWaardelijstenError.value ||
     forbidden.value
 );
 
@@ -130,21 +135,25 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
-// Waardelijsten user
+// Mijn waardelijsten
+const waardelijstUrls = {
+  mijnOrganisaties: "/api/v1/mijn-organisaties",
+  mijnInformatiecategorieen: "/api/v1/mijn-informatiecategorieen"
+} as const;
+
 const {
-  mijnOrganisaties,
-  mijnInformatiecategorieen,
-  mijnWaardelijstenUuids,
-  loadingWaardelijstenUser,
-  waardelijstenUserError
-} = useWaardelijstenUser();
+  lists: mijnWaardelijsten,
+  uuids: mijnWaardelijstenUuids,
+  loading: loadingMijnWaardelijsten,
+  error: mijnWaardelijstenError
+} = useFetchLists<keyof typeof waardelijstUrls, OptionProps>(waardelijstUrls);
 
 const forbidden = computed(
   () =>
     // Not assigned to any organisatie
-    !mijnOrganisaties.value?.length ||
+    !mijnWaardelijsten.value.mijnOrganisaties.length ||
     // Not assigned to any informatiecategorie
-    !mijnInformatiecategorieen.value?.length ||
+    !mijnWaardelijsten.value.mijnInformatiecategorieen.length ||
     // Not assigned to publisher organisatie
     (publicatie.value.publisher &&
       !mijnWaardelijstenUuids.value.includes(publicatie.value.publisher)) ||
@@ -179,8 +188,8 @@ const submit = async () => {
 
     // As soon as a publicatie gets status 'ingetrokken' in ODRC, the associated documents will
     // be automatically set to 'ingetrokken' as well and can no longer be updated from ODPC
-    publicatie.value.publicatiestatus !== PublicatieStatus.ingetrokken &&
-      (await submitDocumenten());
+    if (publicatie.value.publicatiestatus !== PublicatieStatus.ingetrokken)
+      await submitDocumenten();
   } catch {
     return;
   }

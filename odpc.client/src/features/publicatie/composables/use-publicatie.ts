@@ -34,12 +34,16 @@ export const usePublicatie = (uuid?: string) => {
     publicatie.value = {
       ...publicatie.value,
       ...{
-        verantwoordelijke: publicatie.value.publisher,
+        verantwoordelijke: publicatie.value.publisher
         // opsteller: publicatie.value.publisher
       }
     };
 
-    uuid ? await putPublicatie(publicatie).execute() : await postPublicatie(publicatie).execute();
+    if (uuid) {
+      await putPublicatie(publicatie).execute();
+    } else {
+      await postPublicatie(publicatie).execute();
+    }
 
     if (publicatieError.value) {
       toast.add({
@@ -49,11 +53,11 @@ export const usePublicatie = (uuid?: string) => {
 
       publicatieError.value = null;
 
-      throw new Error();
+      throw new Error(`submitPublicatie`);
     }
   };
 
-  onMounted(async () => uuid && (await getPublicatie().execute()));
+  onMounted(() => uuid && getPublicatie().execute());
 
   return {
     publicatie,
