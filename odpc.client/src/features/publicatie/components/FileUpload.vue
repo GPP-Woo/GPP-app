@@ -24,13 +24,15 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { mimeTypesMap } from "../service";
+import { mimeTypes } from "../service";
 
 const emit = defineEmits<{ (e: "filesSelected", payload: Event | DragEvent): void }>();
 
 const dragging = ref(false);
 
-const accept = computed(() => Array.from(mimeTypesMap.value?.keys() || []).join(","));
+const accept = computed(
+  () => mimeTypes.value?.map((t) => t.extension || t.mimeType).join(",") ?? ""
+);
 
 const onFilesSelected = (event: Event | DragEvent) => {
   emit("filesSelected", event);

@@ -113,7 +113,7 @@ import toast from "@/stores/toast";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import { PublicatieStatus, type PublicatieDocument } from "../types";
-import { mimeTypesMap } from "../service";
+import { mimeTypes } from "../service";
 import FileUpload from "./FileUpload.vue";
 
 const props = defineProps<{
@@ -146,7 +146,15 @@ const filesSelected = (event: Event | DragEvent) => {
       ? [...(event.dataTransfer?.files || [])]
       : [...((event.target as HTMLInputElement).files || [])];
 
-  const unknownType = selectedFiles.some((file) => !mimeTypesMap.value?.get(file.type));
+  const unknownType = selectedFiles.some(
+    (file) =>
+      !mimeTypes.value?.some((type) =>
+        type.extension
+          ? file.name.toLowerCase().endsWith(type.extension)
+          : type.mimeType === file.type
+      )
+  );
+
   const emptyFile = selectedFiles.some((file) => !file.size);
 
   if (!selectedFiles.length || unknownType || emptyFile) {
@@ -175,7 +183,12 @@ const addDocumenten = () => {
   try {
     Array.from(files.value || []).forEach((file) => {
       const doc = getInitialDocument();
-      const bestandsformaat = mimeTypesMap.value?.get(file.type)?.identifier;
+
+      const bestandsformaat = mimeTypes.value?.find((type) =>
+        type.extension
+          ? file.name.toLowerCase().endsWith(type.extension)
+          : type.mimeType === file.type
+      )?.identifier;
 
       if (!bestandsformaat) throw new Error();
 
