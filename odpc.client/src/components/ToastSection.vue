@@ -6,7 +6,7 @@
       role="status"
       :class="message.type"
       @click="toast.remove(message)"
-      v-html="message.text"
+      ><div v-html="message.text"></div
     ></output>
   </transition-group>
 </template>

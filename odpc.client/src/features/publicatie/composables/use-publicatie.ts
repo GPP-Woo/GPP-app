@@ -57,7 +57,7 @@ export const usePublicatie = (uuid?: string) => {
     }
   };
 
-  onMounted(async () => uuid && (await getPublicatie().execute()));
+  onMounted(() => uuid && getPublicatie().execute());
 
   return {
     publicatie,

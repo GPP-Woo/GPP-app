@@ -61,7 +61,7 @@ export const useGebruikersgroep = (uuid?: string) => {
     }
   };
 
-  onMounted(async () => uuid && (await getGebruikersgroep().execute()));
+  onMounted(() => uuid && getGebruikersgroep().execute());
 
   return {
     gebruikersgroep,

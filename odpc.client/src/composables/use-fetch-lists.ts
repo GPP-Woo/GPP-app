@@ -3,11 +3,25 @@ import { until } from "@vueuse/core";
 import { useFetchApi } from "@/api";
 import { useAllPages } from "./use-all-pages";
 
-type Fetcher = "fetch-api" | "all-pages";
+type FetcherFn<T> = (url: string) => Promise<{ data: T[]; error: boolean }>;
+
+export const defaultFetcher = async <T>(url: string) => {
+  const { data, error } = await useFetchApi(url).json<T[]>();
+
+  return { data: data.value ?? [], error: !!error.value };
+};
+
+export const allPagesFetcher = async <T>(url: string) => {
+  const { data, loading, error } = useAllPages<T>(url);
+
+  await until(loading).toBe(false);
+
+  return { data: data.value, error: error.value };
+};
 
 export const useFetchLists = <K extends string, T extends { uuid: string }>(
   urls: Record<K, string>,
-  fetcher: Fetcher = "fetch-api"
+  fetcher: FetcherFn<T> = defaultFetcher
 ) => {
   const loading = ref(false);
   const error = ref(false);
@@ -22,18 +36,11 @@ export const useFetchLists = <K extends string, T extends { uuid: string }>(
 
     const promises = (Object.entries(urls) as [K, string][]).map(async ([key, url]) => {
       try {
-        const {
-          data: dataRef,
-          isFetching: loadingRef,
-          error: errorRef
-        } = fetcher === "all-pages" ? useAllPages<T>(url) : await useFetchApi(url).json<T[]>();
+        const { data, error: fetchError } = await fetcher(url);
 
-        // await asyncComputed data to be loaded from useAllPages
-        await until(loadingRef).toBe(false);
+        if (fetchError) throw new Error();
 
-        if (errorRef.value) throw new Error();
-
-        lists.value[key] = dataRef.value ?? [];
+        lists.value[key] = data;
       } catch {
         error.value = true;
       }
