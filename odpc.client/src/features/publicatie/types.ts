@@ -48,4 +48,5 @@ export type MimeType = {
   identifier: string;
   name: string;
   mimeType: string;
+  extension?: string;
 };
