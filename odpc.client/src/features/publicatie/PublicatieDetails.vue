@@ -85,7 +85,6 @@ import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
 import { PublicatieStatus } from "./types";
 import { useFetchLists } from "@/composables/use-fetch-lists";
-import type { OptionProps } from "@/components/option-group/types";
 
 const router = useRouter();
 
@@ -140,7 +139,7 @@ const {
 const waardelijstUrls = {
   mijnOrganisaties: "/api/v1/mijn-organisaties",
   mijnInformatiecategorieen: "/api/v1/mijn-informatiecategorieen",
-  mijnOnderwerpen: "/api/v1/onderwerpen"
+  mijnOnderwerpen: "/api/v1/mijn-onderwerpen"
 } as const;
 
 const {
@@ -148,7 +147,7 @@ const {
   uuids: mijnWaardelijstenUuids,
   loading: loadingMijnWaardelijsten,
   error: mijnWaardelijstenError
-} = useFetchLists<keyof typeof waardelijstUrls, OptionProps>(waardelijstUrls);
+} = useFetchLists(waardelijstUrls);
 
 const forbidden = computed(
   () =>

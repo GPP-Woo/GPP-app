@@ -5,7 +5,8 @@ import { handleFetchError, type PagedResult } from "@/api";
 const fetchPage = <T>(url: string, signal?: AbortSignal | undefined) =>
   fetch(url, { headers: { "is-api": "true" }, signal })
     .then((r) => (r.ok ? r : (handleFetchError(r.status), Promise.reject(r))))
-    .then((r) => r.json() as Promise<PagedResult<T>>);
+    .then((r) => r.json() as Promise<PagedResult<T> | T[]>)
+    .then((r) => (Array.isArray(r) ? { results: r, next: undefined } : r));
 
 export const fetchAllPages = async <T>(
   url: string,
@@ -22,7 +23,7 @@ export const fetchAllPages = async <T>(
   return results;
 };
 
-export const useAllPages = <T>(url: string | MaybeRefOrGetter<string | null>) => {
+export const useAllPages = <T>(url: MaybeRefOrGetter<string | null>) => {
   const loading = ref(true);
   const error = ref(false);
 

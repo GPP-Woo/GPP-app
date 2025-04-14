@@ -35,8 +35,6 @@ import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { WAARDELIJSTEN } from "../types";
-import { fetchAllPages } from "@/composables/use-all-pages";
-import type { OptionProps } from "@/components/option-group/types";
 import { useFetchLists } from "@/composables/use-fetch-lists";
 
 const props = defineProps<{ modelValue: string[] }>();
@@ -50,12 +48,7 @@ const lijstUrls = {
   onderwerpen: "/api/v1/onderwerpen"
 } as const;
 
-const {
-  lists,
-  uuids,
-  loading,
-  error: fetchError
-} = useFetchLists<keyof typeof lijstUrls, OptionProps>(lijstUrls, fetchAllPages);
+const { lists, uuids, loading, error: fetchError } = useFetchLists(lijstUrls);
 
 const error = computed(
   () =>

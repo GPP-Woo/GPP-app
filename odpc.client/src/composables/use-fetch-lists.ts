@@ -1,23 +1,29 @@
 import { ref, computed, onMounted } from "vue";
-import { handleFetchError } from "@/api";
 import { promiseAll } from "@/utils";
+import { fetchAllPages } from "./use-all-pages";
 
-type FetcherFn<T> = (url: string) => Promise<T[]>;
+const defaultFetcher = async (url: string) =>
+  fetchAllPages<{ uuid: string; naam: string } | { uuid: string; officieleTitel: string }>(
+    url
+  ).then((r) =>
+    r.map(({ uuid, ...rest }) => ({
+      uuid,
+      naam: "naam" in rest ? rest.naam : rest.officieleTitel
+    }))
+  );
 
-const defaultFetcher = async <T>(url: string) =>
-  fetch(url, { headers: { "is-api": "true" } })
-    .then((r) => (r.ok ? r : (handleFetchError(r.status), Promise.reject(r))))
-    .then((r) => r.json() as Promise<T[]>);
-
-export const useFetchLists = <K extends string, T extends { uuid: string }>(
+export const useFetchLists = <K extends string>(
   urls: Record<K, string>,
-  fetcher: FetcherFn<T> = defaultFetcher
+  fetcher = defaultFetcher
 ) => {
   const loading = ref(false);
   const error = ref(false);
 
-  const lists = ref<Record<K, T[]>>(
-    Object.keys(urls).reduce((acc, key) => ({ ...acc, [key as K]: [] }), {} as Record<K, T[]>)
+  const lists = ref(
+    Object.keys(urls).reduce(
+      (acc, key) => ({ ...acc, [key as K]: [] }),
+      {} as Record<K, { uuid: string; naam: string }[]>
+    )
   );
 
   const fetchLists = async () => {
