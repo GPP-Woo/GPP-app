@@ -46,7 +46,7 @@ export const useFetchLists = <K extends string>(
   };
 
   const uuids = computed(() =>
-    (Object.values(lists.value) as T[][]).flat().map((item) => item.uuid)
+    (Object.values(lists.value) as { uuid: string }[][]).flat().map((item) => item.uuid)
   );
 
   onMounted(() => fetchLists());
