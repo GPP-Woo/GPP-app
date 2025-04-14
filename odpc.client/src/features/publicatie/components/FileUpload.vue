@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="accept.length"
     class="dropzone"
     @dragover.prevent="dragging = true"
     @dragleave.prevent="dragging = false"
@@ -20,18 +21,24 @@
       <span v-else>Klik hier om bestanden te selecteren of sleep bestanden hierheen</span>
     </label>
   </div>
+
+  <alert-inline v-else>Er is iets misgegaan bij het ophalen van documentgegevens....</alert-inline>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import AlertInline from "@/components/AlertInline.vue";
 import { mimeTypes } from "../service";
 
 const emit = defineEmits<{ (e: "filesSelected", payload: Event | DragEvent): void }>();
 
 const dragging = ref(false);
 
+// adding 7z mimeType to accept attr doesnt add .7z extension
+// so for 7z the extension is added instead of mimeType
+// for zip as well to remove duplicate .zip entries because of the multiple mimeTypes
 const accept = computed(
-  () => mimeTypes.value?.map((t) => t.extension || t.mimeType).join(",") ?? ""
+  () => [...new Set(mimeTypes.value?.map((t) => t.extension || t.mimeType))].join(",") ?? ""
 );
 
 const onFilesSelected = (event: Event | DragEvent) => {

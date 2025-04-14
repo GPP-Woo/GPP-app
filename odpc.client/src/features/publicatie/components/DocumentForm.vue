@@ -147,12 +147,7 @@ const filesSelected = (event: Event | DragEvent) => {
       : [...((event.target as HTMLInputElement).files || [])];
 
   const unknownType = selectedFiles.some(
-    (file) =>
-      !mimeTypes.value?.some((type) =>
-        type.extension
-          ? file.name.toLowerCase().endsWith(type.extension)
-          : type.mimeType === file.type
-      )
+    (file) => !mimeTypes.value?.some((type) => type.mimeType === file.type)
   );
 
   const emptyFile = selectedFiles.some((file) => !file.size);
@@ -184,10 +179,8 @@ const addDocumenten = () => {
     Array.from(files.value || []).forEach((file) => {
       const doc = getInitialDocument();
 
-      const bestandsformaat = mimeTypes.value?.find((type) =>
-        type.extension
-          ? file.name.toLowerCase().endsWith(type.extension)
-          : type.mimeType === file.type
+      const bestandsformaat = mimeTypes.value?.find(
+        (type) => type.mimeType === file.type
       )?.identifier;
 
       if (!bestandsformaat) throw new Error();
