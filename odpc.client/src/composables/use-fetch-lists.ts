@@ -2,6 +2,11 @@ import { ref, computed, onMounted } from "vue";
 import { promiseAll } from "@/utils";
 import { fetchAllPages } from "./use-all-pages";
 
+export type ListItem = {
+  uuid: string;
+  naam: string;
+};
+
 const defaultFetcher = async (url: string) =>
   fetchAllPages<{ uuid: string; naam: string } | { uuid: string; officieleTitel: string }>(
     url
@@ -22,7 +27,7 @@ export const useFetchLists = <K extends string>(
   const lists = ref(
     Object.keys(urls).reduce(
       (acc, key) => ({ ...acc, [key as K]: [] }),
-      {} as Record<K, { uuid: string; naam: string }[]>
+      {} as Record<K, ListItem[]>
     )
   );
 
@@ -46,7 +51,7 @@ export const useFetchLists = <K extends string>(
   };
 
   const uuids = computed(() =>
-    (Object.values(lists.value) as { uuid: string }[][]).flat().map((item) => item.uuid)
+    (Object.values(lists.value) as ListItem[][]).flat().map((item) => item.uuid)
   );
 
   onMounted(() => fetchLists());
