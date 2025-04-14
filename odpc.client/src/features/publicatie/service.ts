@@ -1,14 +1,7 @@
-import { ref } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import type { Bestandsdeel, MimeType } from "./types";
 
-const mimeTypesMap = ref<Map<string, MimeType> | null>(null);
-
-(async () => {
-  const { data } = await useFetchApi(() => "/api/v1/formats").json<MimeType[]>();
-
-  mimeTypesMap.value = new Map(data.value?.map((type) => [type.mimeType, type]));
-})();
+const { data: mimeTypes } = useFetchApi(() => "/api/v1/formats").json<MimeType[]>();
 
 const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
   let blobStart = 0;
@@ -37,8 +30,8 @@ const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
       blobStart += omvang;
     }
   } catch {
-    throw new Error();
+    throw new Error(`uploadFile`);
   }
 };
 
-export { mimeTypesMap, uploadFile };
+export { mimeTypes, uploadFile };

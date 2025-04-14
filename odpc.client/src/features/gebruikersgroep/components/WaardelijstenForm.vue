@@ -1,8 +1,7 @@
 <template>
   <simple-spinner v-if="loading" />
 
-  <alert-inline
-    v-else-if="error || !lijsten.organisaties.length || !lijsten.informatiecategorieen.length"
+  <alert-inline v-else-if="error"
     >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
   >
 
@@ -11,95 +10,57 @@
 
     <option-group
       :title="WAARDELIJSTEN.ORGANISATIE"
-      :options="lijsten.organisaties"
+      :options="lists.organisaties"
       v-model="model"
     />
 
     <option-group
       :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
-      :options="lijsten.informatiecategorieen"
+      :options="lists.informatiecategorieen"
       v-model="model"
     />
 
     <option-group
-      v-if="lijsten.onderwerpen.length"
+      v-if="lists.onderwerpen.length"
       :title="WAARDELIJSTEN.ONDERWERP"
-      :options="lijsten.onderwerpen"
+      :options="lists.onderwerpen"
       v-model="model"
     />
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, useModel, watch } from "vue";
+import { useModel, watch, computed } from "vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { WAARDELIJSTEN } from "../types";
-import { fetchAllPages } from "@/composables/use-all-pages";
-import type { OptionProps } from "@/components/option-group/types";
-
-type Onderwerp = {
-  uuid: string;
-  officieleTitel: string;
-};
+import { useFetchLists } from "@/composables/use-fetch-lists";
 
 const props = defineProps<{ modelValue: string[] }>();
 
 const model = useModel(props, "modelValue");
 
-const loading = ref(false);
-const error = ref(false);
-
-const urls = {
+// Lijsten
+const lijstUrls = {
   organisaties: "/api/v1/organisaties",
   informatiecategorieen: "/api/v1/informatiecategorieen",
   onderwerpen: "/api/v1/onderwerpen"
 } as const;
 
-const lijsten = reactive<Record<keyof typeof urls, OptionProps[]>>({
-  organisaties: [],
-  informatiecategorieen: [],
-  onderwerpen: []
-});
+const { lists, uuids, loading, error: fetchError } = useFetchLists(lijstUrls);
 
-const getLijsten = async () => {
-  loading.value = true;
-
-  try {
-    const results = await Promise.allSettled(
-      Object.entries(urls).map(async ([key, url]) =>
-        fetchAllPages<OptionProps | Onderwerp>(url).then((data) => {
-          const mappedData = data.map(
-            (option) =>
-              ("officieleTitel" in option && {
-                uuid: option.uuid,
-                naam: option.officieleTitel
-              }) ||
-              option
-          ) as OptionProps[];
-
-          return { [key]: mappedData };
-        })
-      )
-    );
-
-    results.forEach((result) =>
-      result.status === "fulfilled" ? Object.assign(lijsten, result.value) : (error.value = true)
-    );
-  } catch {
-    error.value = true;
-  } finally {
-    loading.value = false;
-  }
-};
+const error = computed(
+  () =>
+    fetchError.value ||
+    !lists.value.organisaties.length ||
+    !lists.value.informatiecategorieen.length
+);
 
 // After loading remove uuids from model that are not present/active anymore in ODRC
-watch(loading, () => {
-  const uuids = Object.values(lijsten).flatMap((items) => items.map((item) => item.uuid) || []);
-
-  model.value = model.value.filter((uuid: string) => uuids.includes(uuid));
-});
-
-onMounted(() => getLijsten());
+watch(
+  loading,
+  () =>
+    !error.value && (model.value = model.value.filter((uuid: string) => uuids.value.includes(uuid)))
+);
 </script>

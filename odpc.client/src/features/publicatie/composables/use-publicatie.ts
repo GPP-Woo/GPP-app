@@ -54,11 +54,11 @@ export const usePublicatie = (uuid?: string) => {
 
       publicatieError.value = null;
 
-      throw new Error();
+      throw new Error(`submitPublicatie`);
     }
   };
 
-  onMounted(async () => uuid && (await getPublicatie().execute()));
+  onMounted(() => uuid && getPublicatie().execute());
 
   return {
     publicatie,
