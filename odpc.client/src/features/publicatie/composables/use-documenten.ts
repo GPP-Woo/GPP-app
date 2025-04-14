@@ -1,55 +1,49 @@
-import { ref, onMounted, type ComputedRef } from "vue";
+import { ref, type Ref, computed, watch } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
-import { fetchAllPages } from "@/composables/use-all-pages";
+import { useAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
 import { uploadFile } from "../service";
 import type { PublicatieDocument } from "../types";
 
-export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
+export const useDocumenten = (pubUUID: Ref<string | undefined>) => {
   // Documenten
   const files = ref<File[]>([]);
   const documenten = ref<PublicatieDocument[]>([]);
 
-  const loadingDocumenten = ref(false);
-  const documentenError = ref(false);
+  const {
+    data: documentenData,
+    loading: loadingDocumenten,
+    error: documentenError
+  } = useAllPages<PublicatieDocument>(
+    computed(() => (pubUUID.value ? `/api/v1/documenten/?publicatie=${pubUUID.value}` : null))
+  );
 
-  const getDocumenten = () => {
-    loadingDocumenten.value = true;
-
-    fetchAllPages<PublicatieDocument>(`/api/v1/documenten/?publicatie=${pubUUID.value}`)
-      .then((results) => (documenten.value = results))
-      .catch(() => (documentenError.value = true))
-      .finally(() => (loadingDocumenten.value = false));
-  };
+  watch(documentenData, (value) => (documenten.value = value ?? []));
 
   const submitDocumenten = async () => {
     if (!pubUUID.value || !documenten.value) return;
 
-    try {
-      for (const [index, doc] of documenten.value.entries()) {
-        if (!doc.uuid) {
-          docUUID.value = undefined;
+    for (const [index, doc] of documenten.value.entries()) {
+      if (!doc.uuid) {
+        docUUID.value = undefined;
 
-          await postDocument({ ...doc, publicatie: pubUUID.value }).execute();
+        await postDocument({ ...doc, publicatie: pubUUID.value }).execute();
 
-          if (!documentError.value) await uploadDocument(index);
-        } else {
-          docUUID.value = doc.uuid;
+        if (!documentError.value) await uploadDocument(index);
+      } else {
+        docUUID.value = doc.uuid;
 
-          await putDocument(doc).execute();
-        }
-
-        if (documentError.value) {
-          toast.add({
-            text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
-            type: "error"
-          });
-
-          throw new Error();
-        }
+        await putDocument(doc).execute();
       }
-    } catch {
-      throw new Error();
+
+      if (documentError.value) {
+        toast.add({
+          text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
+          type: "error"
+        });
+
+        throw new Error(`submitDocumenten`);
+      }
     }
   };
 
@@ -73,22 +67,20 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
 
       try {
         await uploadFile(files.value[index], documentData.value.bestandsdelen);
-      } catch {
+      } catch (err) {
         toast.add({
           text: "Het document kon niet worden geupload, probeer het nogmaals...",
           type: "error"
         });
 
-        throw new Error();
+        throw err;
       } finally {
         uploadingFile.value = false;
       }
     } else {
-      throw new Error();
+      throw new Error(`uploadDocument`);
     }
   };
-
-  onMounted(() => pubUUID.value && getDocumenten());
 
   return {
     files,

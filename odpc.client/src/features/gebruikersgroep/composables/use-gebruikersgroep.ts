@@ -42,7 +42,7 @@ export const useGebruikersgroep = (uuid?: string) => {
 
       gebruikersgroepError.value = null;
 
-      throw new Error();
+      throw new Error(`submitGebruikersgroep`);
     }
   };
 
@@ -57,11 +57,11 @@ export const useGebruikersgroep = (uuid?: string) => {
 
       gebruikersgroepError.value = null;
 
-      throw new Error();
+      throw new Error(`removeGebruikersgroep`);
     }
   };
 
-  onMounted(async () => uuid && (await getGebruikersgroep().execute()));
+  onMounted(() => uuid && getGebruikersgroep().execute());
 
   return {
     gebruikersgroep,

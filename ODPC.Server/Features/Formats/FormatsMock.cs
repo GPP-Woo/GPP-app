@@ -4,7 +4,8 @@
     {
         public static readonly Dictionary<string, Format> Formats = new Format[]
         {
-            new() { Name = "7z", MimeType = "application/x-7z-compressed", Identifier = "a81129a3-ec70-40f3-8eb6-fc94e97ef865" },
+            new() { Name = "7z", MimeType = "application/x-7z-compressed", Extension = ".7z", Identifier = "a81129a3-ec70-40f3-8eb6-fc94e97ef865" },
+            new() { Name = "7z", MimeType = "application/x-compressed", Extension = ".7z", Identifier = "a81129a3-ec70-40f3-8eb6-fc94e97ef865" },
             new() { Name = "CSV", MimeType = "text/csv", Identifier = "6bdd2631-b5d5-472a-b336-9cc643822f0a" },
             new() { Name = "Excel XLS", MimeType = "application/vnd.ms-excel", Identifier = "822928f7-73f0-45d3-b1a0-4f3a3dbc361a" },
             new() { Name = "Excel XLSX", MimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Identifier = "fd16ded8-f013-4ca7-ba21-ee3ca36a6054" },
@@ -22,9 +23,9 @@
             new() { Name = "RTF", MimeType = "application/rtf", Identifier = "63026476-5d40-424e-a113-b02ed7fba760" },
             new() { Name = "DOC", MimeType = "application/msword", Identifier = "26ccc5e3-acf2-4251-9618-46321e2b9d36" },
             new() { Name = "DOCX", MimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document", Identifier = "ae0ea877-3207-4a97-b5df-bf552bc9b895" },
-            new() { Name = "ZIP", MimeType = "application/zip", Identifier = "f879f55e-a9c2-4779-96b2-288d6359d86b" },
-            new() { Name = "ZIP Win v1", MimeType = "application/zip-compressed", Identifier = "f879f55e-a9c2-4779-96b2-288d6359d86b" },
-            new() { Name = "ZIP Win v2", MimeType = "application/x-zip-compressed", Identifier = "f879f55e-a9c2-4779-96b2-288d6359d86b" }
+            new() { Name = "ZIP", MimeType = "application/zip", Extension = ".zip", Identifier = "f879f55e-a9c2-4779-96b2-288d6359d86b" },
+            new() { Name = "ZIP Win v1", MimeType = "application/zip-compressed", Extension = ".zip", Identifier = "f879f55e-a9c2-4779-96b2-288d6359d86b" },
+            new() { Name = "ZIP Win v2", MimeType = "application/x-zip-compressed", Extension = ".zip", Identifier = "f879f55e-a9c2-4779-96b2-288d6359d86b" }
         }.ToDictionary(x => x.MimeType);
     }
 }
