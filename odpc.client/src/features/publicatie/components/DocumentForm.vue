@@ -112,7 +112,7 @@ import { useConfirmDialog } from "@vueuse/core";
 import toast from "@/stores/toast";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
-import { PublicatieStatus, type PublicatieDocument } from "../types";
+import { PublicatieStatus, type MimeType, type PublicatieDocument } from "../types";
 import { mimeTypes } from "../service";
 import FileUpload from "./FileUpload.vue";
 
@@ -140,6 +140,13 @@ const getInitialDocument = (): PublicatieDocument => ({
   bestandsomvang: 0
 });
 
+// for file types zip and 7z mimetypes are sometimes not properly mapped
+// and may fallback to 'application/octet-stream', if so then check against extension
+const matchKnownTypes = (file: File, type: MimeType) =>
+  file.type === "application/octet-stream" && type.extension
+    ? file.name.toLowerCase().endsWith(type.extension)
+    : file.type === type.mimeType;
+
 const filesSelected = (event: Event | DragEvent) => {
   const selectedFiles: File[] =
     event instanceof DragEvent
@@ -147,7 +154,7 @@ const filesSelected = (event: Event | DragEvent) => {
       : [...((event.target as HTMLInputElement).files || [])];
 
   const unknownType = selectedFiles.some(
-    (file) => !mimeTypes.value?.some((type) => type.mimeType === file.type)
+    (file) => !mimeTypes.value?.some((type) => matchKnownTypes(file, type))
   );
 
   const emptyFile = selectedFiles.some((file) => !file.size);
@@ -179,8 +186,8 @@ const addDocumenten = () => {
     Array.from(files.value || []).forEach((file) => {
       const doc = getInitialDocument();
 
-      const bestandsformaat = mimeTypes.value?.find(
-        (type) => type.mimeType === file.type
+      const bestandsformaat = mimeTypes.value?.find((type) =>
+        matchKnownTypes(file, type)
       )?.identifier;
 
       if (!bestandsformaat) throw new Error();
