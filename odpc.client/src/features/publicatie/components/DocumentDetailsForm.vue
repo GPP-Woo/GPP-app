@@ -38,7 +38,7 @@
       </div>
     </template>
 
-    <summary v-else @click.prevent tabdetailsId="-1">
+    <summary v-else @click.prevent tabindex="-1">
       {{ doc.bestandsnaam }}
     </summary>
 
