@@ -24,7 +24,7 @@
         >Er is iets misgegaan bij het ophalen van de documenten...</alert-inline
       >
 
-      <document-form
+      <documenten-form
         v-else
         v-model:files="files"
         v-model:documenten="documenten"
@@ -80,7 +80,7 @@ import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
-import DocumentForm from "./components/DocumentForm.vue";
+import DocumentenForm from "./components/DocumentenForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
 import { PublicatieStatus } from "./types";
