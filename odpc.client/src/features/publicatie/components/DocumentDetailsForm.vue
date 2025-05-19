@@ -56,7 +56,7 @@
       />
 
       <span :id="`creatiedatumError-${detailsId}`" class="error"
-        >(Geldige) creatiedatum is een verplicht veld</span
+        >Vul een geldige creatiedatum in.</span
       >
     </div>
 
@@ -73,7 +73,7 @@
         :aria-invalid="!doc.officieleTitel"
       />
 
-      <span :id="`titelError-${detailsId}`" class="error">Titel is een verplicht veld</span>
+      <span :id="`titelError-${detailsId}`" class="error">Titel is een verplicht veld.</span>
     </div>
 
     <div class="form-group">
