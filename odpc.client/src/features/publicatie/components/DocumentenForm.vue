@@ -56,9 +56,10 @@ const props = defineProps<{
 const dialog = useConfirmDialog();
 
 const files = useModel(props, "files");
+const documenten = useModel(props, "documenten");
+
 const selectedFiles = ref<File[]>([]);
 
-const documenten = useModel(props, "documenten");
 const pendingDocuments = computed(() => documenten.value.filter((doc) => !doc.uuid));
 const existingDocuments = computed(() => documenten.value.filter((doc) => doc.uuid));
 
@@ -138,6 +139,7 @@ watch(selectedFiles, (newFiles) => {
     return;
   }
 
+  // update both files and documenten together to maintain consistency/stay in sync
   files.value = [...files.value, ...newFiles];
   documenten.value = [...pendingDocuments.value, ...newDocuments, ...existingDocuments.value];
 });
