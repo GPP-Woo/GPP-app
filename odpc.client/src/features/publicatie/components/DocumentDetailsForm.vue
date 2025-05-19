@@ -43,6 +43,24 @@
     </template>
 
     <div class="form-group">
+      <label for="creatiedatum">Creatiedatum *</label>
+
+      <input
+        id="creatiedatum"
+        type="date"
+        v-model="doc.creatiedatum"
+        required
+        aria-required="true"
+        :aria-describedby="`creatiedatumError-${detailsId}`"
+        :aria-invalid="!doc.creatiedatum"
+      />
+
+      <span :id="`creatiedatumError-${detailsId}`" class="error"
+        >(Geldige) creatiedatum is een verplicht veld</span
+      >
+    </div>
+
+    <div class="form-group">
       <label for="titel">Titel *</label>
 
       <input
@@ -112,6 +130,10 @@ details {
 
   &.ingetrokken {
     background-color: var(--disabled);
+  }
+
+  input[type="date"] {
+    max-inline-size: 15ch;
   }
 }
 </style>
