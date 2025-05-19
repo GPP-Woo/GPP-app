@@ -1,6 +1,10 @@
 <template>
   <details :class="{ nieuw: !doc.uuid }" :open="!doc.uuid">
-    <template v-if="doc.uuid">
+    <summary v-if="!doc.uuid" @click.prevent tabindex="-1">
+      {{ doc.bestandsnaam }}
+    </summary>
+
+    <template v-else>
       <summary>
         <template v-if="doc.publicatiestatus === PublicatieStatus.ingetrokken"
           ><s :aria-describedby="`status-${detailsId}`">{{ doc.bestandsnaam }}</s>
@@ -37,10 +41,6 @@
         >
       </div>
     </template>
-
-    <summary v-else @click.prevent tabindex="-1">
-      {{ doc.bestandsnaam }}
-    </summary>
 
     <div class="form-group">
       <label for="titel">Titel *</label>
