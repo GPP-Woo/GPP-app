@@ -55,9 +55,7 @@
         :aria-invalid="!doc.creatiedatum"
       />
 
-      <span :id="`creatiedatumError-${detailsId}`" class="error"
-        >Vul een geldige creatiedatum in.</span
-      >
+      <span :id="`creatiedatumError-${detailsId}`" class="error">Vul een geldige datum in.</span>
     </div>
 
     <div class="form-group">
