@@ -43,7 +43,7 @@
     </template>
 
     <div class="form-group">
-      <label for="creatiedatum">Creatiedatum *</label>
+      <label for="creatiedatum">Datum document *</label>
 
       <input
         id="creatiedatum"
@@ -55,9 +55,7 @@
         :aria-invalid="!doc.creatiedatum"
       />
 
-      <span :id="`creatiedatumError-${detailsId}`" class="error"
-        >Vul een geldige creatiedatum in.</span
-      >
+      <span :id="`creatiedatumError-${detailsId}`" class="error">Vul een geldige datum in.</span>
     </div>
 
     <div class="form-group">
