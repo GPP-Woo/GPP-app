@@ -43,7 +43,7 @@
     </template>
 
     <div class="form-group">
-      <label for="creatiedatum">Creatiedatum *</label>
+      <label for="creatiedatum">Datum document *</label>
 
       <input
         id="creatiedatum"
