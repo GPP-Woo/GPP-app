@@ -50,6 +50,11 @@ namespace ODPC.Authentication
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.SlidingExpiration = true;
                 //options.Events.OnSigningOut = (e) => e.HttpContext.RevokeRefreshTokenAsync();
+                options.Events.OnSigningOut = (ctx) =>
+                {
+                    ctx.Response.Redirect("/");
+                    return Task.CompletedTask;
+                };
                 options.Events.OnRedirectToAccessDenied = (ctx) =>
                 {
                     //https://www.rfc-editor.org/rfc/rfc7231#section-6.5.3
@@ -124,7 +129,6 @@ namespace ODPC.Authentication
         private static async Task LogoffAsync(HttpContext httpContext)
         {
             await httpContext.SignOutAsync(CookieSchemeName);
-            await httpContext.SignOutAsync(ChallengeSchemeName);
         }
 
         private static Task RedirectToRoot<TOptions>(HandleRequestContext<TOptions> context) where TOptions : AuthenticationSchemeOptions
