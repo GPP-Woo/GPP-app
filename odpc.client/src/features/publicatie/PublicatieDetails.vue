@@ -84,6 +84,7 @@ import { useDocumenten } from "./composables/use-documenten";
 import { PublicatieStatus } from "./types";
 import { useFetchLists } from "@/composables/use-fetch-lists";
 import { useMultipleConfirmDialogs } from "@/composables/use-multiple-confirm-dialogs";
+import { Dialogs } from "./dialogs";
 
 const router = useRouter();
 
@@ -177,23 +178,11 @@ const navigate = () => {
 
 const submit = async () => {
   if (documenten.value.length === 0) {
-    const { isCanceled } = await showDialog({
-      message:
-        "Aan deze publicatie zijn geen documenten toegevoegd. Weet je zeker dat je deze registratie wil publiceren?",
-      cancelText: "Nee, documenten toevoegen",
-      confirmText: "Ja, publiceren"
-    });
+    const { isCanceled } = await showDialog(Dialogs.noDocumenten);
 
     if (isCanceled) return;
   } else if (publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken) {
-    const { isCanceled } = await showDialog({
-      message: `
-        <span>Weet je zeker dat je deze publicatie wilt intrekken?</span>
-        <span><strong>Let op:</strong> deze actie kan niet ongedaan worden gemaakt.</span>
-      `,
-      cancelText: "Nee, gepubliceerd laten",
-      confirmText: "Ja, intrekken"
-    });
+    const { isCanceled } = await showDialog(Dialogs.retractPublicatie);
 
     if (isCanceled) {
       // Reset publicatie status in model to 'gepubliceerd' when user doesn't want to retract
