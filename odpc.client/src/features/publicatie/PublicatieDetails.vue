@@ -61,11 +61,10 @@
 
     <prompt-modal
       :dialog="dialog"
-      confirm-message="Ja, intrekken"
-      cancel-message="Nee, gepubliceerd laten"
+      :cancel-text="currentDialogConfig?.cancelText"
+      :confirm-text="currentDialogConfig?.confirmText"
     >
-      <span>Weet u zeker dat u dit deze publicatie wilt intrekken?</span>
-      <span><strong>Let op:</strong> deze actie kan niet ongedaan worden gemaakt.</span>
+      <section v-html="currentDialogConfig?.message"></section>
     </prompt-modal>
   </form>
 </template>
@@ -74,7 +73,6 @@
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { previousRoute } from "@/router";
-import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
@@ -85,12 +83,13 @@ import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
 import { PublicatieStatus } from "./types";
 import { useFetchLists } from "@/composables/use-fetch-lists";
+import { useMultipleConfirmDialogs } from "@/composables/use-multiple-confirm-dialogs";
 
 const router = useRouter();
 
 const props = defineProps<{ uuid?: string }>();
 
-const dialog = useConfirmDialog();
+const { dialog, currentDialogConfig, showDialog } = useMultipleConfirmDialogs();
 
 const loading = computed(
   () =>
@@ -177,8 +176,24 @@ const navigate = () => {
 };
 
 const submit = async () => {
-  if (publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken) {
-    const { isCanceled } = await dialog.reveal();
+  if (documenten.value.length === 0) {
+    const { isCanceled } = await showDialog({
+      message:
+        "Aan deze publicatie zijn geen documenten toegevoegd. Weet je zeker dat je deze registratie wil publiceren?",
+      cancelText: "Nee, documenten toevoegen",
+      confirmText: "Ja, publiceren"
+    });
+
+    if (isCanceled) return;
+  } else if (publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken) {
+    const { isCanceled } = await showDialog({
+      message: `
+        <span>Weet je zeker dat je deze publicatie wilt intrekken?</span>
+        <span><strong>Let op:</strong> deze actie kan niet ongedaan worden gemaakt.</span>
+      `,
+      cancelText: "Nee, gepubliceerd laten",
+      confirmText: "Ja, intrekken"
+    });
 
     if (isCanceled) {
       // Reset publicatie status in model to 'gepubliceerd' when user doesn't want to retract
