@@ -1,4 +1,4 @@
-﻿namespace ODPC.Features.Gebruikersgroepen
+﻿namespace ODPC.Features.Gebruikersgroepen.AlleGebruikersgroepen
 {
     public class GebruikersgroepModel
     {

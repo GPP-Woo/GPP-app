@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ODPC.Authentication;
 using ODPC.Data;
 
-namespace ODPC.Features.Gebruikersgroep.GebruikersgroepVerwijderen
+namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepVerwijderen
 {
     [ApiController]
     [Authorize(AdminPolicy.Name)]
