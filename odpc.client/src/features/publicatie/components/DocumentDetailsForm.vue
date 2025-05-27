@@ -53,6 +53,7 @@
         aria-required="true"
         :aria-describedby="`creatiedatumError-${detailsId}`"
         :aria-invalid="!doc.creatiedatum"
+        :max="today"
       />
 
       <span :id="`creatiedatumError-${detailsId}`" class="error">Vul een geldige datum in.</span>
@@ -106,6 +107,8 @@ const props = defineProps<{ doc: PublicatieDocument; disabled?: boolean }>();
 const doc = useModel(props, "doc");
 
 const detailsId = useId();
+
+const today = new Date().toISOString().split("T")[0];
 </script>
 
 <style lang="scss" scoped>
