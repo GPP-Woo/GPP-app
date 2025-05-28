@@ -9,7 +9,7 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
         [HttpPost("api/{version}/publicaties")]
         public async Task<IActionResult> Post(string version, OdpcPublicatie publicatie, CancellationToken token)
         {
-            var waardelijstItems = await waardelijstItemsService.GetAsync(token);
+            var waardelijstItems = await waardelijstItemsService.GetAsync(publicatie.Gebruikersgroep, token);
 
             if (publicatie.Publisher != null && !waardelijstItems.Contains(publicatie.Publisher))
             {

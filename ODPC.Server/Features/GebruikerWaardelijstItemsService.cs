@@ -6,28 +6,29 @@ namespace ODPC.Features
 {
     public interface IGebruikerWaardelijstItemsService
     {
-        Task<IReadOnlyList<string>> GetAsync(CancellationToken token);
+        Task<IReadOnlyList<string>> GetAsync(Guid? gebruikersgroepUuid, CancellationToken token);
     }
 
     public class GebruikerWaardelijstItemsService(OdpcUser user, OdpcDbContext context) : IGebruikerWaardelijstItemsService
     {
-        public async Task<IReadOnlyList<string>> GetAsync(CancellationToken token)
+        public async Task<IReadOnlyList<string>> GetAsync(Guid? gebruikersgroepUuid, CancellationToken token)
         {
             var lowerCaseId = user.Id?.ToLowerInvariant();
 
-            if (lowerCaseId == null) return [];
+            if (lowerCaseId == null || gebruikersgroepUuid == null) return [];
 
 #pragma warning disable CA1862 // Needed by ef core: Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
-            var groepIds = context.GebruikersgroepGebruikers
-                .Where(x => x.GebruikerId.ToLower() == lowerCaseId)
-                .Select(x => x.GebruikersgroepUuid);
+            var count = await context.GebruikersgroepGebruikers
+                .CountAsync(x => x.GebruikerId.ToLower() == lowerCaseId && x.GebruikersgroepUuid == gebruikersgroepUuid, token);
 #pragma warning restore CA1862 // Needed by ef core: Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 
-            return await context.GebruikersgroepWaardelijsten
-                .Where(x => groepIds.Contains(x.GebruikersgroepUuid))
-                .Select(x => x.WaardelijstId)
-                .Distinct()
-                .ToListAsync(token);
+            return count != 1
+                ? []
+                : await context.GebruikersgroepWaardelijsten
+                    .Where(x => x.GebruikersgroepUuid == gebruikersgroepUuid)
+                    .Select(x => x.WaardelijstId)
+                    .Distinct()
+                    .ToListAsync(token);
         }
     }
 }
