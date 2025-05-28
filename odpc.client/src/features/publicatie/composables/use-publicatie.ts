@@ -17,18 +17,14 @@ export const usePublicatie = (uuid?: string) => {
     onderwerpen: []
   });
 
-  const {
-    get: getPublicatie,
-    post: postPublicatie,
-    put: putPublicatie,
-    data: publicatieData,
-    isFetching: loadingPublicatie,
-    error: publicatieError
-  } = useFetchApi(() => `${API_URL}/publicaties${uuid ? "/" + uuid : ""}`, {
-    immediate: false
-  }).json<Publicatie>();
+  const { data, isFetching, error, get, post, put } = useFetchApi(
+    () => `${API_URL}/publicaties${uuid ? "/" + uuid : ""}`,
+    {
+      immediate: false
+    }
+  ).json<Publicatie>();
 
-  watch(publicatieData, (value) => (publicatie.value = value || publicatie.value));
+  watch(data, (value) => (publicatie.value = value ?? publicatie.value));
 
   const submitPublicatie = async () => {
     // Fill required verantwoordelijke with publisher value and add to publicatie
@@ -41,29 +37,29 @@ export const usePublicatie = (uuid?: string) => {
     };
 
     if (uuid) {
-      await putPublicatie(publicatie).execute();
+      await put(publicatie).execute();
     } else {
-      await postPublicatie(publicatie).execute();
+      await post(publicatie).execute();
     }
 
-    if (publicatieError.value) {
+    if (error.value) {
       toast.add({
         text: "De publicatie kon niet worden opgeslagen. Probeer het nogmaals of neem contact op met uw beheerder.",
         type: "error"
       });
 
-      publicatieError.value = null;
+      error.value = null;
 
       throw new Error(`submitPublicatie`);
     }
   };
 
-  onMounted(() => uuid && getPublicatie().execute());
+  onMounted(() => uuid && get().execute());
 
   return {
     publicatie,
-    loadingPublicatie,
-    publicatieError,
+    isFetching,
+    error,
     submitPublicatie
   };
 };

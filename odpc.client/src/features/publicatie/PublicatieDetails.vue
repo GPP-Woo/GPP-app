@@ -2,7 +2,7 @@
   <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-if="!loading" @submit.prevent="submit" v-form-invalid-handler>
-    <alert-inline v-if="mijnWaardelijstenError"
+    <alert-inline v-if="mijnGebruikersgroepenError"
       >Er is iets misgegaan bij het ophalen van uw gegevens...</alert-inline
     >
 
@@ -15,9 +15,8 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
-        :mijn-organisaties="mijnWaardelijsten.mijnOrganisaties || []"
-        :mijn-informatiecategorieen="mijnWaardelijsten.mijnInformatiecategorieen || []"
-        :mijn-onderwerpen="mijnWaardelijsten.mijnOnderwerpen || []"
+        :mijn-gebruikersgroepen="mijnGebruikersgroepen ?? []"
+        :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
       />
 
       <alert-inline v-if="documentenError"
@@ -76,14 +75,14 @@ import { previousRoute } from "@/router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
+import { useMultipleConfirmDialogs } from "@/composables/use-multiple-confirm-dialogs";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentenForm from "./components/DocumentenForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
+import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroepen";
 import { PublicatieStatus } from "./types";
-import { useFetchLists } from "@/composables/use-fetch-lists";
-import { useMultipleConfirmDialogs } from "@/composables/use-multiple-confirm-dialogs";
 import { Dialogs } from "./dialogs";
 
 const router = useRouter();
@@ -96,7 +95,7 @@ const loading = computed(
   () =>
     loadingPublicatie.value ||
     loadingDocumenten.value ||
-    loadingMijnWaardelijsten.value ||
+    loadingMijnGebruikersgroepen.value ||
     loadingDocument.value ||
     uploadingFile.value
 );
@@ -106,14 +105,17 @@ const error = computed(
     !!publicatieError.value ||
     !!documentenError.value ||
     !!documentError.value ||
-    !!mijnWaardelijstenError.value ||
+    !!mijnGebruikersgroepenError.value ||
     forbidden.value
 );
 
 // Publicatie
-const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = usePublicatie(
-  props.uuid
-);
+const {
+  publicatie,
+  isFetching: loadingPublicatie,
+  error: publicatieError,
+  submitPublicatie
+} = usePublicatie(props.uuid);
 
 // Store initial publicatie status in seperate ref to manage UI-state
 const initialStatus = ref<keyof typeof PublicatieStatus>(PublicatieStatus.gepubliceerd);
@@ -133,38 +135,36 @@ const {
 } =
   // Get associated docs by uuid prop when existing pub, so no need to wait for pub fetch.
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
-  useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
+  useDocumenten(() => props.uuid || publicatie.value?.uuid);
 
-// Mijn waardelijsten
-const waardelijstUrls = {
-  mijnOrganisaties: "/api/v1/mijn-organisaties",
-  mijnInformatiecategorieen: "/api/v1/mijn-informatiecategorieen",
-  mijnOnderwerpen: "/api/v1/mijn-onderwerpen"
-} as const;
-
+// Mijn gebruikersgroepen
 const {
-  lists: mijnWaardelijsten,
-  uuids: mijnWaardelijstenUuids,
-  loading: loadingMijnWaardelijsten,
-  error: mijnWaardelijstenError
-} = useFetchLists(waardelijstUrls);
+  data: mijnGebruikersgroepen,
+  isFetching: loadingMijnGebruikersgroepen,
+  error: mijnGebruikersgroepenError,
+  gekoppeldeWaardelijsten,
+  gekoppeldeWaardelijstenUuids
+} = useMijnGebruikersgroepen(() => publicatie.value?.gebruikersgroep);
+
+// tmp
+watch(mijnGebruikersgroepen, (value) => (publicatie.value.gebruikersgroep = value?.[0].uuid));
 
 const forbidden = computed(
   () =>
     // Not assigned to any organisatie
-    !mijnWaardelijsten.value.mijnOrganisaties.length ||
+    !gekoppeldeWaardelijsten.value.organisaties?.length ||
     // Not assigned to any informatiecategorie
-    !mijnWaardelijsten.value.mijnInformatiecategorieen.length ||
+    !gekoppeldeWaardelijsten.value.informatiecategorieen?.length ||
     // Not assigned to publisher organisatie
     (publicatie.value.publisher &&
-      !mijnWaardelijstenUuids.value.includes(publicatie.value.publisher)) ||
+      !gekoppeldeWaardelijstenUuids.value?.includes(publicatie.value.publisher)) ||
     // Not assigned to every informatieCategorie of publicatie
     !publicatie.value.informatieCategorieen.every((uuid: string) =>
-      mijnWaardelijstenUuids.value.includes(uuid)
+      gekoppeldeWaardelijstenUuids.value?.includes(uuid)
     ) ||
     // Not assigned to every onderwerp of publicatie
     !publicatie.value.onderwerpen.every((uuid: string) =>
-      mijnWaardelijstenUuids.value.includes(uuid)
+      gekoppeldeWaardelijstenUuids.value?.includes(uuid)
     )
 );
 

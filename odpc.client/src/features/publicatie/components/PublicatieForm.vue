@@ -2,6 +2,16 @@
   <fieldset :disabled="disabled">
     <legend>Publicatie</legend>
 
+    <div class="form-group">
+      <label for="gebruikersgroep">Profiel</label>
+
+      <select name="gebruikersgroep" id="gebruikersgroep" v-model="model.gebruikersgroep">
+        <option v-for="{ uuid, naam } in mijnGebruikersgroepen" :key="uuid" :value="uuid">
+          {{ naam }}
+        </option>
+      </select>
+    </div>
+
     <template v-if="model.uuid">
       <div v-if="!disabled" class="form-group form-group-radio">
         <label>
@@ -67,7 +77,7 @@
     <option-group
       type="radio"
       title="Organisatie"
-      :options="mijnOrganisaties"
+      :options="gekoppeldeWaardelijsten.organisaties ?? []"
       v-model="model.publisher"
       :required="true"
     />
@@ -75,16 +85,16 @@
     <option-group
       type="checkbox"
       title="Informatiecategorieën"
-      :options="mijnInformatiecategorieen"
+      :options="gekoppeldeWaardelijsten.informatiecategorieen ?? []"
       v-model="model.informatieCategorieen"
       :required="true"
     />
 
     <option-group
-      v-if="mijnOnderwerpen.length"
+      v-if="gekoppeldeWaardelijsten.onderwerpen"
       type="checkbox"
       title="Onderwerpen"
-      :options="mijnOnderwerpen"
+      :options="gekoppeldeWaardelijsten.onderwerpen"
       v-model="model.onderwerpen"
     />
   </fieldset>
@@ -94,15 +104,18 @@
 import { useModel } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
-import { PublicatieStatus, type Publicatie } from "../types";
+import { PublicatieStatus, type MijnGebruikersgroep, type Publicatie } from "../types";
 import type { OptionProps } from "@/components/option-group/types";
 
 const props = defineProps<{
   modelValue: Publicatie;
   disabled: boolean;
-  mijnOrganisaties: OptionProps[];
-  mijnInformatiecategorieen: OptionProps[];
-  mijnOnderwerpen: OptionProps[];
+  mijnGebruikersgroepen: MijnGebruikersgroep[];
+  gekoppeldeWaardelijsten: {
+    organisaties?: OptionProps[];
+    informatiecategorieen?: OptionProps[];
+    onderwerpen?: OptionProps[];
+  };
 }>();
 
 const model = useModel(props, "modelValue");
