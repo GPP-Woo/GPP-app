@@ -50,7 +50,7 @@ const props = withDefaults(
   defineProps<{
     type?: string;
     title: string;
-    options: Readonly<OptionProps[]>;
+    options: OptionProps[];
     modelValue: string | string[];
     required?: boolean;
   }>(),

@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ODPC.Apis.Odrc;
 using ODPC.Authentication;
+using ODPC.Data;
 
 namespace ODPC.Features.Publicaties.PublicatieDetails
 {
     [ApiController]
-    public class PublicatieDetailsController(IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
+    public class PublicatieDetailsController(OdpcDbContext context, IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
     {
         [HttpGet("api/{version}/publicaties/{uuid:guid}")]
         public async Task<IActionResult> Put(string version, Guid uuid, CancellationToken token)
@@ -21,7 +23,17 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
                 return StatusCode(502);
             }
 
-            var json = await response.Content.ReadFromJsonAsync<Publicatie>(token);
+            var json = await response.Content.ReadFromJsonAsync<OdpcPublicatie>(token);
+
+            if (json == null)
+            {
+                return NotFound();
+            }
+
+            var gebruikersgroepPublicatie = await context.GebruikersgroepPublicatie
+                .SingleOrDefaultAsync(x => x.PublicatieUuid == uuid, cancellationToken: token);
+
+            json.Gebruikersgroep = gebruikersgroepPublicatie?.GebruikersgroepUuid;
 
             return json?.Eigenaar?.identifier == user.Id ? Ok(json) : NotFound();
         }

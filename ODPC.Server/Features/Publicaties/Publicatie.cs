@@ -1,4 +1,5 @@
-﻿using ODPC.Features.Documenten;
+﻿using System.Text.Json.Serialization;
+using ODPC.Features.Documenten;
 
 namespace ODPC.Features.Publicaties
 {
@@ -15,6 +16,11 @@ namespace ODPC.Features.Publicaties
         public DateTime Registratiedatum { get; set; }
         public List<string>? InformatieCategorieen { get; set; }
         public List<string>? Onderwerpen { get; set; }
+    }
+
+    public class OdpcPublicatie : Publicatie
+    {
+        public Guid? Gebruikersgroep { get; set; }
     }
 
     public class Eigenaar

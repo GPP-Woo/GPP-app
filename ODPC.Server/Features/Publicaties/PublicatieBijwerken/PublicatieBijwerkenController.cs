@@ -11,7 +11,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
         OdpcUser user) : ControllerBase
     {
         [HttpPut("api/{version}/publicaties/{uuid:guid}")]
-        public async Task<IActionResult> Put(string version, Guid uuid, Publicatie publicatie, CancellationToken token)
+        public async Task<IActionResult> Put(string version, Guid uuid, OdpcPublicatie publicatie, CancellationToken token)
         {
             var waardelijstItems = await waardelijstItemsService.GetAsync(token);
 
@@ -47,7 +47,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
             }
 
             // publicatie bijwerken
-            using var putResponse = await client.PutAsJsonAsync(url, publicatie, token);
+            using var putResponse = await client.PutAsJsonAsync<Publicatie>(url, publicatie, token);
 
             putResponse.EnsureSuccessStatusCode();
 

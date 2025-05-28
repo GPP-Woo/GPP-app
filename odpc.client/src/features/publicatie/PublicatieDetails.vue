@@ -146,9 +146,6 @@ const {
   gekoppeldeWaardelijstenUuids
 } = useMijnGebruikersgroepen(() => publicatie.value?.gebruikersgroep);
 
-// tmp
-watch(mijnGebruikersgroepen, (value) => (publicatie.value.gebruikersgroep = value?.[0].uuid));
-
 const forbidden = computed(
   () =>
     // Not assigned to any organisatie

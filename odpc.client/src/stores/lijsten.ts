@@ -1,17 +1,15 @@
 import { promiseAll } from "@/utils";
 import { fetchAllPages } from "@/composables/use-all-pages";
-import { inject, readonly } from "vue";
+import { inject } from "vue";
 
 const fetcher = (url: string) =>
-  readonly(
-    fetchAllPages<{ uuid: string; naam: string } | { uuid: string; officieleTitel: string }>(
-      url
-    ).then((r) =>
-      r.map(({ uuid, ...rest }) => ({
-        uuid,
-        naam: "naam" in rest ? rest.naam : rest.officieleTitel
-      }))
-    )
+  fetchAllPages<{ uuid: string; naam: string } | { uuid: string; officieleTitel: string }>(
+    url
+  ).then((r) =>
+    r.map(({ uuid, ...rest }) => ({
+      uuid,
+      naam: "naam" in rest ? rest.naam : rest.officieleTitel
+    }))
   );
 
 const fetchLijsten = async () =>
