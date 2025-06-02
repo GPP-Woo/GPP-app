@@ -12,6 +12,8 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
         [HttpGet("api/{version}/publicaties/{uuid:guid}")]
         public async Task<IActionResult> Put(string version, Guid uuid, CancellationToken token)
         {
+            // PUBLICATIEBANK
+
             using var client = clientFactory.Create("Publicatie ophalen");
 
             var url = $"/api/{version}/publicaties/{uuid}";
@@ -29,6 +31,8 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
             {
                 return NotFound();
             }
+
+            // ODPC
 
             var gebruikersgroepPublicatie = await context.GebruikersgroepPublicatie
                 .SingleOrDefaultAsync(x => x.PublicatieUuid == uuid, cancellationToken: token);

@@ -24,7 +24,7 @@ export const getLijsten = async () => {
     return await fetchLijsten();
   } catch (error) {
     console.error(`One or more lists failed to load. ${error}`);
-    return null;
+    throw error;
   }
 };
 

@@ -2,11 +2,12 @@
   <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-if="!loading" @submit.prevent="submit" v-form-invalid-handler>
-    <alert-inline v-if="mijnGebruikersgroepenError"
-      >Er is iets misgegaan bij het ophalen van uw gegevens...</alert-inline
+    <alert-inline v-if="mijnGebruikersgroepenError || !mijnGebruikersgroepen?.length"
+      >Er is iets misgegaan bij het ophalen van uw gegevens. Neem contact op met uw
+      beheerder.</alert-inline
     >
 
-    <section v-else-if="!forbidden">
+    <section v-else>
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
       >
@@ -14,8 +15,9 @@
       <publicatie-form
         v-else
         v-model="publicatie"
-        :disabled="initialStatus === PublicatieStatus.ingetrokken"
-        :mijn-gebruikersgroepen="mijnGebruikersgroepen ?? []"
+        :forbidden="forbidden"
+        :disabled="disabled"
+        :mijn-gebruikersgroepen="mijnGebruikersgroepen"
         :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
       />
 
@@ -24,17 +26,12 @@
       >
 
       <documenten-form
-        v-else
+        v-else-if="publicatie.gebruikersgroep || disabled"
         v-model:files="files"
         v-model:documenten="documenten"
-        :disabled="initialStatus === PublicatieStatus.ingetrokken"
+        :disabled="disabled"
       />
     </section>
-
-    <alert-inline v-else
-      >U bent niet gekoppeld aan een (juiste) gebruikersgroep. Neem contact op met uw
-      beheerder.</alert-inline
-    >
 
     <div class="form-submit">
       <span class="required-message">Velden met (*) zijn verplicht</span>
@@ -47,13 +44,7 @@
         </li>
 
         <li>
-          <button
-            type="submit"
-            title="Opslaan"
-            :disabled="error || initialStatus === PublicatieStatus.ingetrokken"
-          >
-            Opslaan
-          </button>
+          <button type="submit" title="Opslaan" :disabled="disabled || error">Opslaan</button>
         </li>
       </menu>
     </div>
@@ -105,8 +96,11 @@ const error = computed(
     !!publicatieError.value ||
     !!documentenError.value ||
     !!documentError.value ||
-    !!mijnGebruikersgroepenError.value ||
-    forbidden.value
+    !!mijnGebruikersgroepenError.value
+);
+
+const disabled = computed(
+  () => initialStatus.value === PublicatieStatus.ingetrokken || forbidden.value
 );
 
 // Publicatie
@@ -144,26 +138,57 @@ const {
   error: mijnGebruikersgroepenError,
   gekoppeldeWaardelijsten,
   gekoppeldeWaardelijstenUuids
-} = useMijnGebruikersgroepen(() => publicatie.value?.gebruikersgroep);
+} = useMijnGebruikersgroepen(() => publicatie.value.gebruikersgroep);
 
-const forbidden = computed(
-  () =>
-    // Not assigned to any organisatie
+// Preset gebruikersgroep of a new publicatie when only one mijnGebruikersgroepen
+watch(loading, () => {
+  if (!error.value && !publicatie.value.uuid && mijnGebruikersgroepen.value?.length === 1) {
+    publicatie.value.gebruikersgroep = mijnGebruikersgroepen.value[0].uuid;
+  }
+});
+
+// Clear waardelijsten of publicatie when gebruikersgroep changes
+watch(
+  () => publicatie.value.gebruikersgroep,
+  (_, oldValue) => {
+    if (oldValue && !forbidden.value) {
+      publicatie.value = {
+        ...publicatie.value,
+        ...{
+          publisher: "",
+          informatieCategorieen: [],
+          onderwerpen: []
+        }
+      };
+    }
+  }
+);
+
+const forbidden = computed(() => {
+  if (!publicatie.value.gebruikersgroep) return false;
+
+  return (
+    // Gebruiker not assigned to gebruikersgroep of the publicatie
+    !mijnGebruikersgroepen.value?.some(
+      (groep) => groep.uuid === publicatie.value.gebruikersgroep
+    ) ||
+    // Gebruikersgroep is not assigned to any organisatie
     !gekoppeldeWaardelijsten.value.organisaties?.length ||
-    // Not assigned to any informatiecategorie
+    // Gebruikersgroep is not assigned to any informatiecategorie
     !gekoppeldeWaardelijsten.value.informatiecategorieen?.length ||
-    // Not assigned to publisher organisatie
+    // Gebruikersgroep is not assigned to publisher organisatie
     (publicatie.value.publisher &&
       !gekoppeldeWaardelijstenUuids.value?.includes(publicatie.value.publisher)) ||
-    // Not assigned to every informatieCategorie of publicatie
+    // Gebruikersgroep is not assigned to every informatiecategorie of publicatie
     !publicatie.value.informatieCategorieen.every((uuid: string) =>
       gekoppeldeWaardelijstenUuids.value?.includes(uuid)
     ) ||
-    // Not assigned to every onderwerp of publicatie
+    // Gebruikersgroep is not assigned to every onderwerp of publicatie
     !publicatie.value.onderwerpen.every((uuid: string) =>
       gekoppeldeWaardelijstenUuids.value?.includes(uuid)
     )
-);
+  );
+});
 
 const navigate = () => {
   if (previousRoute.value?.name === "publicaties") {

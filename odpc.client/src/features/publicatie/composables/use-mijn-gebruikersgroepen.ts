@@ -5,7 +5,7 @@ import type { MijnGebruikersgroep } from "../types";
 
 const API_URL = `/api/v1`;
 
-export const useMijnGebruikersgroepen = (uuid: MaybeRefOrGetter<string | undefined>) => {
+export const useMijnGebruikersgroepen = (uuid: MaybeRefOrGetter<string>) => {
   const gebruikersgroepUuid = toRef(uuid);
 
   const lijsten = injectLijsten();

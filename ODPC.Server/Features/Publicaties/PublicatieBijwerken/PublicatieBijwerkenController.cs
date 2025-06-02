@@ -18,6 +18,12 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
         {
             var gebruikersgroepWaardelijstUuids = await waardelijstItemsService.GetAsync(publicatie.Gebruikersgroep, token);
 
+            if (publicatie.Gebruikersgroep == null)
+            {
+                ModelState.AddModelError(nameof(publicatie.Gebruikersgroep), "Publicatie is niet gekoppeld aan een gebruikergroep");
+                return BadRequest(ModelState);
+            }
+
             if (publicatie.Publisher != null && !gebruikersgroepWaardelijstUuids.Contains(publicatie.Publisher))
             {
                 ModelState.AddModelError(nameof(publicatie.Publisher), "Gebruiker is niet geautoriseerd voor deze organisatie");
@@ -36,27 +42,24 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
                 return BadRequest(ModelState);
             }
 
-            if(publicatie.Gebruikersgroep == null)
-            {
-                ModelState.AddModelError(nameof(publicatie.Gebruikersgroep), "Publicatie is niet gekoppeld aan een gebruikergroep");
-                return BadRequest(ModelState);
-            }
+            // ODPC
 
-            // update odpc -----
             await context.GebruikersgroepPublicatie
                 .Where(x => x.PublicatieUuid == uuid)
                 .ExecuteDeleteAsync(token);
 
-            var row = new Data.Entities.GebruikersgroepPublicatie
-            {
-                GebruikersgroepUuid = (Guid)publicatie.Gebruikersgroep,
-                PublicatieUuid = uuid
-            };
-            
-            context.GebruikersgroepPublicatie.Add(row);
+            context.GebruikersgroepPublicatie.Add
+            (
+                new Data.Entities.GebruikersgroepPublicatie
+                {
+                    GebruikersgroepUuid = (Guid)publicatie.Gebruikersgroep,
+                    PublicatieUuid = uuid
+                }
+            );
            
             await context.SaveChangesAsync(token);
-            // -----
+            
+            // PUBLICATIEBANK
 
             using var client = clientFactory.Create("Publicatie bijwerken");
 

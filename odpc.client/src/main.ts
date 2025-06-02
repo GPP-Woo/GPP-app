@@ -15,11 +15,13 @@ app.directive("form-invalid-handler", formInvalidHandler);
 
 (async () => {
   try {
-    // Loader ...
     // Preload waardelijsten to be used in different app components
     app.provide("lijsten", await getLijsten());
     app.mount("#app");
   } catch {
-    // Error ...
+    const loadingMessage = document.getElementById("loadingMessage");
+    
+    if (loadingMessage)
+      loadingMessage.innerText = "Er is iets fout gegaan. De applicatie kan niet worden geladen.";
   }
 })();

@@ -14,7 +14,8 @@ export const usePublicatie = (uuid?: string) => {
     omschrijving: "",
     publicatiestatus: "gepubliceerd",
     informatieCategorieen: [],
-    onderwerpen: []
+    onderwerpen: [],
+    gebruikersgroep: ""
   });
 
   const { data, isFetching, error, get, post, put } = useFetchApi(
@@ -24,7 +25,14 @@ export const usePublicatie = (uuid?: string) => {
     }
   ).json<Publicatie>();
 
-  watch(data, (value) => (publicatie.value = value ?? publicatie.value));
+  watch(data, (value) => {
+    if (value) {
+      publicatie.value = {
+        ...value,
+        ...{ gebruikersgroep: value.gebruikersgroep ?? "" }
+      };
+    }
+  });
 
   const submitPublicatie = async () => {
     // Fill required verantwoordelijke with publisher value and add to publicatie
