@@ -66,7 +66,7 @@
         <input
           id="titel"
           type="text"
-          v-model="model.officieleTitel"
+          v-model.trim="model.officieleTitel"
           required
           aria-required="true"
           aria-describedby="titelError"
