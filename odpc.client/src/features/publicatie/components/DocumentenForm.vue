@@ -1,8 +1,8 @@
 <template>
-  <fieldset v-if="documenten" aria-live="polite" :disabled="disabled">
+  <fieldset v-if="documenten" aria-live="polite" :disabled="readonly">
     <legend>Documenten</legend>
 
-    <file-upload v-if="!disabled" @filesSelected="filesSelected" />
+    <file-upload v-if="!readonly" @filesSelected="filesSelected" />
 
     <template v-if="pendingDocuments.length">
       <h2>Nieuwe documenten</h2>
@@ -22,11 +22,11 @@
         v-for="(doc, index) in existingDocuments"
         :key="index"
         :doc="doc"
-        :disabled="disabled"
+        :readonly="readonly"
       />
     </template>
 
-    <alert-inline v-if="disabled && !documenten.length"
+    <alert-inline v-if="readonly && !documenten.length"
       >Er zijn geen gekoppelde documenten.</alert-inline
     >
 
@@ -50,7 +50,7 @@ import DocumentDetailsForm from "./DocumentDetailsForm.vue";
 const props = defineProps<{
   files: File[];
   documenten: PublicatieDocument[];
-  disabled: boolean;
+  readonly: boolean;
 }>();
 
 const dialog = useConfirmDialog();

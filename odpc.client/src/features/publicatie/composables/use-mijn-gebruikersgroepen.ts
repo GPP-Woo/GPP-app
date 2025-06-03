@@ -1,6 +1,6 @@
 import { type MaybeRefOrGetter, toRef, computed } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
-import { injectLijsten } from "@/stores/lijsten";
+import { useAppData } from "@/composables/use-app-data";
 import type { MijnGebruikersgroep } from "../types";
 
 const API_URL = `/api/v1`;
@@ -8,7 +8,7 @@ const API_URL = `/api/v1`;
 export const useMijnGebruikersgroepen = (uuid: MaybeRefOrGetter<string>) => {
   const gebruikersgroepUuid = toRef(uuid);
 
-  const lijsten = injectLijsten();
+  const { lijsten } = useAppData();
 
   const { data, isFetching, error } = useFetchApi(() => `${API_URL}/mijn-gebruikersgroepen`).json<
     MijnGebruikersgroep[]
@@ -20,13 +20,13 @@ export const useMijnGebruikersgroepen = (uuid: MaybeRefOrGetter<string>) => {
   );
 
   const gekoppeldeWaardelijsten = computed(() => ({
-    organisaties: lijsten?.organisaties.filter((item) =>
+    organisaties: lijsten.value?.organisaties.filter((item) =>
       gekoppeldeWaardelijstenUuids.value?.includes(item.uuid)
     ),
-    informatiecategorieen: lijsten?.informatiecategorieen.filter((item) =>
+    informatiecategorieen: lijsten.value?.informatiecategorieen.filter((item) =>
       gekoppeldeWaardelijstenUuids.value?.includes(item.uuid)
     ),
-    onderwerpen: lijsten?.onderwerpen.filter((item) =>
+    onderwerpen: lijsten.value?.onderwerpen.filter((item) =>
       gekoppeldeWaardelijstenUuids.value?.includes(item.uuid)
     )
   }));

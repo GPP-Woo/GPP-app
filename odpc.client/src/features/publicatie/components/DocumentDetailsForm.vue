@@ -21,7 +21,7 @@
         </span>
       </summary>
 
-      <div v-if="!disabled" class="form-group form-group-radio">
+      <div v-if="!readonly" class="form-group form-group-radio">
         <label>
           <input
             type="radio"
@@ -102,7 +102,7 @@
 import { useId, useModel } from "vue";
 import { PublicatieStatus, type PublicatieDocument } from "../types";
 
-const props = defineProps<{ doc: PublicatieDocument; disabled?: boolean }>();
+const props = defineProps<{ doc: PublicatieDocument; readonly?: boolean }>();
 
 const doc = useModel(props, "doc");
 

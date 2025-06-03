@@ -3,6 +3,11 @@ import { RouterView } from "vue-router";
 import ToastSection from "./components/ToastSection.vue";
 import TheHeader from "./components/TheHeader.vue";
 import TheFooter from "./components/TheFooter.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import AlertInline from "@/components/AlertInline.vue";
+import { useAppData } from "./composables/use-app-data";
+
+const { loading, error } = useAppData();
 </script>
 
 <template>
@@ -13,7 +18,13 @@ import TheFooter from "./components/TheFooter.vue";
   </Suspense>
 
   <main>
-    <router-view />
+    <simple-spinner v-if="loading"></simple-spinner>
+
+    <alert-inline v-if="error"
+      >Er is iets misgegaan. Neem contact op met de beheerder.</alert-inline
+    >
+
+    <router-view v-else />
   </main>
 
   <the-footer />

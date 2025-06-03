@@ -32,17 +32,17 @@ import { useModel, computed, onMounted } from "vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import { WAARDELIJSTEN } from "../types";
-import { injectLijsten } from "@/stores/lijsten";
+import { useAppData } from "@/composables/use-app-data";
 
 const props = defineProps<{ modelValue: string[] }>();
 
 const model = useModel(props, "modelValue");
 
-const lijsten = injectLijsten();
+const { lijsten } = useAppData();
 
 const uuids = computed(() =>
-  lijsten
-    ? Object.values(lijsten)
+  lijsten.value
+    ? Object.values(lijsten.value)
         .flat()
         .map((item) => item.uuid)
     : []

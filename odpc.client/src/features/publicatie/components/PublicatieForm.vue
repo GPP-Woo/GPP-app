@@ -1,5 +1,5 @@
 <template>
-  <fieldset :disabled="disabled">
+  <fieldset :disabled="readonly">
     <legend>Publicatie</legend>
 
     <alert-inline v-if="model.publicatiestatus === PublicatieStatus.ingetrokken"
@@ -7,11 +7,11 @@
     >
 
     <alert-inline v-else-if="forbidden"
-      >U heeft niet (meer) de juiste rechten om deze publicatie aan te passen. Neem contact op met
-      uw beheerder.</alert-inline
+      >Onder dit profiel heb je niet (meer) de juiste rechten om deze publicatie aan te passen. Neem
+      contact op met de beheerder.</alert-inline
     >
 
-    <div v-if="!disabled" class="form-group">
+    <div class="form-group">
       <label for="gebruikersgroep">Profiel *</label>
 
       <select
@@ -23,7 +23,7 @@
         aria-describedby="profielError"
         :aria-invalid="!model.gebruikersgroep"
       >
-        <option v-if="!model.gebruikersgroep" value="">Kies een profiel</option>
+        <option v-if="!model.gebruikersgroep && !readonly" value="">Kies een profiel</option>
 
         <option v-for="{ uuid, naam } in mijnGebruikersgroepen" :key="uuid" :value="uuid">
           {{ naam }}
@@ -33,8 +33,8 @@
       <span id="profielError" class="error">Profiel is een verplicht veld</span>
     </div>
 
-    <template v-if="model.gebruikersgroep || disabled">
-      <div v-if="model.uuid && !disabled" class="form-group form-group-radio">
+    <template v-if="model.gebruikersgroep || readonly">
+      <div v-if="model.uuid && !readonly" class="form-group form-group-radio">
         <label>
           <input
             type="radio"
@@ -126,16 +126,16 @@
 
 <script setup lang="ts">
 import { computed, useModel } from "vue";
-import { injectLijsten } from "@/stores/lijsten";
 import AlertInline from "@/components/AlertInline.vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
+import { useAppData } from "@/composables/use-app-data";
 import { PublicatieStatus, type MijnGebruikersgroep, type Publicatie } from "../types";
 import type { OptionProps } from "@/components/option-group/types";
 
 const props = defineProps<{
   modelValue: Publicatie;
-  disabled: boolean;
   forbidden: boolean;
+  readonly: boolean;
   mijnGebruikersgroepen: MijnGebruikersgroep[];
   gekoppeldeWaardelijsten: {
     organisaties?: OptionProps[];
@@ -146,18 +146,18 @@ const props = defineProps<{
 
 const model = useModel(props, "modelValue");
 
-const lijsten = injectLijsten();
+const { lijsten } = useAppData();
 
 const waardelijsten = computed(() =>
-  props.disabled
+  props.readonly
     ? {
-        organisaties: lijsten?.organisaties.filter((item) =>
+        organisaties: lijsten.value?.organisaties.filter((item) =>
           model.value.publisher.includes(item.uuid)
         ),
-        informatiecategorieen: lijsten?.informatiecategorieen.filter((item) =>
+        informatiecategorieen: lijsten.value?.informatiecategorieen.filter((item) =>
           model.value.informatieCategorieen.includes(item.uuid)
         ),
-        onderwerpen: lijsten?.onderwerpen.filter((item) =>
+        onderwerpen: lijsten.value?.onderwerpen.filter((item) =>
           model.value.onderwerpen.includes(item.uuid)
         )
       }

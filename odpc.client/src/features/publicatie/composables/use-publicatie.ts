@@ -52,7 +52,7 @@ export const usePublicatie = (uuid?: string) => {
 
     if (error.value) {
       toast.add({
-        text: "De publicatie kon niet worden opgeslagen. Probeer het nogmaals of neem contact op met uw beheerder.",
+        text: "De publicatie kon niet worden opgeslagen. Probeer het nogmaals of neem contact op met de beheerder.",
         type: "error"
       });
 

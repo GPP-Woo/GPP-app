@@ -3,7 +3,7 @@
 
   <form v-if="!loading" @submit.prevent="submit" v-form-invalid-handler>
     <alert-inline v-if="mijnGebruikersgroepenError || !mijnGebruikersgroepen?.length"
-      >Er is iets misgegaan bij het ophalen van uw gegevens. Neem contact op met uw
+      >Er is iets misgegaan bij het ophalen van de gegevens. Neem contact op met de
       beheerder.</alert-inline
     >
 
@@ -16,7 +16,7 @@
         v-else
         v-model="publicatie"
         :forbidden="forbidden"
-        :disabled="disabled"
+        :readonly="readonly"
         :mijn-gebruikersgroepen="mijnGebruikersgroepen"
         :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
       />
@@ -26,10 +26,10 @@
       >
 
       <documenten-form
-        v-else-if="publicatie.gebruikersgroep || disabled"
+        v-else-if="publicatie.gebruikersgroep || readonly"
         v-model:files="files"
         v-model:documenten="documenten"
-        :disabled="disabled"
+        :readonly="readonly"
       />
     </section>
 
@@ -44,7 +44,7 @@
         </li>
 
         <li>
-          <button type="submit" title="Opslaan" :disabled="disabled || error">Opslaan</button>
+          <button type="submit" title="Opslaan" :disabled="readonly || error">Opslaan</button>
         </li>
       </menu>
     </div>
@@ -62,7 +62,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { previousRoute } from "@/router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
@@ -75,6 +74,7 @@ import { useDocumenten } from "./composables/use-documenten";
 import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroepen";
 import { PublicatieStatus } from "./types";
 import { Dialogs } from "./dialogs";
+import { previousRoute } from "@/router/guards";
 
 const router = useRouter();
 
@@ -99,7 +99,7 @@ const error = computed(
     !!mijnGebruikersgroepenError.value
 );
 
-const disabled = computed(
+const readonly = computed(
   () => initialStatus.value === PublicatieStatus.ingetrokken || forbidden.value
 );
 
@@ -147,7 +147,7 @@ watch(loading, () => {
   }
 });
 
-// Clear waardelijsten of publicatie when gebruikersgroep changes
+// Clear waardelijsten of publicatie on change gebruikersgroep and not forbidden
 watch(
   () => publicatie.value.gebruikersgroep,
   (_, oldValue) => {
