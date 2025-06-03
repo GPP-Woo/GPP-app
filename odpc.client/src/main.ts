@@ -7,7 +7,6 @@ import App from "./App.vue";
 import router from "./router";
 import guards from "./router/guards.ts";
 import formInvalidHandler from "./directives/form-invalid-handler";
-import { getLijsten } from "./stores/lijsten";
 
 const app = createApp(App);
 
