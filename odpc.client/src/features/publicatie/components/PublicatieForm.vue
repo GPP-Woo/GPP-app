@@ -148,6 +148,10 @@ const model = useModel(props, "modelValue");
 
 const { lijsten } = useAppData();
 
+// When gekoppeldeWaardelijsten don't match the publicatie (forbidden)
+// or when publicatie has status 'ingetrokken', the form is displayed as readonly/disabled
+// In readonly mode waardelijsten are constructed based on all/existing waardelijsten because there is (forbidden) -
+// or there may be (ingestrokken) a mismatch in waardelijsten between the publicatie and gekoppeldeWaardelijsten
 const waardelijsten = computed(() =>
   props.readonly
     ? {
