@@ -42,7 +42,7 @@ import { useConfirmDialog } from "@vueuse/core";
 import toast from "@/stores/toast";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
-import { PublicatieStatus, type MimeType, type PublicatieDocument } from "../types";
+import type { MimeType, PublicatieDocument } from "../types";
 import { mimeTypes } from "../service";
 import FileUpload from "./FileUpload.vue";
 import DocumentDetailsForm from "./DocumentDetailsForm.vue";
@@ -69,7 +69,6 @@ const getInitialDocument = (): PublicatieDocument => ({
   officieleTitel: "",
   verkorteTitel: "",
   omschrijving: "",
-  publicatiestatus: PublicatieStatus.gepubliceerd,
   creatiedatum: new Date().toISOString().split("T")[0],
   bestandsnaam: "",
   bestandsformaat: "",

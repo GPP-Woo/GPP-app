@@ -26,7 +26,7 @@ export type PublicatieDocument = {
   officieleTitel: string;
   verkorteTitel?: string;
   omschrijving?: string;
-  publicatiestatus: keyof typeof PublicatieStatus;
+  publicatiestatus?: keyof typeof PublicatieStatus;
   creatiedatum: string;
   bestandsnaam: string;
   bestandsformaat: string;
