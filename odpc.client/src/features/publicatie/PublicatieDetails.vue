@@ -140,28 +140,35 @@ const {
   gekoppeldeWaardelijstenUuids
 } = useMijnGebruikersgroepen(() => publicatie.value.gebruikersgroep);
 
-// Preset gebruikersgroep of a new publicatie when only one mijnGebruikersgroepen
+const clearPublicatieWaardelijsten = () =>
+  (publicatie.value = {
+    ...publicatie.value,
+    ...{
+      publisher: "",
+      informatieCategorieen: [],
+      onderwerpen: []
+    }
+  });
+
 watch(loading, () => {
-  if (!error.value && !publicatie.value.uuid && mijnGebruikersgroepen.value?.length === 1) {
+  if (error.value) return;
+
+  // Preset gebruikersgroep of a new publicatie when only one mijnGebruikersgroep
+  if (!publicatie.value.uuid && mijnGebruikersgroepen.value?.length === 1) {
     publicatie.value.gebruikersgroep = mijnGebruikersgroepen.value[0].uuid;
+  }
+
+  // When publicatie is created outside the app user has to select gebruikersgroep
+  // Clear waardelijsten of publicatie to prevent mismatch on waardelijsten
+  if (publicatie.value.uuid && !publicatie.value.gebruikersgroep) {
+    clearPublicatieWaardelijsten();
   }
 });
 
-// Clear waardelijsten of publicatie on change gebruikersgroep and not forbidden
+// Clear waardelijsten of publicatie on change gebruikersgroep
 watch(
   () => publicatie.value.gebruikersgroep,
-  (_, oldValue) => {
-    if (oldValue && !forbidden.value) {
-      publicatie.value = {
-        ...publicatie.value,
-        ...{
-          publisher: "",
-          informatieCategorieen: [],
-          onderwerpen: []
-        }
-      };
-    }
-  }
+  (_, oldValue) => oldValue && clearPublicatieWaardelijsten()
 );
 
 const forbidden = computed(() => {
