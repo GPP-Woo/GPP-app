@@ -12,7 +12,7 @@ using ODPC.Data;
 namespace ODPC.Migrations
 {
     [DbContext(typeof(OdpcDbContext))]
-    [Migration("20250604140136_AddGebruikersgroepPublicatie")]
+    [Migration("20250528112843_AddGebruikersgroepPublicatie")]
     partial class AddGebruikersgroepPublicatie
     {
         /// <inheritdoc />
