@@ -65,6 +65,7 @@ import { useRouter } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
+import { usePreviousRoute } from "@/composables/use-previous-route";
 import { useMultipleConfirmDialogs } from "@/composables/use-multiple-confirm-dialogs";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
@@ -74,11 +75,12 @@ import { useDocumenten } from "./composables/use-documenten";
 import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroepen";
 import { PublicatieStatus } from "./types";
 import { Dialogs } from "./dialogs";
-import { previousRoute } from "@/router/guards";
 
 const router = useRouter();
 
 const props = defineProps<{ uuid?: string }>();
+
+const { previousRoute } = usePreviousRoute();
 
 const { dialog, currentDialogConfig, showDialog } = useMultipleConfirmDialogs();
 

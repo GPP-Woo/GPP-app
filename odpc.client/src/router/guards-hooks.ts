@@ -1,13 +1,8 @@
-import { ref, type App } from "vue";
-import type {
-  Router,
-  RouteLocationNormalized,
-  RouteLocationNormalizedLoadedGeneric
-} from "vue-router";
+import type { App } from "vue";
+import type { Router, RouteLocationNormalized } from "vue-router";
 import getUser from "@/stores/user";
 import { useAppData } from "@/composables/use-app-data";
-
-const previousRoute = ref<RouteLocationNormalizedLoadedGeneric>();
+import { setPreviousRoute } from "@/composables/use-previous-route";
 
 async function authGuard(to: RouteLocationNormalized) {
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
@@ -26,20 +21,18 @@ async function authGuard(to: RouteLocationNormalized) {
   if (user?.isLoggedIn) await useAppData().fetchData();
 }
 
-function titleGuard(to: RouteLocationNormalized) {
+function titleHook(to: RouteLocationNormalized) {
   document.title = `${to.meta?.title || ""} | ${import.meta.env.VITE_APP_TITLE}`;
 }
 
-function previousGuard(_: RouteLocationNormalized, from: RouteLocationNormalized) {
-  previousRoute.value = from;
+function previousRouteHook(_: RouteLocationNormalized, from: RouteLocationNormalized) {
+  setPreviousRoute(from);
 }
 
 export default {
   install(_: App, router: Router) {
     router.beforeEach(authGuard);
-    router.beforeEach(titleGuard);
-    router.beforeEach(previousGuard);
+    router.beforeEach(titleHook);
+    router.beforeEach(previousRouteHook);
   }
 };
-
-export { previousRoute };

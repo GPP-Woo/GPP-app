@@ -5,14 +5,14 @@ import "./assets/main.scss";
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import guards from "./router/guards.ts";
+import guardsHooks from "./router/guards-hooks.ts";
 import formInvalidHandler from "./directives/form-invalid-handler";
 
 const app = createApp(App);
 
 app.directive("form-invalid-handler", formInvalidHandler);
 
-app.use(guards, router);
+app.use(guardsHooks, router);
 app.use(router);
 
 app.mount("#app");

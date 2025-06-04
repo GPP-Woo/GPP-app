@@ -64,7 +64,7 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
             (
                 new Data.Entities.GebruikersgroepPublicatie
                 {
-                    GebruikersgroepUuid = (Guid)publicatie.Gebruikersgroep,
+                    GebruikersgroepUuid = publicatie.Gebruikersgroep.Value,
                     PublicatieUuid = viewModel.Uuid
                 }
             );
