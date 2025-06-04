@@ -152,25 +152,33 @@ const clearPublicatieWaardelijsten = () =>
     }
   });
 
+// Externally created publicaties will not have a gebruikersgroep untill updated from ODPC
+const isPublicatieWithoutGebruikersgroep = ref(false);
+
 watch(loading, () => {
   if (error.value) return;
 
-  // Preset gebruikersgroep of a new publicatie when only one mijnGebruikersgroep
-  if (!publicatie.value.uuid && mijnGebruikersgroepen.value?.length === 1) {
-    publicatie.value.gebruikersgroep = mijnGebruikersgroepen.value[0].uuid;
-  }
+  isPublicatieWithoutGebruikersgroep.value =
+    !!publicatie.value.uuid && !publicatie.value.gebruikersgroep;
 
-  // When publicatie is created outside the app user has to select gebruikersgroep
-  // Clear waardelijsten of publicatie to prevent mismatch on waardelijsten
-  if (publicatie.value.uuid && !publicatie.value.gebruikersgroep) {
-    clearPublicatieWaardelijsten();
+  // Preset gebruikersgroep of a new - or externally created publicatie when only one mijnGebruikersgroep
+  if (
+    (!publicatie.value.uuid || isPublicatieWithoutGebruikersgroep.value) &&
+    mijnGebruikersgroepen.value?.length === 1
+  ) {
+    publicatie.value.gebruikersgroep = mijnGebruikersgroepen.value[0].uuid;
   }
 });
 
-// Clear waardelijsten of publicatie on change gebruikersgroep
+// Clear waardelijsten of publicatie when mismatch waardelijsten gebruikersgroep (forbidden) on
+// a) switch from one to another gebruikersgroep or
+// b) initial select gebruikersgroep when isPublicatieWithoutGebruikersgroep
 watch(
   () => publicatie.value.gebruikersgroep,
-  (_, oldValue) => oldValue && clearPublicatieWaardelijsten()
+  (_, oldValue) =>
+    forbidden.value &&
+    (oldValue || isPublicatieWithoutGebruikersgroep.value) &&
+    clearPublicatieWaardelijsten()
 );
 
 const forbidden = computed(() => {
