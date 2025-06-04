@@ -3,14 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ODPC.Authentication;
 using ODPC.Data;
-using ODPC.Features.Gebruikersgroepen;
 
-namespace ODPC.Features.GebruikersgroepenOverzicht
+namespace ODPC.Features.Gebruikersgroepen.AlleGebruikersgroepen
 {
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize(AdminPolicy.Name)]
-    public class GebruikersGroepenController(OdpcDbContext context) : ControllerBase
+    public class GebruikersgroepenController(OdpcDbContext context) : ControllerBase
     {
 
         private readonly OdpcDbContext _context = context;

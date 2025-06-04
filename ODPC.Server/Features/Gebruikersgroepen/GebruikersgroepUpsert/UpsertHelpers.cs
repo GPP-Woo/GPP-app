@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ODPC.Data;
+﻿using ODPC.Data;
 using ODPC.Data.Entities;
 
-namespace ODPC.Features.Gebruikersgroep.GebruikersgroepUpsert
+namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert
 {
     public class UpsertHelpers
     {

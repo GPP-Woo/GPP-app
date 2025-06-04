@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace ODPC.Features.Gebruikersgroep
+﻿namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails
 {
     public class GebruikersgroepDetailsModel
     {

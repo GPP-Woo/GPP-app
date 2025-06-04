@@ -1,4 +1,4 @@
-﻿namespace ODPC.Features.Gebruikersgroep.GebruikersgroepUpsert
+﻿namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert
 {
     public class GebruikersgroepUpsertModel
     {

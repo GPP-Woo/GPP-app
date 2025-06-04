@@ -16,6 +16,7 @@ export type Publicatie = {
   registratiedatum?: string;
   informatieCategorieen: string[];
   onderwerpen: string[];
+  gebruikersgroep: string;
 };
 
 export type PublicatieDocument = {
@@ -59,4 +60,10 @@ export type MimeType = {
   name: string;
   mimeType: string;
   extension?: string;
+};
+
+export type MijnGebruikersgroep = {
+  uuid: string;
+  naam: string;
+  gekoppeldeWaardelijsten: string[];
 };

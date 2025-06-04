@@ -1,13 +1,11 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ODPC.Authentication;
 using ODPC.Data;
-using ODPC.Data.Entities;
+using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
 
-namespace ODPC.Features.Gebruikersgroep.GebruikersgroepUpsert
+namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepBijwerken
 {
     [ApiController]
     [Authorize(AdminPolicy.Name)]

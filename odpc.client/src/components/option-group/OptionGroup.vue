@@ -23,7 +23,7 @@
       </label>
     </div>
 
-    <div class="input-option" v-for="({ uuid, naam }, key) in options" :key="key">
+    <div class="input-option" v-for="{ uuid, naam } in options" :key="uuid">
       <label
         ><input
           :type="type"
@@ -50,7 +50,7 @@ const props = withDefaults(
   defineProps<{
     type?: string;
     title: string;
-    options: OptionProps[];
+    options: Readonly<OptionProps[]>;
     modelValue: string | string[];
     required?: boolean;
   }>(),
@@ -87,6 +87,13 @@ details {
     .error {
       color: var(--code);
     }
+  }
+}
+
+:disabled {
+  .error,
+  .check-all {
+    display: none;
   }
 }
 </style>

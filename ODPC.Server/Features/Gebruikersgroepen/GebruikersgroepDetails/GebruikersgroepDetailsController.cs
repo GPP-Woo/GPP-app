@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ODPC.Authentication;
 using ODPC.Data;
 
-namespace ODPC.Features.Gebruikersgroep.GebruikersgroepDetails
+namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails
 {
 
     [ApiController]

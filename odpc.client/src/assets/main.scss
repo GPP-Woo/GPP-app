@@ -64,6 +64,10 @@ body {
   flex-direction: column;
   margin-block-end: var(--spacing-default);
 
+  &:last-child {
+    margin-block-end: 0;
+  }
+
   &.form-group-radio {
     flex-direction: row;
     gap: var(--spacing-default);
@@ -74,7 +78,8 @@ body {
     margin-block-end: var(--spacing-small);
   }
 
-  input {
+  input,
+  select {
     & + .error {
       display: none;
       color: var(--code);

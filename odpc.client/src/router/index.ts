@@ -1,13 +1,7 @@
-import { ref } from "vue";
-import {
-  createRouter,
-  createWebHistory,
-  type RouteLocationNormalizedLoadedGeneric
-} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "@/views/LoginView.vue";
 import ForbiddenView from "@/views/ForbiddenView.vue";
 import PublicatiesView from "@/views/PublicatiesView.vue";
-import getUser from "@/stores/user";
 
 const resetFocus = () => {
   document.body.setAttribute("tabindex", "-1");
@@ -85,26 +79,4 @@ const router = createRouter({
   ]
 });
 
-const previousRoute = ref<RouteLocationNormalizedLoadedGeneric>();
-
-router.beforeEach(async (to, from) => {
-  document.title = `${to.meta?.title || ""} | ${import.meta.env.VITE_APP_TITLE}`;
-
-  previousRoute.value = from;
-
-  const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
-  const requiresAdmin = to.matched.some((route) => route.meta.requiresAdmin);
-
-  const user = await getUser(false);
-
-  if ((requiresAuth || requiresAdmin) && !user?.isLoggedIn) {
-    return { name: "login" };
-  }
-
-  if (requiresAdmin && !user?.isAdmin) {
-    return { name: "forbidden" };
-  }
-});
-
 export default router;
-export { previousRoute };

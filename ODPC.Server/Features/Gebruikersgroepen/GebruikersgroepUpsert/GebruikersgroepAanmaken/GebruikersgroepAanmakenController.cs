@@ -1,12 +1,10 @@
-﻿using System;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ODPC.Authentication;
 using ODPC.Data;
-using ODPC.Data.Entities;
+using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
 
-namespace ODPC.Features.Gebruikersgroep.GebruikersgroepUpsert
+namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepAanmaken
 {
     [ApiController]
     [Authorize(AdminPolicy.Name)]
@@ -35,6 +33,6 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepUpsert
 
             return base.Ok(GebruikersgroepDetailsModel.MapEntityToViewModel(groep));
         }
-      
+
     }
 }

@@ -1,37 +1,36 @@
-import { ref, type Ref, computed, watch } from "vue";
+import { ref, type MaybeRefOrGetter, toRef } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import { useAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
 import { uploadFile } from "../service";
 import type { PublicatieDocument } from "../types";
 
-export const useDocumenten = (pubUUID: Ref<string | undefined>) => {
+export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
+  const pubUuid = toRef(uuid);
+
   // Documenten
   const files = ref<File[]>([]);
-  const documenten = ref<PublicatieDocument[]>([]);
 
   const {
-    data: documentenData,
+    data: documenten,
     loading: loadingDocumenten,
     error: documentenError
-  } = useAllPages<PublicatieDocument>(
-    computed(() => (pubUUID.value ? `/api/v1/documenten/?publicatie=${pubUUID.value}` : null))
+  } = useAllPages<PublicatieDocument>(() =>
+    pubUuid.value ? `/api/v1/documenten/?publicatie=${pubUuid.value}` : null
   );
 
-  watch(documentenData, (value) => (documenten.value = value ?? []));
-
   const submitDocumenten = async () => {
-    if (!pubUUID.value || !documenten.value) return;
+    if (!pubUuid.value || !documenten.value) return;
 
     for (const [index, doc] of documenten.value.entries()) {
       if (!doc.uuid) {
-        docUUID.value = undefined;
+        docUuid.value = undefined;
 
-        await postDocument({ ...doc, publicatie: pubUUID.value }).execute();
+        await postDocument({ ...doc, publicatie: pubUuid.value }).execute();
 
         if (!documentError.value) await uploadDocument(index);
       } else {
-        docUUID.value = doc.uuid;
+        docUuid.value = doc.uuid;
 
         await putDocument(doc).execute();
       }
@@ -48,7 +47,7 @@ export const useDocumenten = (pubUUID: Ref<string | undefined>) => {
   };
 
   // Document
-  const docUUID = ref<string>();
+  const docUuid = ref<string>();
   const uploadingFile = ref(false);
 
   const {
@@ -57,7 +56,7 @@ export const useDocumenten = (pubUUID: Ref<string | undefined>) => {
     data: documentData,
     isFetching: loadingDocument,
     error: documentError
-  } = useFetchApi(() => `/api/v1/documenten${docUUID.value ? "/" + docUUID.value : ""}`, {
+  } = useFetchApi(() => `/api/v1/documenten${docUuid.value ? "/" + docUuid.value : ""}`, {
     immediate: false
   }).json<PublicatieDocument>();
 

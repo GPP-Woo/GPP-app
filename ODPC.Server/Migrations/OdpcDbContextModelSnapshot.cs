@@ -17,7 +17,7 @@ namespace ODPC.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -38,23 +38,6 @@ namespace ODPC.Migrations
                     b.HasKey("Uuid");
 
                     b.ToTable("Gebruikersgroepen");
-
-                    b.HasData(
-                        new
-                        {
-                            Uuid = new Guid("d3da5277-ea07-4921-97b8-e9a181390c76"),
-                            Naam = "Groep 1"
-                        },
-                        new
-                        {
-                            Uuid = new Guid("8f939b51-dad3-436d-a5fa-495b42317d64"),
-                            Naam = "Groep 2"
-                        },
-                        new
-                        {
-                            Uuid = new Guid("0e7a0023-423a-421a-8700-359232fef584"),
-                            Naam = "Groep 3"
-                        });
                 });
 
             modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepGebruiker", b =>
@@ -70,6 +53,19 @@ namespace ODPC.Migrations
                     b.HasIndex("GebruikersgroepUuid");
 
                     b.ToTable("GebruikersgroepGebruikers");
+                });
+
+            modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepPublicatie", b =>
+                {
+                    b.Property<Guid>("GebruikersgroepUuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PublicatieUuid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("GebruikersgroepUuid", "PublicatieUuid");
+
+                    b.ToTable("GebruikersgroepPublicatie");
                 });
 
             modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepWaardelijst", b =>
@@ -88,6 +84,17 @@ namespace ODPC.Migrations
             modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepGebruiker", b =>
                 {
                     b.HasOne("ODPC.Data.Entities.Gebruikersgroep", "Gebruikersgroep")
+                        .WithMany("GebruikersgroepGebruikers")
+                        .HasForeignKey("GebruikersgroepUuid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gebruikersgroep");
+                });
+
+            modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepPublicatie", b =>
+                {
+                    b.HasOne("ODPC.Data.Entities.Gebruikersgroep", "Gebruikersgroep")
                         .WithMany()
                         .HasForeignKey("GebruikersgroepUuid")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -99,12 +106,19 @@ namespace ODPC.Migrations
             modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepWaardelijst", b =>
                 {
                     b.HasOne("ODPC.Data.Entities.Gebruikersgroep", "Gebruikersgroep")
-                        .WithMany()
+                        .WithMany("Waardelijsten")
                         .HasForeignKey("GebruikersgroepUuid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Gebruikersgroep");
+                });
+
+            modelBuilder.Entity("ODPC.Data.Entities.Gebruikersgroep", b =>
+                {
+                    b.Navigation("GebruikersgroepGebruikers");
+
+                    b.Navigation("Waardelijsten");
                 });
 #pragma warning restore 612, 618
         }
