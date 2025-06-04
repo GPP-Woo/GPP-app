@@ -41,6 +41,8 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
           type: "error"
         });
 
+        documentError.value = null;
+
         throw new Error(`submitDocumenten`);
       }
     }

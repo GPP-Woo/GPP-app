@@ -65,7 +65,7 @@
       <input
         id="titel"
         type="text"
-        v-model="doc.officieleTitel"
+        v-model.trim="doc.officieleTitel"
         required
         aria-required="true"
         :aria-describedby="`titelError-${detailsId}`"

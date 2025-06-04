@@ -8,7 +8,7 @@
       <input
         id="titel"
         type="text"
-        v-model="naam"
+        v-model.trim="naam"
         required
         aria-required="true"
         aria-describedby="titelError"
