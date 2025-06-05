@@ -113,12 +113,13 @@ details {
 }
 
 .form-submit {
-  display: flex;
-  justify-content: space-between;
-
   menu {
     display: flex;
     gap: var(--spacing-default);
+
+    .cancel {
+      margin-inline-end: auto;
+    }
   }
 }
 

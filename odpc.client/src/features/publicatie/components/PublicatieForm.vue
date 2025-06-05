@@ -11,6 +11,10 @@
       contact op met de beheerder.</alert-inline
     >
 
+    <alert-inline v-else-if="model.uuid && model.publicatiestatus === PublicatieStatus.concept"
+      >Deze publicatie is nog in concept.</alert-inline
+    >
+
     <div class="form-group">
       <label for="gebruikersgroep">Profiel *</label>
 
@@ -34,26 +38,6 @@
     </div>
 
     <template v-if="model.gebruikersgroep || readonly">
-      <div v-if="model.uuid && !readonly" class="form-group form-group-radio">
-        <label>
-          <input
-            type="radio"
-            v-model="model.publicatiestatus"
-            :value="PublicatieStatus.gepubliceerd"
-          />
-          Gepubliceerd
-        </label>
-
-        <label
-          ><input
-            type="radio"
-            v-model="model.publicatiestatus"
-            :value="PublicatieStatus.ingetrokken"
-          />
-          Ingetrokken</label
-        >
-      </div>
-
       <div v-if="model.uuid" class="form-group">
         <label for="uuid">ID</label>
 
@@ -100,6 +84,7 @@
         :options="waardelijsten.organisaties"
         v-model="model.publisher"
         :required="true"
+        :open="expandOptionGroup"
       />
 
       <option-group
@@ -110,6 +95,7 @@
         :options="waardelijsten.informatiecategorieen"
         v-model="model.informatieCategorieen"
         :required="true"
+        :open="expandOptionGroup"
       />
 
       <option-group
@@ -119,13 +105,14 @@
         :key="model.gebruikersgroep"
         :options="waardelijsten.onderwerpen"
         v-model="model.onderwerpen"
+        :open="expandOptionGroup"
       />
     </template>
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { computed, useModel } from "vue";
+import { computed, ref, useModel, watch } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import { useAppData } from "@/composables/use-app-data";
@@ -145,6 +132,21 @@ const props = defineProps<{
 }>();
 
 const model = useModel(props, "modelValue");
+
+// Expand waardelijsten when waardelijsten are cleared after gebruikersgroep switch
+const expandOptionGroup = ref(false);
+
+watch(
+  () => model.value.gebruikersgroep,
+  () => {
+    const { publisher, informatieCategorieen, onderwerpen } = model.value;
+
+    const waardelijstenLength =
+      publisher.length + informatieCategorieen.length + onderwerpen.length;
+
+    if (waardelijstenLength === 0) expandOptionGroup.value = true;
+  }
+);
 
 const { lijsten } = useAppData();
 

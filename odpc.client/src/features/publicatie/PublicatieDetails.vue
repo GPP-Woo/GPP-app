@@ -34,19 +34,45 @@
     </section>
 
     <div class="form-submit">
-      <span class="required-message">Velden met (*) zijn verplicht</span>
-
       <menu class="reset">
-        <li>
+        <li class="cancel">
           <button type="button" title="Opslaan" class="button secondary" @click="navigate">
             Annuleren
           </button>
         </li>
 
+        <!-- Setup -->
+        <template v-if="!readonly && !error">
+          <li v-if="publicatie.uuid && publicatie.publicatiestatus === PublicatieStatus.concept">
+            <button type="button" title="Publicatie verwijderen" class="button secondary">
+              Publicatie verwijderen
+            </button>
+          </li>
+
+          <li v-if="!publicatie.uuid || publicatie.publicatiestatus === PublicatieStatus.concept">
+            <button type="submit" title="Opslaan als concept" class="button secondary">
+              Opslaan als concept
+            </button>
+          </li>
+
+          <li v-else-if="publicatie.publicatiestatus === PublicatieStatus.gepubliceerd">
+            <button
+              type="button"
+              title="Publicatie intrekken"
+              class="button secondary"
+              @click="confirmRetract()"
+            >
+              Publicatie intrekken
+            </button>
+          </li>
+        </template>
+
         <li>
-          <button type="submit" title="Opslaan" :disabled="readonly || error">Opslaan</button>
+          <button type="submit" title="Publiceren" :disabled="readonly || error">Publiceren</button>
         </li>
       </menu>
+
+      <p class="required-message">Velden met (*) zijn verplicht</p>
     </div>
 
     <prompt-modal
@@ -215,20 +241,28 @@ const navigate = () => {
   }
 };
 
+// Setup dialogs ...
+const confirmRetract = async () => {
+  const { isCanceled } = await showDialog(Dialogs.retractPublicatie);
+
+  if (isCanceled) return;
+
+  publicatie.value.publicatiestatus = PublicatieStatus.ingetrokken;
+
+  submit();
+};
+
+// ...
+
 const submit = async () => {
-  if (documenten.value.length === 0) {
+  // No documenten dialog
+  if (
+    publicatie.value.publicatiestatus === PublicatieStatus.gepubliceerd &&
+    documenten.value.length === 0
+  ) {
     const { isCanceled } = await showDialog(Dialogs.noDocumenten);
 
     if (isCanceled) return;
-  } else if (publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken) {
-    const { isCanceled } = await showDialog(Dialogs.retractPublicatie);
-
-    if (isCanceled) {
-      // Reset publicatie status in model to 'gepubliceerd' when user doesn't want to retract
-      publicatie.value.publicatiestatus = PublicatieStatus.gepubliceerd;
-
-      return;
-    }
   }
 
   try {
