@@ -171,7 +171,7 @@ const waardelijsten = computed(() =>
     : props.gekoppeldeWaardelijsten
 );
 
-// Expand option groups after a gebruikersgroep changes and waardelijst values are empty
+// Expand option groups after gebruikersgroep changes and waardelijst values are empty
 const expandOptionGroup = ref(false);
 
 watch(
