@@ -1,4 +1,4 @@
-import { ref, type MaybeRefOrGetter, toRef } from "vue";
+import { ref, type MaybeRefOrGetter, toRef, watch } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import { useAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
@@ -10,14 +10,17 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
 
   // Documenten
   const files = ref<File[]>([]);
+  const documenten = ref<PublicatieDocument[]>([]);
 
   const {
-    data: documenten,
+    data,
     loading: loadingDocumenten,
     error: documentenError
   } = useAllPages<PublicatieDocument>(() =>
     pubUuid.value ? `/api/v1/documenten/?publicatie=${pubUuid.value}` : null
   );
+
+  watch(data, (value) => (documenten.value = value ?? []));
 
   const submitDocumenten = async () => {
     if (!pubUuid.value || !documenten.value) return;
