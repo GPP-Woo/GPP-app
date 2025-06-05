@@ -179,9 +179,9 @@ watch(
   (_, oldGroep) =>
     (expandOptionGroup.value =
       !!oldGroep &&
-      (model.value.publisher.length === 0 ||
-        model.value.informatieCategorieen.length === 0 ||
-        model.value.onderwerpen.length === 0))
+      model.value.publisher.length === 0 &&
+      model.value.informatieCategorieen.length === 0 &&
+      model.value.onderwerpen.length === 0)
 );
 </script>
 
