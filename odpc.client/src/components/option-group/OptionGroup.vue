@@ -5,6 +5,7 @@
     :aria-labelledby="`label-${instanceId}`"
     :aria-required="required ? true : undefined"
     @change="setCustomValidity"
+    :open="open"
   >
     <summary :id="`label-${instanceId}`">{{ title }} {{ required ? "*" : "" }}</summary>
 
@@ -53,6 +54,7 @@ const props = withDefaults(
     options: Readonly<OptionProps[]>;
     modelValue: string | string[];
     required?: boolean;
+    open?: boolean;
   }>(),
   {
     type: "checkbox"

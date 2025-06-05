@@ -100,6 +100,7 @@
         :options="waardelijsten.organisaties"
         v-model="model.publisher"
         :required="true"
+        :open="expandOptionGroup"
       />
 
       <option-group
@@ -110,6 +111,7 @@
         :options="waardelijsten.informatiecategorieen"
         v-model="model.informatieCategorieen"
         :required="true"
+        :open="expandOptionGroup"
       />
 
       <option-group
@@ -119,13 +121,14 @@
         :key="model.gebruikersgroep"
         :options="waardelijsten.onderwerpen"
         v-model="model.onderwerpen"
+        :open="expandOptionGroup"
       />
     </template>
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { computed, useModel } from "vue";
+import { computed, ref, useModel, watch } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import { useAppData } from "@/composables/use-app-data";
@@ -166,6 +169,19 @@ const waardelijsten = computed(() =>
         )
       }
     : props.gekoppeldeWaardelijsten
+);
+
+// Expand option groups after a gebruikersgroep changes and waardelijst values are empty
+const expandOptionGroup = ref(false);
+
+watch(
+  () => model.value.gebruikersgroep,
+  (_, oldGroep) =>
+    (expandOptionGroup.value =
+      !!oldGroep &&
+      (model.value.publisher.length === 0 ||
+        model.value.informatieCategorieen.length === 0 ||
+        model.value.onderwerpen.length === 0))
 );
 </script>
 
