@@ -9,7 +9,8 @@
 
     <section v-else>
       <alert-inline v-if="publicatieError"
-        >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
+        >Er is iets misgegaan bij het ophalen van de publicatie of de publicatie is niet (meer)
+        beschikbaar...</alert-inline
       >
 
       <publicatie-form
@@ -22,7 +23,7 @@
       />
 
       <alert-inline v-if="documentenError"
-        >Er is iets misgegaan bij het ophalen van de documenten...</alert-inline
+        >Er is iets misgegaan bij het ophalen van de documenten bij deze publicatie...</alert-inline
       >
 
       <documenten-form
@@ -41,35 +42,44 @@
           </button>
         </li>
 
-        <!-- Setup -->
-        <template v-if="!readonly && !error">
+        <template v-if="publicatie.gebruikersgroep && !readonly && !error">
           <li v-if="publicatie.uuid && publicatie.publicatiestatus === PublicatieStatus.concept">
-            <button type="button" title="Publicatie verwijderen" class="button secondary">
+            <button
+              type="submit"
+              title="Publicatie verwijderen"
+              class="button secondary"
+              value="delete"
+            >
               Publicatie verwijderen
             </button>
           </li>
 
           <li v-if="!publicatie.uuid || publicatie.publicatiestatus === PublicatieStatus.concept">
-            <button type="submit" title="Opslaan als concept" class="button secondary">
+            <button
+              type="submit"
+              title="Opslaan als concept"
+              class="button secondary"
+              value="draft"
+            >
               Opslaan als concept
             </button>
           </li>
 
-          <li v-else-if="publicatie.publicatiestatus === PublicatieStatus.gepubliceerd">
+          <li v-if="publicatie.publicatiestatus === PublicatieStatus.gepubliceerd">
             <button
-              type="button"
+              type="submit"
               title="Publicatie intrekken"
               class="button secondary"
-              @click="confirmRetract()"
+              value="retract"
             >
               Publicatie intrekken
             </button>
           </li>
-        </template>
 
-        <li>
-          <button type="submit" title="Publiceren" :disabled="readonly || error">Publiceren</button>
-        </li>
+          <li>
+            <button type="submit" title="Publiceren" value="publish">Publiceren</button>
+          </li>
+        </template>
       </menu>
 
       <p class="required-message">Velden met (*) zijn verplicht</p>
@@ -136,7 +146,8 @@ const {
   publicatie,
   isFetching: loadingPublicatie,
   error: publicatieError,
-  submitPublicatie
+  submitPublicatie,
+  deletePublicatie
 } = usePublicatie(props.uuid);
 
 // Store initial publicatie status in seperate ref to manage UI-state
@@ -241,44 +252,84 @@ const navigate = () => {
   }
 };
 
-// Setup dialogs ...
-const confirmRetract = async () => {
-  const { isCanceled } = await showDialog(Dialogs.retractPublicatie);
+const successRedirect = (successMessage?: string) => {
+  toast.add({ text: successMessage ?? "De publicatie is succesvol opgeslagen" });
 
-  if (isCanceled) return;
-
-  publicatie.value.publicatiestatus = PublicatieStatus.ingetrokken;
-
-  submit();
+  navigate();
 };
 
-// ...
+const submitHandlers = {
+  draft: async () => {
+    if ((await showDialog(Dialogs.draftPublicatie)).isCanceled) return;
 
-const submit = async () => {
-  // No documenten dialog
-  if (
-    publicatie.value.publicatiestatus === PublicatieStatus.gepubliceerd &&
-    documenten.value.length === 0
-  ) {
-    const { isCanceled } = await showDialog(Dialogs.noDocumenten);
+    try {
+      await submitPublicatie();
 
-    if (isCanceled) return;
-  }
-
-  try {
-    await submitPublicatie();
-
-    // As soon as a publicatie gets status 'ingetrokken' in ODRC, the associated documents will
-    // be automatically set to 'ingetrokken' as well and can no longer be updated from ODPC
-    if (publicatie.value.publicatiestatus !== PublicatieStatus.ingetrokken)
       await submitDocumenten();
-  } catch {
+    } catch {
+      return;
+    }
+
+    successRedirect("De publicatie is succesvol opgeslagen als concept.");
+  },
+  delete: async () => {
+    if ((await showDialog(Dialogs.deletePublicatie)).isCanceled) return;
+
+    try {
+      await deletePublicatie();
+    } catch {
+      return;
+    }
+
+    successRedirect("De publicatie is succesvol verwijderd.");
+  },
+  retract: async () => {
+    if ((await showDialog(Dialogs.retractPublicatie)).isCanceled) return;
+
+    publicatie.value.publicatiestatus = PublicatieStatus.ingetrokken;
+
+    try {
+      // As soon as a publicatie gets status 'ingetrokken', the associated documents will
+      // be automatically set to 'ingetrokken' as well and can no longer be updated from ODPC
+      await submitPublicatie();
+    } catch {
+      return;
+    }
+
+    successRedirect("De publicatie is succesvol ingetrokken.");
+  },
+  publish: async () => {
+    if (documenten.value.length === 0 && (await showDialog(Dialogs.noDocumenten)).isCanceled)
+      return;
+
+    publicatie.value.publicatiestatus = PublicatieStatus.gepubliceerd;
+    
+    documenten.value.forEach((doc) => (doc.publicatiestatus = PublicatieStatus.gepubliceerd));
+
+    try {
+      await submitPublicatie();
+
+      await submitDocumenten();
+    } catch {
+      return;
+    }
+
+    successRedirect("De publicatie is succesvol opgeslagen en gepubliceerd.");
+  }
+} as const;
+
+const submit = async (event?: Event) => {
+  const submitEvent = event as SubmitEvent;
+  const submitAction = (submitEvent?.submitter as HTMLButtonElement)?.value || "default";
+
+  const handleSubmit = submitHandlers[submitAction as keyof typeof submitHandlers];
+
+  if (!handleSubmit) {
+    toast.add({ text: "Er is iets misgegaan.", type: "error" });
     return;
   }
 
-  toast.add({ text: "De publicatie is succesvol opgeslagen." });
-
-  navigate();
+  await handleSubmit();
 };
 </script>
 

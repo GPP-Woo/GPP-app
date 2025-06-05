@@ -25,7 +25,7 @@ export const usePublicatie = (uuid?: string) => {
     get,
     post,
     put,
-    delete: deletePublicatie
+    delete: deleteMethod
   } = useFetchApi(() => `${API_URL}/publicaties${uuid ? "/" + uuid : ""}`, {
     immediate: false
   }).json<Publicatie>();
@@ -66,8 +66,8 @@ export const usePublicatie = (uuid?: string) => {
     }
   };
 
-  const removePublicatie = async () => {
-    await deletePublicatie().execute();
+  const deletePublicatie = async () => {
+    await deleteMethod().text().execute();
 
     if (error.value) {
       toast.add({
@@ -88,6 +88,6 @@ export const usePublicatie = (uuid?: string) => {
     isFetching,
     error,
     submitPublicatie,
-    removePublicatie
+    deletePublicatie
   };
 };
