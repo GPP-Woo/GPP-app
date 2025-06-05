@@ -133,21 +133,6 @@ const props = defineProps<{
 
 const model = useModel(props, "modelValue");
 
-// Expand waardelijsten when waardelijsten are cleared after gebruikersgroep switch
-const expandOptionGroup = ref(false);
-
-watch(
-  () => model.value.gebruikersgroep,
-  () => {
-    const { publisher, informatieCategorieen, onderwerpen } = model.value;
-
-    const waardelijstenLength =
-      publisher.length + informatieCategorieen.length + onderwerpen.length;
-
-    if (waardelijstenLength === 0) expandOptionGroup.value = true;
-  }
-);
-
 const { lijsten } = useAppData();
 
 // When gekoppeldeWaardelijsten don't match the publicatie (forbidden)
@@ -168,6 +153,19 @@ const waardelijsten = computed(() =>
         )
       }
     : props.gekoppeldeWaardelijsten
+);
+
+// Expand option groups after gebruikersgroep changes and waardelijst values are empty
+const expandOptionGroup = ref(false);
+
+watch(
+  () => model.value.gebruikersgroep,
+  (_, oldGroep) =>
+    (expandOptionGroup.value =
+      !!oldGroep &&
+      model.value.publisher.length === 0 &&
+      model.value.informatieCategorieen.length === 0 &&
+      model.value.onderwerpen.length === 0)
 );
 </script>
 
