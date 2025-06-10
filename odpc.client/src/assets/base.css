@@ -21,6 +21,10 @@
   --preformatted: #444;
   --marked: #ffdd33;
   --disabled: #efefef;
+  --danger: #cc0000;
+  --danger-text: var(--bg);
+  --danger-hover: #ee4444;
+  
 }
 
 /* Dark theme */
@@ -231,6 +235,12 @@ a.button-secondary {
   color: var(--accent);
 }
 
+.button.danger {
+  color: var(--danger);
+  border-color: var(--danger);
+  background-color: var(--bg);
+}
+
 .button[aria-disabled="true"],
 input:disabled,
 textarea:disabled,
@@ -272,6 +282,16 @@ input:enabled:focus-visible:where([type="submit"], [type="reset"], [type="button
   background-color: var(--accent-hover);
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+.danger:enabled:hover {
+  background-color: var(--danger-hover);
+  border-color: var(--danger-hover);
+}
+
+.danger:focus-visible {
+  background-color: var(--danger-hover);
+  outline-color: var(--danger);
 }
 
 /* Format navigation */

@@ -16,7 +16,7 @@
       <publicatie-form
         v-else
         v-model="publicatie"
-        :forbidden="forbidden"
+        :unauthorized="unauthorized"
         :readonly="isReadonly"
         :mijn-gebruikersgroepen="mijnGebruikersgroepen"
         :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
@@ -43,6 +43,7 @@
         </li>
 
         <template v-if="publicatie.gebruikersgroep && !isReadonly && !hasError">
+          <!-- save buttons -->
           <li v-if="canDraft">
             <button
               type="submit"
@@ -54,11 +55,16 @@
             </button>
           </li>
 
+          <li>
+            <button type="submit" title="Publiceren" value="publish">Publiceren</button>
+          </li>
+
+          <!-- danger buttons -->
           <li v-if="canDelete">
             <button
               type="submit"
               title="Publicatie verwijderen"
-              class="button secondary"
+              class="button danger"
               value="delete"
             >
               Publicatie verwijderen
@@ -69,15 +75,11 @@
             <button
               type="submit"
               title="Publicatie intrekken"
-              class="button secondary"
+              class="button danger"
               value="retract"
             >
               Publicatie intrekken
             </button>
-          </li>
-
-          <li>
-            <button type="submit" title="Publiceren" value="publish">Publiceren</button>
           </li>
         </template>
       </menu>
@@ -165,7 +167,7 @@ const hasError = computed(
 );
 
 const isReadonly = computed(
-  () => publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken || forbidden.value
+  () => publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken || unauthorized.value
 );
 
 const canDraft = computed(
@@ -205,7 +207,7 @@ const publicatieWaardelijstenMatch = computed(
     )
 );
 
-const forbidden = computed(() => {
+const unauthorized = computed(() => {
   if (!publicatie.value.gebruikersgroep) return false;
 
   return (
@@ -276,15 +278,17 @@ watch(isLoading, () => {
   }
 });
 
-// Clear waardelijsten of publicatie when mismatch waardelijsten gebruikersgroep (forbidden) on
+// Clear waardelijsten of publicatie when mismatch waardelijsten gebruikersgroep (unauthorized) on
 // a) switch from one to another gebruikersgroep or
 // b) initial select gebruikersgroep when isPublicatieWithoutGebruikersgroep
+const shouldClearWaardelijsten = (isSwitchGebruikersgroep: boolean) =>
+  unauthorized.value && (isSwitchGebruikersgroep || isPublicatieWithoutGebruikersgroep.value);
+
 watch(
   () => publicatie.value.gebruikersgroep,
-  (_, oldValue) =>
-    forbidden.value &&
-    (oldValue || isPublicatieWithoutGebruikersgroep.value) &&
-    clearPublicatieWaardelijsten()
+  (_, oldValue) => {
+    if (shouldClearWaardelijsten(!!oldValue)) clearPublicatieWaardelijsten();
+  }
 );
 
 const navigate = () => {
@@ -343,9 +347,12 @@ const submitHandlers = {
   publish: async () => {
     if (documenten.value.length === 0 && (await noDocumentsDialog.reveal()).isCanceled) return;
 
-    // Let document publicatiestatus be handled by publicatie-bank
-    documenten.value.forEach((doc) => (doc.publicatiestatus = undefined));
     publicatie.value.publicatiestatus = PublicatieStatus.gepubliceerd;
+
+    documenten.value.forEach((doc) => {
+      if (doc.publicatiestatus === PublicatieStatus.concept)
+        doc.publicatiestatus = PublicatieStatus.gepubliceerd;
+    });
 
     try {
       await submitPublicatie();
@@ -375,5 +382,23 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   grid-gap: var(--spacing-default);
+}
+
+menu {
+  li:has([value="delete"]) {
+    order: 2;
+  }
+
+  li:has([value="draft"]) {
+    order: 3;
+  }
+
+  li:has([value="retract"]) {
+    order: 4;
+  }
+
+  li:has([value="publish"]) {
+    order: 5;
+  }
 }
 </style>

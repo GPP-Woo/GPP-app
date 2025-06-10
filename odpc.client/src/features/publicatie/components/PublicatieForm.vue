@@ -6,7 +6,7 @@
       >Deze publicatie is ingetrokken.</alert-inline
     >
 
-    <alert-inline v-else-if="forbidden"
+    <alert-inline v-else-if="unauthorized"
       >Onder dit profiel heb je niet (meer) de juiste rechten om deze publicatie aan te passen. Neem
       contact op met de beheerder.</alert-inline
     >
@@ -121,7 +121,7 @@ import type { OptionProps } from "@/components/option-group/types";
 
 const props = defineProps<{
   modelValue: Publicatie;
-  forbidden: boolean;
+  unauthorized: boolean;
   readonly: boolean;
   mijnGebruikersgroepen: MijnGebruikersgroep[];
   gekoppeldeWaardelijsten: {
@@ -135,9 +135,9 @@ const model = useModel(props, "modelValue");
 
 const { lijsten } = useAppData();
 
-// When gekoppeldeWaardelijsten don't match the publicatie (forbidden)
+// When gekoppeldeWaardelijsten don't match the publicatie (unauthorized)
 // or when publicatie has status 'ingetrokken', the form is displayed as readonly/disabled
-// In readonly mode waardelijsten are constructed based on all/existing waardelijsten because there is (forbidden) -
+// In readonly mode waardelijsten are constructed based on all/existing waardelijsten because there is (unauthorized) -
 // or there may be (ingestrokken) a mismatch in waardelijsten between the publicatie and gekoppeldeWaardelijsten
 const waardelijsten = computed(() =>
   props.readonly

@@ -98,15 +98,36 @@
           :to="{ name: 'publicatie', params: { uuid } }"
           :title="officieleTitel"
           class="card-link icon-after pen"
+          :class="{ draft: publicatiestatus === PublicatieStatus.concept }"
         >
-          <h2 v-if="publicatiestatus === PublicatieStatus.ingetrokken">
-            <s :aria-describedby="`status-${uuid}`">{{ officieleTitel }}</s>
-            <span :id="`status-${uuid}`" role="status">(ingetrokken)</span>
+          <h2 :aria-describedby="`status-${uuid}`">
+            <s v-if="publicatiestatus === PublicatieStatus.ingetrokken">{{ officieleTitel }}</s>
+
+            <template v-else>
+              {{ officieleTitel }}
+            </template>
           </h2>
 
-          <h2 v-else>{{ officieleTitel }}</h2>
+          <span
+            :id="`status-${uuid}`"
+            role="status"
+            class="alert"
+            :class="{ danger: publicatiestatus === PublicatieStatus.concept }"
+          >
+            <template v-if="publicatiestatus === PublicatieStatus.concept">
+              Waarschuwing: deze publicatie is nog in concept!
+            </template>
 
-          <h3>{{ verkorteTitel }}</h3>
+            <template v-if="publicatiestatus === PublicatieStatus.gepubliceerd">
+              Deze publicatie is gepubliceerd.
+            </template>
+
+            <template v-if="publicatiestatus === PublicatieStatus.ingetrokken">
+              Deze publicatie is ingetrokken.
+            </template>
+          </span>
+
+          <h3 v-if="verkorteTitel">{{ verkorteTitel }}</h3>
 
           <dl>
             <dt>Publicatiedatum:</dt>
