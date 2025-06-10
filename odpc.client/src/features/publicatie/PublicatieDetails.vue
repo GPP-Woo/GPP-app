@@ -1,7 +1,7 @@
 <template>
-  <simple-spinner v-show="loading"></simple-spinner>
+  <simple-spinner v-show="isLoading"></simple-spinner>
 
-  <form v-if="!loading" @submit.prevent="submit" v-form-invalid-handler>
+  <form v-if="!isLoading" @submit.prevent="submit" v-form-invalid-handler>
     <alert-inline v-if="mijnGebruikersgroepenError || !mijnGebruikersgroepen?.length"
       >Er is iets misgegaan bij het ophalen van de gegevens. Neem contact op met de
       beheerder.</alert-inline
@@ -17,7 +17,7 @@
         v-else
         v-model="publicatie"
         :forbidden="forbidden"
-        :readonly="readonly"
+        :readonly="isReadonly"
         :mijn-gebruikersgroepen="mijnGebruikersgroepen"
         :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
       />
@@ -27,10 +27,10 @@
       >
 
       <documenten-form
-        v-else-if="publicatie.gebruikersgroep || readonly"
+        v-else-if="publicatie.gebruikersgroep || isReadonly"
         v-model:files="files"
         v-model:documenten="documenten"
-        :readonly="readonly"
+        :readonly="isReadonly"
       />
     </section>
 
@@ -42,19 +42,8 @@
           </button>
         </li>
 
-        <template v-if="publicatie.gebruikersgroep && !readonly && !error">
-          <li v-if="publicatie.uuid && publicatie.publicatiestatus === PublicatieStatus.concept">
-            <button
-              type="submit"
-              title="Publicatie verwijderen"
-              class="button secondary"
-              value="delete"
-            >
-              Publicatie verwijderen
-            </button>
-          </li>
-
-          <li v-if="!publicatie.uuid || publicatie.publicatiestatus === PublicatieStatus.concept">
+        <template v-if="publicatie.gebruikersgroep && !isReadonly && !hasError">
+          <li v-if="canDraft">
             <button
               type="submit"
               title="Opslaan als concept"
@@ -65,7 +54,18 @@
             </button>
           </li>
 
-          <li v-if="publicatie.publicatiestatus === PublicatieStatus.gepubliceerd">
+          <li v-if="canDelete">
+            <button
+              type="submit"
+              title="Publicatie verwijderen"
+              class="button secondary"
+              value="delete"
+            >
+              Publicatie verwijderen
+            </button>
+          </li>
+
+          <li v-if="canRetract">
             <button
               type="submit"
               title="Publicatie intrekken"
@@ -86,11 +86,35 @@
     </div>
 
     <prompt-modal
-      :dialog="dialog"
-      :cancel-text="currentDialogConfig?.cancelText"
-      :confirm-text="currentDialogConfig?.confirmText"
+      :dialog="draftDialog"
+      cancel-text="Nee, keer terug"
+      confirm-text="Ja, sla op als concept"
     >
-      <section v-html="currentDialogConfig?.message"></section>
+      <draft-dialog-content />
+    </prompt-modal>
+
+    <prompt-modal
+      :dialog="deleteDialog"
+      cancel-text="Nee, keer terug"
+      confirm-text="Ja, verwijderen"
+    >
+      <delete-dialog-content />
+    </prompt-modal>
+
+    <prompt-modal
+      :dialog="retractDialog"
+      cancel-text="Nee, gepubliceerd laten"
+      confirm-text="Ja, intrekken"
+    >
+      <retract-dialog-content />
+    </prompt-modal>
+
+    <prompt-modal
+      :dialog="noDocumentsDialog"
+      cancel-text="Nee, documenten toevoegen"
+      confirm-text="Ja, publiceren"
+    >
+      <no-documents-dialog-content />
     </prompt-modal>
   </form>
 </template>
@@ -102,15 +126,18 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import { usePreviousRoute } from "@/composables/use-previous-route";
-import { useMultipleConfirmDialogs } from "@/composables/use-multiple-confirm-dialogs";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentenForm from "./components/DocumentenForm.vue";
+import DraftDialogContent from "./components/dialogs/DraftDialogContent.vue";
+import DeleteDialogContent from "./components/dialogs/DeleteDialogContent.vue";
+import RetractDialogContent from "./components/dialogs/RetractDialogContent.vue";
+import NoDocumentsDialogContent from "./components/dialogs/NoDocumentsDialogContent.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
 import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroepen";
+import { useDialogs } from "./composables/use-dialogs";
 import { PublicatieStatus } from "./types";
-import { Dialogs } from "./dialogs";
 
 const router = useRouter();
 
@@ -118,9 +145,9 @@ const props = defineProps<{ uuid?: string }>();
 
 const { previousRoute } = usePreviousRoute();
 
-const { dialog, currentDialogConfig, showDialog } = useMultipleConfirmDialogs();
+const { deleteDialog, draftDialog, retractDialog, noDocumentsDialog } = useDialogs();
 
-const loading = computed(
+const isLoading = computed(
   () =>
     loadingPublicatie.value ||
     loadingDocumenten.value ||
@@ -129,7 +156,7 @@ const loading = computed(
     uploadingFile.value
 );
 
-const error = computed(
+const hasError = computed(
   () =>
     !!publicatieError.value ||
     !!documentenError.value ||
@@ -137,9 +164,56 @@ const error = computed(
     !!mijnGebruikersgroepenError.value
 );
 
-const readonly = computed(
-  () => initialStatus.value === PublicatieStatus.ingetrokken || forbidden.value
+const isReadonly = computed(
+  () => publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken || forbidden.value
 );
+
+const canDraft = computed(
+  () => !publicatie.value.uuid || publicatie.value.publicatiestatus === PublicatieStatus.concept
+);
+
+const canDelete = computed(
+  () => publicatie.value.uuid && publicatie.value.publicatiestatus === PublicatieStatus.concept
+);
+
+const canRetract = computed(
+  () => publicatie.value.publicatiestatus === PublicatieStatus.gepubliceerd
+);
+
+const userHasAccessToGroup = computed(() =>
+  mijnGebruikersgroepen.value?.some((groep) => groep.uuid === publicatie.value.gebruikersgroep)
+);
+
+const groupHasWaardelijsten = computed(
+  () =>
+    gekoppeldeWaardelijsten.value.organisaties?.length &&
+    gekoppeldeWaardelijsten.value.informatiecategorieen?.length
+);
+
+const publicatieWaardelijstenMatch = computed(
+  () =>
+    // Gebruikersgroep is assigned to publisher organisatie (or publisher not set yet)
+    (gekoppeldeWaardelijstenUuids.value?.includes(publicatie.value.publisher) ||
+      !publicatie.value.publisher) &&
+    // Gebruikersgroep is assigned to every informatiecategorie of publicatie
+    publicatie.value.informatieCategorieen.every((uuid: string) =>
+      gekoppeldeWaardelijstenUuids.value?.includes(uuid)
+    ) &&
+    // Gebruikersgroep is assigned to every onderwerp of publicatie
+    publicatie.value.onderwerpen.every((uuid: string) =>
+      gekoppeldeWaardelijstenUuids.value?.includes(uuid)
+    )
+);
+
+const forbidden = computed(() => {
+  if (!publicatie.value.gebruikersgroep) return false;
+
+  return (
+    !userHasAccessToGroup.value ||
+    !groupHasWaardelijsten.value ||
+    !publicatieWaardelijstenMatch.value
+  );
+});
 
 // Publicatie
 const {
@@ -149,11 +223,6 @@ const {
   submitPublicatie,
   deletePublicatie
 } = usePublicatie(props.uuid);
-
-// Store initial publicatie status in seperate ref to manage UI-state
-const initialStatus = ref<keyof typeof PublicatieStatus>(PublicatieStatus.gepubliceerd);
-
-watch(loadingPublicatie, () => (initialStatus.value = publicatie.value.publicatiestatus));
 
 // Documenten
 const {
@@ -192,8 +261,8 @@ const clearPublicatieWaardelijsten = () =>
 // Externally created publicaties will not have a gebruikersgroep untill updated from ODPC
 const isPublicatieWithoutGebruikersgroep = ref(false);
 
-watch(loading, () => {
-  if (error.value) return;
+watch(isLoading, () => {
+  if (hasError.value) return;
 
   isPublicatieWithoutGebruikersgroep.value =
     !!publicatie.value.uuid && !publicatie.value.gebruikersgroep;
@@ -218,32 +287,6 @@ watch(
     clearPublicatieWaardelijsten()
 );
 
-const forbidden = computed(() => {
-  if (!publicatie.value.gebruikersgroep) return false;
-
-  return (
-    // Gebruiker not assigned to gebruikersgroep of the publicatie
-    !mijnGebruikersgroepen.value?.some(
-      (groep) => groep.uuid === publicatie.value.gebruikersgroep
-    ) ||
-    // Gebruikersgroep is not assigned to any organisatie
-    !gekoppeldeWaardelijsten.value.organisaties?.length ||
-    // Gebruikersgroep is not assigned to any informatiecategorie
-    !gekoppeldeWaardelijsten.value.informatiecategorieen?.length ||
-    // Gebruikersgroep is not assigned to publisher organisatie
-    (publicatie.value.publisher &&
-      !gekoppeldeWaardelijstenUuids.value?.includes(publicatie.value.publisher)) ||
-    // Gebruikersgroep is not assigned to every informatiecategorie of publicatie
-    !publicatie.value.informatieCategorieen.every((uuid: string) =>
-      gekoppeldeWaardelijstenUuids.value?.includes(uuid)
-    ) ||
-    // Gebruikersgroep is not assigned to every onderwerp of publicatie
-    !publicatie.value.onderwerpen.every((uuid: string) =>
-      gekoppeldeWaardelijstenUuids.value?.includes(uuid)
-    )
-  );
-});
-
 const navigate = () => {
   if (previousRoute.value?.name === "publicaties") {
     router.push({ name: previousRoute.value.name, query: previousRoute.value?.query });
@@ -252,7 +295,7 @@ const navigate = () => {
   }
 };
 
-const successRedirect = (successMessage?: string) => {
+const handleSuccess = (successMessage?: string) => {
   toast.add({ text: successMessage ?? "De publicatie is succesvol opgeslagen" });
 
   navigate();
@@ -260,20 +303,19 @@ const successRedirect = (successMessage?: string) => {
 
 const submitHandlers = {
   draft: async () => {
-    if ((await showDialog(Dialogs.draftPublicatie)).isCanceled) return;
+    if ((await draftDialog.reveal()).isCanceled) return;
 
     try {
       await submitPublicatie();
-
       await submitDocumenten();
     } catch {
       return;
     }
 
-    successRedirect("De publicatie is succesvol opgeslagen als concept.");
+    handleSuccess("De publicatie is succesvol opgeslagen als concept.");
   },
   delete: async () => {
-    if ((await showDialog(Dialogs.deletePublicatie)).isCanceled) return;
+    if ((await deleteDialog.reveal()).isCanceled) return;
 
     try {
       await deletePublicatie();
@@ -281,10 +323,10 @@ const submitHandlers = {
       return;
     }
 
-    successRedirect("De publicatie is succesvol verwijderd.");
+    handleSuccess("De publicatie is succesvol verwijderd.");
   },
   retract: async () => {
-    if ((await showDialog(Dialogs.retractPublicatie)).isCanceled) return;
+    if ((await retractDialog.reveal()).isCanceled) return;
 
     publicatie.value.publicatiestatus = PublicatieStatus.ingetrokken;
 
@@ -296,40 +338,35 @@ const submitHandlers = {
       return;
     }
 
-    successRedirect("De publicatie is succesvol ingetrokken.");
+    handleSuccess("De publicatie is succesvol ingetrokken.");
   },
   publish: async () => {
-    if (documenten.value.length === 0 && (await showDialog(Dialogs.noDocumenten)).isCanceled)
-      return;
+    if (documenten.value.length === 0 && (await noDocumentsDialog.reveal()).isCanceled) return;
 
+    // Let document publicatiestatus be handled by publicatie-bank
+    documenten.value.forEach((doc) => (doc.publicatiestatus = undefined));
     publicatie.value.publicatiestatus = PublicatieStatus.gepubliceerd;
-    
-    documenten.value.forEach((doc) => (doc.publicatiestatus = PublicatieStatus.gepubliceerd));
 
     try {
       await submitPublicatie();
-
       await submitDocumenten();
     } catch {
       return;
     }
 
-    successRedirect("De publicatie is succesvol opgeslagen en gepubliceerd.");
+    handleSuccess("De publicatie is succesvol opgeslagen en gepubliceerd.");
   }
 } as const;
 
-const submit = async (event?: Event) => {
-  const submitEvent = event as SubmitEvent;
-  const submitAction = (submitEvent?.submitter as HTMLButtonElement)?.value || "default";
+const submit = async (e: Event) => {
+  const submitAction = ((e as SubmitEvent).submitter as HTMLButtonElement)?.value;
 
-  const handleSubmit = submitHandlers[submitAction as keyof typeof submitHandlers];
-
-  if (!handleSubmit) {
-    toast.add({ text: "Er is iets misgegaan.", type: "error" });
+  if (!submitAction || !(submitAction in submitHandlers)) {
+    toast.add({ text: "Onbekende actie.", type: "error" });
     return;
   }
 
-  await handleSubmit();
+  submitHandlers[submitAction as keyof typeof submitHandlers]();
 };
 </script>
 
