@@ -43,7 +43,7 @@
         </li>
 
         <template v-if="publicatie.gebruikersgroep && !isReadonly && !hasError">
-          <!-- save buttons -->
+          <!-- main actions -->
           <li v-if="canDraft">
             <button
               type="submit"
@@ -59,7 +59,7 @@
             <button type="submit" title="Publiceren" value="publish">Publiceren</button>
           </li>
 
-          <!-- danger buttons -->
+          <!-- delete / retract actions -->
           <li v-if="canDelete">
             <button
               type="submit"
