@@ -21,24 +21,11 @@
         </span>
       </summary>
 
-      <div v-if="!readonly" class="form-group form-group-radio">
-        <label>
-          <input
-            type="radio"
-            v-model="doc.publicatiestatus"
-            :value="PublicatieStatus.gepubliceerd"
-          />
-          Gepubliceerd
-        </label>
-
-        <label
-          ><input
-            type="radio"
-            v-model="doc.publicatiestatus"
-            :value="PublicatieStatus.ingetrokken"
-          />
-          Ingetrokken</label
-        >
+      <div
+        v-if="!readonly && doc.publicatiestatus === PublicatieStatus.gepubliceerd"
+        class="form-group"
+      >
+        <label><input type="checkbox" v-model="doc.pendingRetract" /> Document intrekken</label>
       </div>
     </template>
 

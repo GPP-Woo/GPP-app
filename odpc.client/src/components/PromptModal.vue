@@ -64,6 +64,10 @@ form {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-default);
+
+  > * {
+    margin-block: 0;
+  }
 }
 
 dialog {

@@ -13,10 +13,8 @@
     </section>
 
     <div class="form-submit">
-      <span class="required-message">Velden met (*) zijn verplicht</span>
-
       <menu class="reset">
-        <li>
+        <li class="cancel">
           <router-link :to="{ name: 'gebruikersgroepen' }" class="button button-secondary"
             >Annuleren</router-link
           >
@@ -38,6 +36,8 @@
           <button type="submit" title="Opslaan" :disabled="gebruikersgroepError">Opslaan</button>
         </li>
       </menu>
+
+      <p class="required-message">Velden met (*) zijn verplicht</p>
     </div>
 
     <prompt-modal :dialog="dialog" confirm-message="Ja, verwijderen" cancel-message="Nee, behouden">

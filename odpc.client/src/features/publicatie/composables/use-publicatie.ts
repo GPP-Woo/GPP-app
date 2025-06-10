@@ -1,7 +1,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
-import type { Publicatie } from "../types";
+import { PublicatieStatus, type Publicatie } from "../types";
 
 const API_URL = `/api/v1`;
 
@@ -12,18 +12,23 @@ export const usePublicatie = (uuid?: string) => {
     officieleTitel: "",
     verkorteTitel: "",
     omschrijving: "",
-    publicatiestatus: "gepubliceerd",
+    publicatiestatus: PublicatieStatus.concept,
     informatieCategorieen: [],
     onderwerpen: [],
     gebruikersgroep: ""
   });
 
-  const { data, isFetching, error, get, post, put } = useFetchApi(
-    () => `${API_URL}/publicaties${uuid ? "/" + uuid : ""}`,
-    {
-      immediate: false
-    }
-  ).json<Publicatie>();
+  const {
+    data,
+    isFetching,
+    error,
+    get,
+    post,
+    put,
+    delete: deleteMethod
+  } = useFetchApi(() => `${API_URL}/publicaties${uuid ? "/" + uuid : ""}`, {
+    immediate: false
+  }).json<Publicatie>();
 
   watch(data, (value) => {
     if (value) {
@@ -40,7 +45,6 @@ export const usePublicatie = (uuid?: string) => {
       ...publicatie.value,
       ...{
         verantwoordelijke: publicatie.value.publisher
-        // opsteller: publicatie.value.publisher
       }
     };
 
@@ -62,12 +66,28 @@ export const usePublicatie = (uuid?: string) => {
     }
   };
 
+  const deletePublicatie = async () => {
+    await deleteMethod().text().execute();
+
+    if (error.value) {
+      toast.add({
+        text: "De publicatie kon niet worden verwijderd. Probeer het nogmaals of neem contact op met de beheerder.",
+        type: "error"
+      });
+
+      error.value = null;
+
+      throw new Error(`removePublicatie`);
+    }
+  };
+
   onMounted(() => uuid && get().execute());
 
   return {
     publicatie,
     isFetching,
     error,
-    submitPublicatie
+    submitPublicatie,
+    deletePublicatie
   };
 };

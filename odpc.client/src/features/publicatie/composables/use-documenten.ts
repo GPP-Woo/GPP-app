@@ -1,9 +1,9 @@
-import { ref, type MaybeRefOrGetter, toRef, watch } from "vue";
+import { ref, watch, type MaybeRefOrGetter, toRef } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import { useAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
 import { uploadFile } from "../service";
-import type { PublicatieDocument } from "../types";
+import { PublicatieStatus, type PublicatieDocument } from "../types";
 
 export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
   const pubUuid = toRef(uuid);
@@ -35,7 +35,10 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
       } else {
         docUuid.value = doc.uuid;
 
-        await putDocument(doc).execute();
+        await putDocument({
+          ...doc,
+          publicatiestatus: doc.pendingRetract ? PublicatieStatus.ingetrokken : doc.publicatiestatus
+        }).execute();
       }
 
       if (documentError.value) {

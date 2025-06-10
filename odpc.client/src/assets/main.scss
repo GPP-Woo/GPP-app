@@ -35,11 +35,6 @@ body {
     margin-block: 0 var(--spacing-small);
   }
 
-  span {
-    color: var(--text-light);
-    margin-inline: var(--spacing-small) 0;
-  }
-
   h3 {
     color: var(--text-light);
     font-weight: normal;
@@ -56,6 +51,23 @@ body {
       right: var(--spacing-small);
     }
   }
+
+  &.draft {
+    font-style: italic;
+  }
+
+  .alert {
+    display: block;
+    color: var(--text-light);
+    font-style: italic;
+    margin-block-end: var(--spacing-small);
+
+    &.danger {
+      color: var(--danger);
+    }
+  }
+
+  
 }
 
 // Forms
@@ -113,12 +125,13 @@ details {
 }
 
 .form-submit {
-  display: flex;
-  justify-content: space-between;
-
   menu {
     display: flex;
     gap: var(--spacing-default);
+
+    .cancel {
+      margin-inline-end: auto;
+    }
   }
 }
 
