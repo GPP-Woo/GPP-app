@@ -47,7 +47,6 @@ const props = defineProps<{
 }>();
 
 const items = useModel(props, "modelValue");
-
 const item = ref("");
 
 const detailsRef = ref<HTMLDetailsElement>();
@@ -67,7 +66,6 @@ const addItem = () => {
   if (detailsRef.value) detailsRef.value.open = true;
 
   items.value = [...items.value, item.value.trim()];
-
   item.value = "";
 };
 
