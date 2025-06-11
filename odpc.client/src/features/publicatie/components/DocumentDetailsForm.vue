@@ -25,7 +25,18 @@
         v-if="!readonly && doc.publicatiestatus === PublicatieStatus.gepubliceerd"
         class="form-group"
       >
-        <label><input type="checkbox" v-model="doc.pendingRetract" /> Document intrekken</label>
+        <label
+          ><input
+            type="checkbox"
+            v-model="doc.pendingRetract"
+            :aria-describedby="`pendingRetract-${detailsId}`"
+          />
+          Document intrekken</label
+        >
+
+        <span v-show="doc.pendingRetract" :id="`pendingRetract-${detailsId}`" class="alert"
+          >Let op: deze actie kan niet ongedaan worden gemaakt.</span
+        >
       </div>
     </template>
 

@@ -108,6 +108,8 @@
             </template>
           </h2>
 
+          <h3 v-if="verkorteTitel">{{ verkorteTitel }}</h3>
+
           <span
             :id="`status-${uuid}`"
             role="status"
@@ -127,10 +129,8 @@
             </template>
           </span>
 
-          <h3 v-if="verkorteTitel">{{ verkorteTitel }}</h3>
-
           <dl>
-            <dt>Publicatiedatum:</dt>
+            <dt>Registratiedatum:</dt>
             <dd>
               {{
                 registratiedatum &&

@@ -38,7 +38,7 @@ body {
   h3 {
     color: var(--text-light);
     font-weight: normal;
-    margin-block: var(--spacing-small);
+    margin-block: 0 var(--spacing-small);
   }
 
   &.icon-after {
@@ -66,8 +66,6 @@ body {
       color: var(--danger);
     }
   }
-
-  
 }
 
 // Forms
@@ -105,6 +103,10 @@ body {
         display: block;
       }
     }
+  }
+
+  .alert {
+    color: var(--danger);
   }
 }
 
