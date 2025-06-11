@@ -13,17 +13,7 @@
         public DateTime Registratiedatum { get; set; }
         public List<string>? InformatieCategorieen { get; set; }
         public List<string>? Onderwerpen { get; set; }
-        public List<Identifier>? Kenmerken
-        {
-            get
-            {
-                return [
-                    new Identifier { Kenmerk = "PubKenmerk 1", Bron = "Bron1" },
-                    new Identifier { Kenmerk = "PubKenmerk 2", Bron = "Bron2" },
-                    new Identifier { Kenmerk = "PubKenmerk 3", Bron = "Bron3" }
-                ];
-            }
-        }
+        public List<Identifier>? Kenmerken { get; set; }
     }
 
     public class OdpcPublicatie : Publicatie

@@ -15,17 +15,7 @@
         public required string Bestandsformaat { get; set; }
         public required double Bestandsomvang { get; set; }
         public List<Bestandsdeel>? Bestandsdelen { get; set; }
-        public List<Identifier>? Kenmerken
-        {
-            get
-            {
-                return [
-                    new Identifier { Kenmerk = "DocKenmerk 1", Bron = "Bron1" },
-                    new Identifier { Kenmerk = "DocKenmerk 2", Bron = "Bron2" },
-                    new Identifier { Kenmerk = "DocKenmerk 3", Bron = "Bron3" }
-                ];
-            }
-        }
+        public List<Identifier>? Kenmerken { get; set; }
     }
 
     public class Eigenaar
