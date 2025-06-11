@@ -1,12 +1,21 @@
-import { computed, type Ref } from "vue";
+import { computed, type ModelRef } from "vue";
 import type { Kenmerk } from "../types";
 
-const bron = "GPPWOO";
+// Hardcoded 'bron' as reference to 'kenmerk' source
+const BRON = "GPP-app";
 
-export const useKenmerken = <T extends { kenmerken?: Kenmerk[] }>(model: Ref<T>) =>
+export const useKenmerken = <T extends { kenmerken?: Kenmerk[] }>(model: ModelRef<T>) =>
   computed({
     get: () => model.value.kenmerken?.map((k) => k.kenmerk) ?? [],
     set: (kenmerken) => {
-      model.value.kenmerken = kenmerken?.map((k) => ({ kenmerk: k, bron })) ?? [];
+      const existingKenmerken =
+        model.value.kenmerken?.filter((k) => kenmerken.includes(k.kenmerk)) ?? [];
+      const existingKenmerkValues = existingKenmerken.map((k) => k.kenmerk);
+      const newKenmerken = kenmerken.filter((kenmerk) => !existingKenmerkValues.includes(kenmerk));
+
+      model.value.kenmerken = [
+        ...existingKenmerken,
+        ...newKenmerken.map((kenmerk) => ({ kenmerk, bron: BRON }))
+      ];
     }
   });
