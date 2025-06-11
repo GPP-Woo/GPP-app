@@ -15,6 +15,7 @@
         public required string Bestandsformaat { get; set; }
         public required double Bestandsomvang { get; set; }
         public List<Bestandsdeel>? Bestandsdelen { get; set; }
+        public List<Identifier>? Kenmerken { get; set; }
     }
 
     public class Eigenaar
@@ -28,5 +29,11 @@
         public required string Url { get; set; }
         public required int Volgnummer { get; set; }
         public required double Omvang { get; set; }
+    }
+
+    public class Identifier
+    {
+        public string? Kenmerk { get; set; }
+        public string? Bron { get; set; }
     }
 }

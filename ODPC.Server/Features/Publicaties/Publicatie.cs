@@ -1,7 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using ODPC.Features.Documenten;
-
-namespace ODPC.Features.Publicaties
+﻿namespace ODPC.Features.Publicaties
 {
     public class Publicatie
     {
@@ -16,6 +13,7 @@ namespace ODPC.Features.Publicaties
         public DateTime Registratiedatum { get; set; }
         public List<string>? InformatieCategorieen { get; set; }
         public List<string>? Onderwerpen { get; set; }
+        public List<Identifier>? Kenmerken { get; set; }
     }
 
     public class OdpcPublicatie : Publicatie
@@ -27,5 +25,11 @@ namespace ODPC.Features.Publicaties
     {
         public string? identifier { get; set; }
         public string? weergaveNaam { get; set; }
+    }
+
+    public class Identifier
+    {
+        public string? Kenmerk { get; set; }
+        public string? Bron { get; set; }
     }
 }

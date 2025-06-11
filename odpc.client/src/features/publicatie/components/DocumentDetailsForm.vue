@@ -85,6 +85,12 @@
       <textarea id="omschrijving" v-model="doc.omschrijving" rows="4"></textarea>
     </div>
 
+    <add-remove-items
+      v-model="kenmerken"
+      item-name-singular="kenmerk"
+      item-name-plural="kenmerken"
+    />
+
     <button
       v-if="!doc.uuid"
       type="button"
@@ -98,11 +104,15 @@
 
 <script setup lang="ts">
 import { useId, useModel } from "vue";
+import AddRemoveItems from "@/components/AddRemoveItems.vue";
+import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, type PublicatieDocument } from "../types";
 
 const props = defineProps<{ doc: PublicatieDocument; readonly?: boolean }>();
 
 const doc = useModel(props, "doc");
+
+const kenmerken = useKenmerken(doc);
 
 const detailsId = useId();
 

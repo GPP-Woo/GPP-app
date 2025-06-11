@@ -74,6 +74,12 @@
 
           <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
         </div>
+
+        <add-remove-items
+          v-model="kenmerken"
+          item-name-singular="kenmerk"
+          item-name-plural="kenmerken"
+        />
       </details>
 
       <option-group
@@ -115,7 +121,9 @@
 import { computed, ref, useModel, watch } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
+import AddRemoveItems from "@/components/AddRemoveItems.vue";
 import { useAppData } from "@/composables/use-app-data";
+import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, type MijnGebruikersgroep, type Publicatie } from "../types";
 import type { OptionProps } from "@/components/option-group/types";
 
@@ -132,6 +140,8 @@ const props = defineProps<{
 }>();
 
 const model = useModel(props, "modelValue");
+
+const kenmerken = useKenmerken(model);
 
 const { lijsten } = useAppData();
 

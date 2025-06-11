@@ -364,6 +364,10 @@ progress {
   margin-bottom: 1rem;
 }
 
+details > details {
+  background-color: var(--bg);
+}
+
 aside {
   font-size: 1rem;
   width: 30%;
