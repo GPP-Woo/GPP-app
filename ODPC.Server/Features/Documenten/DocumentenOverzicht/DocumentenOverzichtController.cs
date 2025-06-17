@@ -1,5 +1,5 @@
 ﻿using System.Net;
-// using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc;
 using ODPC.Apis.Odrc;
 using ODPC.Authentication;
@@ -29,7 +29,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
                 return StatusCode(502);
             }
 
-            var json = await response.Content.ReadFromJsonAsync<PagedResponseModel<PublicatieDocument>>(token); // JsonNode
+            var json = await response.Content.ReadFromJsonAsync<PagedResponseModel<JsonNode>>(token);
 
             return Ok(json);
         }
