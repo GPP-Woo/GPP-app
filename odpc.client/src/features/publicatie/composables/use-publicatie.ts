@@ -15,7 +15,8 @@ export const usePublicatie = (uuid?: string) => {
     publicatiestatus: PublicatieStatus.concept,
     informatieCategorieen: [],
     onderwerpen: [],
-    gebruikersgroep: ""
+    gebruikersgroep: "",
+    kenmerken: []
   });
 
   const {
