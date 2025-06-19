@@ -1,8 +1,8 @@
 <template>
-  <fieldset v-if="documenten" aria-live="polite" :disabled="readonly">
+  <fieldset v-if="documenten" aria-live="polite">
     <legend>Documenten</legend>
 
-    <file-upload v-if="!readonly" @filesSelected="filesSelected" />
+    <file-upload v-if="!isReadonly" @filesSelected="filesSelected" />
 
     <template v-if="pendingDocuments.length">
       <h2>Nieuwe documenten</h2>
@@ -22,11 +22,11 @@
         v-for="(doc, index) in existingDocuments"
         :key="index"
         :doc="doc"
-        :readonly="readonly"
+        :is-readonly="doc.publicatiestatus === PublicatieStatus.ingetrokken"
       />
     </template>
 
-    <alert-inline v-if="readonly && !documenten.length"
+    <alert-inline v-if="isReadonly && !documenten.length"
       >Er zijn geen gekoppelde documenten.</alert-inline
     >
 
@@ -42,7 +42,7 @@ import { useConfirmDialog } from "@vueuse/core";
 import toast from "@/stores/toast";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
-import type { MimeType, PublicatieDocument } from "../types";
+import { PublicatieStatus, type MimeType, type PublicatieDocument } from "../types";
 import { mimeTypes } from "../service";
 import FileUpload from "./FileUpload.vue";
 import DocumentDetailsForm from "./DocumentDetailsForm.vue";
@@ -50,7 +50,7 @@ import DocumentDetailsForm from "./DocumentDetailsForm.vue";
 const props = defineProps<{
   files: File[];
   documenten: PublicatieDocument[];
-  readonly: boolean;
+  isReadonly: boolean;
 }>();
 
 const dialog = useConfirmDialog();

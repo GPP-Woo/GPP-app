@@ -22,7 +22,7 @@
       </summary>
 
       <div
-        v-if="!readonly && doc.publicatiestatus === PublicatieStatus.gepubliceerd"
+        v-if="!isReadonly && doc.publicatiestatus === PublicatieStatus.gepubliceerd"
         class="form-group"
       >
         <label
@@ -41,10 +41,10 @@
     </template>
 
     <div class="form-group">
-      <label for="creatiedatum">Datum document *</label>
+      <label :for="`creatiedatum-${detailsId}`">Datum document *</label>
 
       <input
-        id="creatiedatum"
+        :id="`creatiedatum-${detailsId}`"
         type="date"
         v-model="doc.creatiedatum"
         required
@@ -52,43 +52,56 @@
         :aria-describedby="`creatiedatumError-${detailsId}`"
         :aria-invalid="!doc.creatiedatum"
         :max="today"
+        v-bind="disabledAttrs"
       />
 
       <span :id="`creatiedatumError-${detailsId}`" class="error">Vul een geldige datum in.</span>
     </div>
 
     <div class="form-group">
-      <label for="titel">Titel *</label>
+      <label :for="`titel-${detailsId}`">Titel *</label>
 
       <input
-        id="titel"
+        :id="`titel-${detailsId}`"
         type="text"
         v-model.trim="doc.officieleTitel"
         required
         aria-required="true"
         :aria-describedby="`titelError-${detailsId}`"
         :aria-invalid="!doc.officieleTitel"
+        v-bind="disabledAttrs"
       />
 
       <span :id="`titelError-${detailsId}`" class="error">Titel is een verplicht veld.</span>
     </div>
 
     <div class="form-group">
-      <label for="verkorte_titel">Verkorte titel</label>
+      <label :for="`verkorte_titel-${detailsId}`">Verkorte titel</label>
 
-      <input id="verkorte_titel" type="text" v-model="doc.verkorteTitel" />
+      <input
+        :id="`verkorte_titel-${detailsId}`"
+        type="text"
+        v-model="doc.verkorteTitel"
+        v-bind="disabledAttrs"
+      />
     </div>
 
     <div class="form-group">
-      <label for="omschrijving">Omschrijving</label>
+      <label :for="`omschrijving-${detailsId}`">Omschrijving</label>
 
-      <textarea id="omschrijving" v-model="doc.omschrijving" rows="4"></textarea>
+      <textarea
+        :id="`omschrijving-${detailsId}`"
+        v-model="doc.omschrijving"
+        rows="4"
+        v-bind="disabledAttrs"
+      ></textarea>
     </div>
 
     <add-remove-items
       v-model="kenmerken"
       item-name-singular="kenmerk"
       item-name-plural="kenmerken"
+      :is-readonly="isReadonly"
     />
 
     <button
@@ -103,12 +116,12 @@
 </template>
 
 <script setup lang="ts">
-import { useId, useModel } from "vue";
+import { computed, useId, useModel } from "vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
 import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, type PublicatieDocument } from "../types";
 
-const props = defineProps<{ doc: PublicatieDocument; readonly?: boolean }>();
+const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean }>();
 
 const doc = useModel(props, "doc");
 
@@ -117,6 +130,10 @@ const kenmerken = useKenmerken(doc);
 const detailsId = useId();
 
 const today = new Date().toISOString().split("T")[0];
+
+const disabledAttrs = computed(() =>
+  props.isReadonly ? { disabled: true, "aria-disabled": true } : {}
+);
 </script>
 
 <style lang="scss" scoped>

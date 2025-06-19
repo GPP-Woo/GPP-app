@@ -31,7 +31,7 @@
         v-else-if="publicatie.gebruikersgroep || isReadonly"
         v-model:files="files"
         v-model:documenten="documenten"
-        :readonly="isReadonly"
+        :is-readonly="isReadonly"
       />
     </section>
 
