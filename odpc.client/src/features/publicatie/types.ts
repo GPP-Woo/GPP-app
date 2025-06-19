@@ -28,6 +28,7 @@ export type PublicatieDocument = {
   verkorteTitel?: string;
   omschrijving?: string;
   publicatiestatus?: keyof typeof PublicatieStatus;
+  pendingDelete?: boolean;
   pendingRetract?: boolean;
   creatiedatum: string;
   bestandsnaam: string;

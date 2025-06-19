@@ -21,20 +21,29 @@
         </span>
       </summary>
 
-      <div
-        v-if="!isReadonly && doc.publicatiestatus === PublicatieStatus.gepubliceerd"
-        class="form-group"
-      >
-        <label
+      <div v-if="!isReadonly" class="form-group">
+        <label v-if="doc.publicatiestatus === PublicatieStatus.concept"
+          ><input
+            type="checkbox"
+            v-model="doc.pendingDelete"
+            :aria-describedby="`pendingAction-${detailsId}`"
+          />
+          Document verwijderen</label
+        >
+
+        <label v-else
           ><input
             type="checkbox"
             v-model="doc.pendingRetract"
-            :aria-describedby="`pendingRetract-${detailsId}`"
+            :aria-describedby="`pendingAction-${detailsId}`"
           />
           Document intrekken</label
         >
 
-        <span v-show="doc.pendingRetract" :id="`pendingRetract-${detailsId}`" class="alert"
+        <span
+          v-show="doc.pendingDelete || doc.pendingRetract"
+          :id="`pendingAction-${detailsId}`"
+          class="alert"
           >Let op: deze actie kan niet ongedaan worden gemaakt.</span
         >
       </div>
