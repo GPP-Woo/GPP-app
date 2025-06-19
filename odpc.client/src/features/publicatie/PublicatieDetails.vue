@@ -374,7 +374,7 @@ const submitHandlers = {
 const isDraftMode = ref(false);
 
 const setValidationMode = (e: Event) =>
-  (isDraftMode.value = (e.currentTarget as HTMLButtonElement)?.value === "draft");
+  (isDraftMode.value = ["draft", "delete"].includes((e.currentTarget as HTMLButtonElement)?.value));
 
 const submit = (e: Event) => {
   const submitAction = ((e as SubmitEvent).submitter as HTMLButtonElement)?.value;
