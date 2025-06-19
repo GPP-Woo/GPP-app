@@ -1,5 +1,5 @@
 <template>
-  <div class="form-group form-group-button">
+  <div v-if="!isReadonly" class="form-group form-group-button">
     <label :for="`item-${itemsId}`">{{ itemNameSingular }} toevoegen</label>
 
     <input
@@ -18,7 +18,7 @@
   <details ref="detailsRef" aria-live="polite">
     <summary>Toegevoegde {{ itemNamePlural }}</summary>
 
-    <p v-if="!items.length">Er zijn nog geen {{ itemNamePlural }} toegevoegd.</p>
+    <p v-if="!items.length">Er zijn (nog) geen {{ itemNamePlural }} toegevoegd.</p>
 
     <ul v-else class="reset">
       <li v-for="(linkedItem, index) in items" :key="`${itemsId}-${index}`">
@@ -26,7 +26,10 @@
           type="button"
           :title="`${linkedItem} verwijderen`"
           :aria-label="`${linkedItem} verwijderen`"
-          class="button secondary icon-after xmark"
+          class="button secondary"
+          :class="[!isReadonly && `icon-after xmark`]"
+          :disabled="isReadonly"
+          :aria-disabled="isReadonly"
           @click="() => removeItem(index)"
         >
           {{ linkedItem }}
@@ -44,6 +47,7 @@ const props = defineProps<{
   modelValue: string[];
   itemNameSingular: string;
   itemNamePlural: string;
+  isReadonly?: boolean;
 }>();
 
 const items = useModel(props, "modelValue");
