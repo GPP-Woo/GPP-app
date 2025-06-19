@@ -72,7 +72,8 @@ const getInitialDocument = (): PublicatieDocument => ({
   creatiedatum: new Date().toISOString().split("T")[0],
   bestandsnaam: "",
   bestandsformaat: "",
-  bestandsomvang: 0
+  bestandsomvang: 0,
+  kenmerken: []
 });
 
 // for file types zip and 7z mimetypes are sometimes not properly mapped

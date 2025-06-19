@@ -1,5 +1,5 @@
 <template>
-  <fieldset :disabled="readonly">
+  <fieldset :disabled="isReadonly">
     <legend>Publicatie</legend>
 
     <alert-inline v-if="model.publicatiestatus === PublicatieStatus.ingetrokken"
@@ -27,7 +27,7 @@
         aria-describedby="profielError"
         :aria-invalid="!model.gebruikersgroep"
       >
-        <option v-if="!model.gebruikersgroep && !readonly" value="">Kies een profiel</option>
+        <option v-if="!model.gebruikersgroep && !isReadonly" value="">Kies een profiel</option>
 
         <option v-for="{ uuid, naam } in mijnGebruikersgroepen" :key="uuid" :value="uuid">
           {{ naam }}
@@ -37,7 +37,7 @@
       <span id="profielError" class="error">Profiel is een verplicht veld</span>
     </div>
 
-    <template v-if="model.gebruikersgroep || readonly">
+    <template v-if="model.gebruikersgroep || isReadonly">
       <div v-if="model.uuid" class="form-group">
         <label for="uuid">ID</label>
 
@@ -89,7 +89,7 @@
         :key="model.gebruikersgroep"
         :options="waardelijsten.organisaties"
         v-model="model.publisher"
-        :required="true"
+        :required="!isDraftMode"
         :open="expandOptionGroup"
       />
 
@@ -100,7 +100,7 @@
         :key="model.gebruikersgroep"
         :options="waardelijsten.informatiecategorieen"
         v-model="model.informatieCategorieen"
-        :required="true"
+        :required="!isDraftMode"
         :open="expandOptionGroup"
       />
 
@@ -130,7 +130,8 @@ import type { OptionProps } from "@/components/option-group/types";
 const props = defineProps<{
   modelValue: Publicatie;
   unauthorized: boolean;
-  readonly: boolean;
+  isReadonly: boolean;
+  isDraftMode: boolean;
   mijnGebruikersgroepen: MijnGebruikersgroep[];
   gekoppeldeWaardelijsten: {
     organisaties?: OptionProps[];
@@ -150,7 +151,7 @@ const { lijsten } = useAppData();
 // In readonly mode waardelijsten are constructed based on all/existing waardelijsten because there is (unauthorized) -
 // or there may be (ingestrokken) a mismatch in waardelijsten between the publicatie and gekoppeldeWaardelijsten
 const waardelijsten = computed(() =>
-  props.readonly
+  props.isReadonly
     ? {
         organisaties: lijsten.value?.organisaties.filter((item) =>
           model.value.publisher.includes(item.uuid)

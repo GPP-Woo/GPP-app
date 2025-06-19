@@ -17,7 +17,8 @@
         v-else
         v-model="publicatie"
         :unauthorized="unauthorized"
-        :readonly="isReadonly"
+        :is-readonly="isReadonly"
+        :is-draft-mode="isDraftMode"
         :mijn-gebruikersgroepen="mijnGebruikersgroepen"
         :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
       />
@@ -50,13 +51,16 @@
               title="Opslaan als concept"
               class="button secondary"
               value="draft"
+              @click="setValidationMode"
             >
               Opslaan als concept
             </button>
           </li>
 
           <li>
-            <button type="submit" title="Publiceren" value="publish">Publiceren</button>
+            <button type="submit" title="Publiceren" value="publish" @click="setValidationMode">
+              Publiceren
+            </button>
           </li>
 
           <!-- delete / retract actions -->
@@ -66,6 +70,7 @@
               title="Publicatie verwijderen"
               class="button danger"
               value="delete"
+              @click="setValidationMode"
             >
               Publicatie verwijderen
             </button>
@@ -77,6 +82,7 @@
               title="Publicatie intrekken"
               class="button danger"
               value="retract"
+              @click="setValidationMode"
             >
               Publicatie intrekken
             </button>
@@ -365,7 +371,12 @@ const submitHandlers = {
   }
 } as const;
 
-const submit = async (e: Event) => {
+const isDraftMode = ref(false);
+
+const setValidationMode = (e: Event) =>
+  (isDraftMode.value = (e.currentTarget as HTMLButtonElement)?.value === "draft");
+
+const submit = (e: Event) => {
   const submitAction = ((e as SubmitEvent).submitter as HTMLButtonElement)?.value;
 
   if (!submitAction || !(submitAction in submitHandlers)) {

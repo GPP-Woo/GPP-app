@@ -17,7 +17,7 @@ export type Publicatie = {
   informatieCategorieen: string[];
   onderwerpen: string[];
   gebruikersgroep: string;
-  kenmerken?: Kenmerk[];
+  kenmerken: Kenmerk[];
 };
 
 export type PublicatieDocument = {
@@ -34,7 +34,7 @@ export type PublicatieDocument = {
   bestandsformaat: string;
   bestandsomvang: number;
   bestandsdelen?: Bestandsdeel[];
-  kenmerken?: Kenmerk[];
+  kenmerken: Kenmerk[];
 };
 
 export type Onderwerp = {

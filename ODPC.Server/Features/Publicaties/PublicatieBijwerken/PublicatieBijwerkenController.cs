@@ -24,7 +24,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
                 return BadRequest(ModelState);
             }
 
-            if (publicatie.Publisher != null && !gebruikersgroepWaardelijstUuids.Contains(publicatie.Publisher))
+            if (!string.IsNullOrEmpty(publicatie.Publisher) && !gebruikersgroepWaardelijstUuids.Contains(publicatie.Publisher))
             {
                 ModelState.AddModelError(nameof(publicatie.Publisher), "Gebruiker is niet geautoriseerd voor deze organisatie");
                 return BadRequest(ModelState);

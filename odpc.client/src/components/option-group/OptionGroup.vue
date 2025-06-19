@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance, useModel } from "vue";
+import { computed, getCurrentInstance, nextTick, useModel, watch } from "vue";
 import { useOptionGroup } from "./use-option-group";
 import type { OptionProps } from "./types";
 
@@ -73,6 +73,11 @@ const toggleAll = () => {
       ? model.value.filter((uuid) => !uuids.value.includes(uuid))
       : [...new Set([...model.value, ...uuids.value])];
 };
+
+watch(
+  () => props.required,
+  () => nextTick(() => setCustomValidity())
+);
 </script>
 
 <style lang="scss" scoped>
