@@ -1,4 +1,6 @@
 <template>
+  <h1>Overzicht publicaties</h1>
+
   <menu class="reset">
     <li>
       <router-link :to="{ name: 'publicatie' }" class="button icon-after note"

@@ -83,12 +83,12 @@
 
 .icon-before.note::before,
 .icon-after.note::after {
-  mask-image: url("@/assets/icons/note.svg");
+  mask-image: url("@/assets/icons/file.svg");
 }
 
 .icon-before.book::before,
 .icon-after.book::after {
-  mask-image: url("@/assets/icons/book.svg");
+  mask-image: url("@/assets/icons/book-open.svg");
 }
 
 .icon-before.pen::before,
@@ -110,7 +110,7 @@
 
 .icon-before.alert::before,
 .icon-after.alert::after {
-  mask-image: url("@/assets/icons/alert.svg");
+  mask-image: url("@/assets/icons/triangle-exclamation.svg");
 }
 
 .icon-before.trash::before,
@@ -120,7 +120,7 @@
 
 .icon-before.loupe::before,
 .icon-after.loupe::after {
-  mask-image: url("@/assets/icons/loupe.svg");
+  mask-image: url("@/assets/icons/magnifying-glass.svg");
 }
 
 .icon-before.sort-descending::before,
@@ -149,5 +149,10 @@
 
 .icon-before.exit::before,
 .icon-after.exit::after {
-  mask-image: url("@/assets/icons/exit.svg");
+  mask-image: url("@/assets/icons/right-from-bracket.svg");
+}
+
+.icon-before.external::before,
+.icon-after.external::after {
+  mask-image: url("@/assets/icons/up-right-from-square.svg");
 }

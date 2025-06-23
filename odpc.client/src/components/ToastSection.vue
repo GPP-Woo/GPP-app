@@ -63,7 +63,7 @@ output {
   background-color: var(--color-error);
 
   &::before {
-    content: url("@/assets/icons/alert.svg");
+    content: url("@/assets/icons/triangle-exclamation.svg");
   }
 
   &::after {

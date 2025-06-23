@@ -13,7 +13,7 @@
         </li>
 
         <li>
-          <a href="/api/logoff" title="Uitloggen">Uitloggen</a>
+          <a href="/api/logoff" title="Uitloggen" class="icon-after exit">Uitloggen</a>
         </li>
       </ul>
     </nav>

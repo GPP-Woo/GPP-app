@@ -27,6 +27,7 @@ export type Publicatie = {
   onderwerpen: string[];
   gebruikersgroep: string;
   kenmerken: Kenmerk[];
+  urlPublicatieExtern?: string;
 };
 
 export type PublicatieDocument = {
