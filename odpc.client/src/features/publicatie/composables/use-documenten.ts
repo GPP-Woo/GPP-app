@@ -48,7 +48,7 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
         await postDocument({ ...doc, publicatie: pubUuid.value }).execute();
 
         if (!documentError.value) await uploadDocument(index);
-      } else if (doc.pendingDelete) {
+      } else if (doc.pendingAction === "delete") {
         // Delete
         docUuid.value = doc.uuid;
 
@@ -59,23 +59,23 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
 
         await putDocument({
           ...doc,
-          publicatiestatus: doc.pendingRetract ? PublicatieStatus.ingetrokken : doc.publicatiestatus
+          publicatiestatus:
+            doc.pendingAction === "retract" ? PublicatieStatus.ingetrokken : doc.publicatiestatus
         }).execute();
       }
 
       if (documentError.value) {
         toast.add({
-          text: doc.pendingDelete
-            ? "Het document kon niet worden verwijderd, probeer het nogmaals..."
-            : "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
+          text:
+            doc.pendingAction === "delete"
+              ? "Het document kon niet worden verwijderd, probeer het nogmaals..."
+              : "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
           type: "error"
         });
 
-        documentError.value = null;
-
         // Reset for retry
-        doc.pendingDelete = false;
-        doc.pendingRetract = false;
+        documentError.value = null;
+        doc.pendingAction = null;
 
         throw new Error(`submitDocumenten`);
       }

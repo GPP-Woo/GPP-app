@@ -69,6 +69,7 @@ const getInitialDocument = (): PublicatieDocument => ({
   officieleTitel: "",
   verkorteTitel: "",
   omschrijving: "",
+  publicatiestatus: PublicatieStatus.concept,
   creatiedatum: new Date().toISOString().split("T")[0],
   bestandsnaam: "",
   bestandsformaat: "",

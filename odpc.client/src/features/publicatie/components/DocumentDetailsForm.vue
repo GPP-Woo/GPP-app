@@ -22,28 +22,21 @@
       </summary>
 
       <div v-if="!isReadonly" class="form-group">
-        <label v-if="doc.publicatiestatus === PublicatieStatus.concept"
+        <label
           ><input
             type="checkbox"
-            v-model="doc.pendingDelete"
+            v-model="pendingAction"
+            :value="PendingDocumentActions[doc.publicatiestatus]"
             :aria-describedby="`pendingAction-${detailsId}`"
           />
-          Document verwijderen</label
-        >
+          {{
+            doc.publicatiestatus === PublicatieStatus.concept
+              ? `Document verwijderen`
+              : `Document intrekken`
+          }}
+        </label>
 
-        <label v-else
-          ><input
-            type="checkbox"
-            v-model="doc.pendingRetract"
-            :aria-describedby="`pendingAction-${detailsId}`"
-          />
-          Document intrekken</label
-        >
-
-        <span
-          v-show="doc.pendingDelete || doc.pendingRetract"
-          :id="`pendingAction-${detailsId}`"
-          class="alert"
+        <span v-show="doc.pendingAction" :id="`pendingAction-${detailsId}`" class="alert"
           >Let op: deze actie kan niet ongedaan worden gemaakt.</span
         >
       </div>
@@ -128,7 +121,7 @@
 import { computed, useId, useModel } from "vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
 import { useKenmerken } from "../composables/use-kenmerken";
-import { PublicatieStatus, type PublicatieDocument } from "../types";
+import { PublicatieStatus, PendingDocumentActions, type PublicatieDocument } from "../types";
 
 const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean }>();
 
@@ -139,6 +132,13 @@ const kenmerken = useKenmerken(doc);
 const detailsId = useId();
 
 const today = new Date().toISOString().split("T")[0];
+
+const pendingAction = computed({
+  get: () => !!doc.value.pendingAction,
+  set: (checked) => {
+    doc.value.pendingAction = checked ? PendingDocumentActions[doc.value.publicatiestatus] : null;
+  }
+});
 
 const disabledAttrs = computed(() =>
   props.isReadonly ? { disabled: true, "aria-disabled": true } : {}
