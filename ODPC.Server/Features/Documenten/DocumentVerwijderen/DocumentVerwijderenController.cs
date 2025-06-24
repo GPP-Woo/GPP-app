@@ -7,8 +7,6 @@ namespace ODPC.Features.Documenten.DocumentVerwijderen
     [ApiController]
     public class DocumentVerwijderenController(IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
     {
-        const string Concept = "concept";
-        
         [HttpDelete("api/{version}/documenten/{uuid:guid}")]
         public async Task<IActionResult> Delete(string version, Guid uuid, CancellationToken token)
         {
@@ -29,11 +27,6 @@ namespace ODPC.Features.Documenten.DocumentVerwijderen
             if (json?.Eigenaar?.identifier != user.Id)
             {
                 return NotFound();
-            }
-
-            if (json?.Publicatiestatus != Concept)
-            {
-                return StatusCode(502);
             }
 
             // document verwijderen
