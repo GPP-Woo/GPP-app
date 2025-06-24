@@ -6,11 +6,13 @@
       <li>
         <a
           :href="publicatie.urlPublicatieExtern"
-          target="_blank"
-          title="Bekijk online"
           class="button secondary icon-after external"
-          >Bekijk online</a
+          target="_blank"
         >
+          Bekijk online
+
+          <span class="visually-hidden">(externe link)</span>
+        </a>
       </li>
     </menu>
   </div>
