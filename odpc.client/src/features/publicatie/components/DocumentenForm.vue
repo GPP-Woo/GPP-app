@@ -22,7 +22,7 @@
         v-for="(doc, index) in existingDocuments"
         :key="index"
         :doc="doc"
-        :is-readonly="doc.publicatiestatus === PublicatieStatus.ingetrokken"
+        :is-readonly="isReadonly || doc.publicatiestatus === PublicatieStatus.ingetrokken"
       />
     </template>
 
