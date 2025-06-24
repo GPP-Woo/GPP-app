@@ -31,7 +31,7 @@
         v-else-if="publicatie.gebruikersgroep || isReadonly"
         v-model:files="files"
         v-model:documenten="documenten"
-        :readonly="isReadonly"
+        :is-readonly="isReadonly"
       />
     </section>
 
@@ -66,11 +66,10 @@
           <!-- delete / retract actions -->
           <li v-if="canDelete">
             <button
-              type="submit"
+              type="button"
               title="Publicatie verwijderen"
               class="button danger"
-              value="delete"
-              @click="setValidationMode"
+              @click="remove"
             >
               Publicatie verwijderen
             </button>
@@ -374,7 +373,9 @@ const submitHandlers = {
 const isDraftMode = ref(false);
 
 const setValidationMode = (e: Event) =>
-  (isDraftMode.value = ["draft", "delete"].includes((e.currentTarget as HTMLButtonElement)?.value));
+  (isDraftMode.value = (e.currentTarget as HTMLButtonElement)?.value === "draft");
+
+const remove = () => submitHandlers.delete();
 
 const submit = (e: Event) => {
   const submitAction = ((e as SubmitEvent).submitter as HTMLButtonElement)?.value;

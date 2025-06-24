@@ -22,38 +22,6 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
 
   watch(data, (value) => (documenten.value = value ?? []));
 
-  const submitDocumenten = async () => {
-    if (!pubUuid.value || !documenten.value) return;
-
-    for (const [index, doc] of documenten.value.entries()) {
-      if (!doc.uuid) {
-        docUuid.value = undefined;
-
-        await postDocument({ ...doc, publicatie: pubUuid.value }).execute();
-
-        if (!documentError.value) await uploadDocument(index);
-      } else {
-        docUuid.value = doc.uuid;
-
-        await putDocument({
-          ...doc,
-          publicatiestatus: doc.pendingRetract ? PublicatieStatus.ingetrokken : doc.publicatiestatus
-        }).execute();
-      }
-
-      if (documentError.value) {
-        toast.add({
-          text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
-          type: "error"
-        });
-
-        documentError.value = null;
-
-        throw new Error(`submitDocumenten`);
-      }
-    }
-  };
-
   // Document
   const docUuid = ref<string>();
   const uploadingFile = ref(false);
@@ -61,12 +29,58 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
   const {
     post: postDocument,
     put: putDocument,
+    delete: deleteDocument,
     data: documentData,
     isFetching: loadingDocument,
     error: documentError
   } = useFetchApi(() => `/api/v1/documenten${docUuid.value ? "/" + docUuid.value : ""}`, {
     immediate: false
   }).json<PublicatieDocument>();
+
+  const submitDocumenten = async () => {
+    if (!pubUuid.value || !documenten.value) return;
+
+    for (const [index, doc] of documenten.value.entries()) {
+      if (!doc.uuid) {
+        // Create
+        docUuid.value = undefined;
+
+        await postDocument({ ...doc, publicatie: pubUuid.value }).execute();
+
+        if (!documentError.value) await uploadDocument(index);
+      } else if (doc.pendingAction === "delete") {
+        // Delete
+        docUuid.value = doc.uuid;
+
+        await deleteDocument().text().execute();
+      } else {
+        // Update
+        docUuid.value = doc.uuid;
+
+        await putDocument({
+          ...doc,
+          publicatiestatus:
+            doc.pendingAction === "retract" ? PublicatieStatus.ingetrokken : doc.publicatiestatus
+        }).execute();
+      }
+
+      if (documentError.value) {
+        toast.add({
+          text:
+            doc.pendingAction === "delete"
+              ? "Het document kon niet worden verwijderd, probeer het nogmaals..."
+              : "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
+          type: "error"
+        });
+
+        // Reset for retry
+        documentError.value = null;
+        doc.pendingAction = null;
+
+        throw new Error(`submitDocumenten`);
+      }
+    }
+  };
 
   const uploadDocument = async (index: number) => {
     if (files.value?.[index] && documentData.value?.bestandsdelen?.length) {
