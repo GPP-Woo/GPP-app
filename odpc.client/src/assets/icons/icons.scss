@@ -127,7 +127,7 @@
 .icon-after.sort-descending::after,
 .icon-before.sort-ascending::before,
 .icon-after.sort-ascending::after {
-  mask-image: url("@/assets/icons/sort.svg");
+  mask-image: url("@/assets/icons/sort-down.svg");
   min-inline-size: 0.5rem;
   min-block-size: 0.5rem;
 }
