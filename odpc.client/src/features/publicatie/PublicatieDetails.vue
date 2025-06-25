@@ -1,4 +1,22 @@
 <template>
+  <div class="header">
+    <h1>{{ !uuid ? `Nieuwe publicatie` : `Publicatie` }}</h1>
+
+    <menu v-if="publicatie.publicatiestatus === PublicatieStatus.gepubliceerd" class="reset">
+      <li>
+        <a
+          :href="publicatie.urlPublicatieExtern"
+          class="button secondary icon-after external"
+          target="_blank"
+        >
+          Bekijk online
+
+          <span class="visually-hidden">(externe link)</span>
+        </a>
+      </li>
+    </menu>
+  </div>
+
   <simple-spinner v-show="isLoading"></simple-spinner>
 
   <form v-if="!isLoading" @submit.prevent="submit" v-form-invalid-handler>
@@ -390,6 +408,12 @@ const submit = (e: Event) => {
 </script>
 
 <style lang="scss" scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));

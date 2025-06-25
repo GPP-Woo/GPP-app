@@ -14,6 +14,7 @@
         public List<string>? InformatieCategorieen { get; set; }
         public List<string>? Onderwerpen { get; set; }
         public List<Identifier>? Kenmerken { get; set; }
+        public string? UrlPublicatieExtern { get; set; }
     }
 
     public class OdpcPublicatie : Publicatie

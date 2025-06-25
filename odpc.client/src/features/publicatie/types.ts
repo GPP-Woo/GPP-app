@@ -7,11 +7,12 @@ export const PublicatieStatus = Object.freeze({
 type PublicatieStatus = keyof typeof PublicatieStatus;
 type PendingDocumentAction = "delete" | "retract" | null;
 
-export const PendingDocumentActions: Record<PublicatieStatus, PendingDocumentAction> = Object.freeze({
-  concept: "delete",
-  gepubliceerd: "retract",
-  ingetrokken: null
-});
+export const PendingDocumentActions: Record<PublicatieStatus, PendingDocumentAction> =
+  Object.freeze({
+    concept: "delete",
+    gepubliceerd: "retract",
+    ingetrokken: null
+  });
 
 export type Publicatie = {
   uuid?: string;
@@ -27,6 +28,7 @@ export type Publicatie = {
   onderwerpen: string[];
   gebruikersgroep: string;
   kenmerken: Kenmerk[];
+  urlPublicatieExtern?: string;
 };
 
 export type PublicatieDocument = {
