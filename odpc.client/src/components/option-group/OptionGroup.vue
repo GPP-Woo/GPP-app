@@ -24,26 +24,38 @@
       </label>
     </div>
 
-    <div class="input-option" v-for="{ uuid, naam } in options" :key="uuid">
-      <label
-        ><input
+    <div class="input-option" v-for="{ uuid, naam, omschrijving } in options" :key="uuid">
+      <label>
+        <input
           :type="type"
           :value="uuid"
           v-model="model"
           :aria-describedby="`description-${instanceId}`"
           :aria-invalid="!model.length ? true : undefined"
-        />{{ naam }}</label
-      >
+        />
+        {{ naam }}
+
+        <info-popover v-if="omschrijving">
+          <template #trigger="{ triggerProps }">
+            <button type="button" class="button secondary popover-trigger" v-bind="triggerProps">
+              ?
+            </button>
+          </template>
+
+          <p class="popover-content pre-wrap">{{ omschrijving }}</p>
+        </info-popover>
+      </label>
     </div>
   </details>
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance, nextTick, useModel, watch } from "vue";
+import { computed, nextTick, useId, useModel, watch } from "vue";
 import { useOptionGroup } from "./use-option-group";
 import type { OptionProps } from "./types";
+import InfoPopover from "@/components/InfoPopover.vue";
 
-const instanceId = getCurrentInstance()?.uid;
+const instanceId = useId();
 
 const { groupRef, setCustomValidity, getMessage } = useOptionGroup();
 
@@ -102,5 +114,17 @@ details {
   .check-all {
     display: none;
   }
+}
+
+.popover-trigger {
+  block-size: 1.4rem;
+  inline-size: 1.4rem;
+  padding: 0;
+  margin: 0;
+}
+
+.popover-content {
+  margin-block: 0;
+  cursor: text;
 }
 </style>

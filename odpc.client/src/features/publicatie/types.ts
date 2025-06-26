@@ -53,7 +53,7 @@ export type Onderwerp = {
   publicaties: string[];
   officieleTitel: string;
   omschrijving: string;
-  publicatiestatus: keyof typeof PublicatieStatus;
+  publicatiestatus: PublicatieStatus;
   promoot: boolean;
   registratiedatum: string;
 };
