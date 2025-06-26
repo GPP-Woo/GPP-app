@@ -3,11 +3,11 @@ import { promiseAll } from "@/utils";
 import { fetchAllPages } from "@/composables/use-all-pages";
 
 type LijstItem = { uuid: string; omschrijving?: string };
+type LijstItemNaam = LijstItem & { naam: string };
+type LijstItemTitel = LijstItem & { officieleTitel: string };
 
 const fetcher = (url: string) =>
-  fetchAllPages<(LijstItem & { naam: string }) | (LijstItem & { officieleTitel: string })>(
-    url
-  ).then((r) =>
+  fetchAllPages<LijstItemNaam | LijstItemTitel>(url).then((r) =>
     r.map(({ uuid, omschrijving, ...rest }) => ({
       uuid,
       naam: "naam" in rest ? rest.naam : rest.officieleTitel,
