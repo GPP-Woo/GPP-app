@@ -8,5 +8,4 @@ export const getTimezoneOffsetString = () => {
   return part?.value.replace("GMT", "") || "+00:00";
 };
 
-
 export const ISOToday = new Date().toISOString().split("T")[0];
