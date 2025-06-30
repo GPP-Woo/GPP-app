@@ -60,6 +60,22 @@
       <span :id="`creatiedatumError-${detailsId}`" class="error">Vul een geldige datum in.</span>
     </div>
 
+    <date-to-date-time-input
+      v-model="doc.ontvangstdatum"
+      :id="`ontvangstdatum-${detailsId}`"
+      label="Datum ontvangst"
+      :max-date="today"
+      :disabled="isReadonly"
+    />
+
+    <date-to-date-time-input
+      v-model="doc.datumOndertekend"
+      :id="`datumOndertekend-${detailsId}`"
+      label="Datum ondertekening (intern)"
+      :max-date="today"
+      :disabled="isReadonly"
+    />
+
     <div class="form-group">
       <label :for="`titel-${detailsId}`">Titel *</label>
 
@@ -120,6 +136,7 @@
 <script setup lang="ts">
 import { computed, useId, useModel } from "vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
+import DateToDateTimeInput from "@/components/DateToDateTimeInput.vue";
 import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, PendingDocumentActions, type PublicatieDocument } from "../types";
 
@@ -165,10 +182,6 @@ details {
 
   &.ingetrokken {
     background-color: var(--disabled);
-  }
-
-  input[type="date"] {
-    max-inline-size: 15ch;
   }
 }
 </style>

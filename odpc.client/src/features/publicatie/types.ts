@@ -41,10 +41,12 @@ export type PublicatieDocument = {
   publicatiestatus: PublicatieStatus;
   pendingAction?: PendingDocumentAction;
   creatiedatum: string;
+  ontvangstdatum?: string | null;
+  datumOndertekend?: string | null;
   bestandsnaam: string;
   bestandsformaat: string;
   bestandsomvang: number;
-  bestandsdelen?: Bestandsdeel[];
+  bestandsdelen?: Bestandsdeel[] | null;
   kenmerken: Kenmerk[];
 };
 
