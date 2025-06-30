@@ -79,7 +79,6 @@
           v-model="model.datumBeginGeldigheid"
           id="datumBeginGeldigheid"
           label="Datum in werking"
-          :max-date="ISOToday"
           :disabled="isReadonly"
         />
 
@@ -87,7 +86,6 @@
           v-model="model.datumEindeGeldigheid"
           id="datumEindeGeldigheid"
           label="Datum buiten werking"
-          :max-date="ISOToday"
           :disabled="isReadonly"
         />
 
@@ -144,7 +142,6 @@ import { useAppData } from "@/composables/use-app-data";
 import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, type MijnGebruikersgroep, type Publicatie } from "../types";
 import type { OptionProps } from "@/components/option-group/types";
-import { ISOToday } from "@/helpers";
 
 const props = defineProps<{
   modelValue: Publicatie;
