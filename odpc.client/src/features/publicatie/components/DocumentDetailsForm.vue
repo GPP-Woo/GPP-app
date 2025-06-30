@@ -42,37 +42,30 @@
       </div>
     </template>
 
-    <div class="form-group">
-      <label :for="`creatiedatum-${detailsId}`">Datum document *</label>
-
-      <input
-        :id="`creatiedatum-${detailsId}`"
-        type="date"
-        v-model="doc.creatiedatum"
-        required
-        aria-required="true"
-        :aria-describedby="`creatiedatumError-${detailsId}`"
-        :aria-invalid="!doc.creatiedatum"
-        :max="today"
-        v-bind="disabledAttrs"
-      />
-
-      <span :id="`creatiedatumError-${detailsId}`" class="error">Vul een geldige datum in.</span>
-    </div>
-
-    <date-to-date-time-input
-      v-model="doc.ontvangstdatum"
-      :id="`ontvangstdatum-${detailsId}`"
-      label="Datum ontvangst"
-      :max-date="today"
+    <date-input
+      v-model="doc.creatiedatum"
+      :id="`creatiedatum-${detailsId}`"
+      label="Datum document"
+      :max-date="ISOToday"
+      :required="true"
       :disabled="isReadonly"
     />
 
-    <date-to-date-time-input
+    <date-input
+      v-model="doc.ontvangstdatum"
+      :id="`ontvangstdatum-${detailsId}`"
+      label="Datum ontvangst"
+      :max-date="ISOToday"
+      :to-date-time="true"
+      :disabled="isReadonly"
+    />
+
+    <date-input
       v-model="doc.datumOndertekend"
       :id="`datumOndertekend-${detailsId}`"
       label="Datum ondertekening (intern)"
-      :max-date="today"
+      :max-date="ISOToday"
+      :to-date-time="true"
       :disabled="isReadonly"
     />
 
@@ -136,9 +129,10 @@
 <script setup lang="ts">
 import { computed, useId, useModel } from "vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
-import DateToDateTimeInput from "@/components/DateToDateTimeInput.vue";
+import DateInput from "@/components/DateInput.vue";
 import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, PendingDocumentActions, type PublicatieDocument } from "../types";
+import { ISOToday } from "@/helpers";
 
 const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean }>();
 
@@ -147,8 +141,6 @@ const doc = useModel(props, "doc");
 const kenmerken = useKenmerken(doc);
 
 const detailsId = useId();
-
-const today = new Date().toISOString().split("T")[0];
 
 const pendingAction = computed({
   get: () => !!doc.value.pendingAction,
