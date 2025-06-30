@@ -10,7 +10,7 @@
         public string? Omschrijving { get; set; }
         public Eigenaar? Eigenaar { get; set; }
         public string? Publicatiestatus { get; set; }
-        public DateTime Registratiedatum { get; set; }
+        public DateTimeOffset Registratiedatum { get; set; }
         public DateOnly? DatumBeginGeldigheid { get; set; }
         public DateOnly? DatumEindeGeldigheid { get; set; }
         public List<string>? InformatieCategorieen { get; set; }

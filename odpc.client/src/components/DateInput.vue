@@ -29,7 +29,7 @@ const props = defineProps<{
   modelValue?: string | null;
   id: string;
   label: string;
-  maxDate: string;
+  maxDate?: string;
   toDateTime?: boolean; // if true, converts date to datetime string with DEFAULT_TIME and timezone offset
   required?: boolean;
   disabled?: boolean;
@@ -38,7 +38,7 @@ const props = defineProps<{
 const model = useModel(props, "modelValue");
 
 const formatDateTime = (date: string) =>
-  props.toDateTime ? `${date}T${DEFAULT_TIME}${getTimezoneOffsetString()}` : date;
+  props.toDateTime ? `${date}T${DEFAULT_TIME}${getTimezoneOffsetString(date)}` : date;
 
 const dateComputed = computed({
   get: () => model.value?.split("T")[0],
