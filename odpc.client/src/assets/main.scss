@@ -105,6 +105,10 @@ body {
     }
   }
 
+  input[type="date"] {
+    max-inline-size: 15ch;
+  }
+
   .alert {
     color: var(--danger);
   }

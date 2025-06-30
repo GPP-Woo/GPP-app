@@ -42,23 +42,32 @@
       </div>
     </template>
 
-    <div class="form-group">
-      <label :for="`creatiedatum-${detailsId}`">Datum document *</label>
+    <date-input
+      v-model="doc.creatiedatum"
+      :id="`creatiedatum-${detailsId}`"
+      label="Datum document"
+      :max-date="ISOToday"
+      :required="true"
+      :disabled="isReadonly"
+    />
 
-      <input
-        :id="`creatiedatum-${detailsId}`"
-        type="date"
-        v-model="doc.creatiedatum"
-        required
-        aria-required="true"
-        :aria-describedby="`creatiedatumError-${detailsId}`"
-        :aria-invalid="!doc.creatiedatum"
-        :max="today"
-        v-bind="disabledAttrs"
-      />
+    <date-input
+      v-model="doc.ontvangstdatum"
+      :id="`ontvangstdatum-${detailsId}`"
+      label="Datum ontvangst"
+      :max-date="ISOToday"
+      :to-date-time="true"
+      :disabled="isReadonly"
+    />
 
-      <span :id="`creatiedatumError-${detailsId}`" class="error">Vul een geldige datum in.</span>
-    </div>
+    <date-input
+      v-model="doc.datumOndertekend"
+      :id="`datumOndertekend-${detailsId}`"
+      label="Datum ondertekening (intern)"
+      :max-date="ISOToday"
+      :to-date-time="true"
+      :disabled="isReadonly"
+    />
 
     <div class="form-group">
       <label :for="`titel-${detailsId}`">Titel *</label>
@@ -120,8 +129,10 @@
 <script setup lang="ts">
 import { computed, useId, useModel } from "vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
+import DateInput from "@/components/DateInput.vue";
 import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, PendingDocumentActions, type PublicatieDocument } from "../types";
+import { ISOToday } from "@/helpers";
 
 const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean }>();
 
@@ -130,8 +141,6 @@ const doc = useModel(props, "doc");
 const kenmerken = useKenmerken(doc);
 
 const detailsId = useId();
-
-const today = new Date().toISOString().split("T")[0];
 
 const pendingAction = computed({
   get: () => !!doc.value.pendingAction,
@@ -165,10 +174,6 @@ details {
 
   &.ingetrokken {
     background-color: var(--disabled);
-  }
-
-  input[type="date"] {
-    max-inline-size: 15ch;
   }
 }
 </style>

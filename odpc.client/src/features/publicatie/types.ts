@@ -5,6 +5,7 @@ export const PublicatieStatus = Object.freeze({
 });
 
 type PublicatieStatus = keyof typeof PublicatieStatus;
+
 type PendingDocumentAction = "delete" | "retract" | null;
 
 export const PendingDocumentActions: Record<PublicatieStatus, PendingDocumentAction> =
@@ -24,6 +25,8 @@ export type Publicatie = {
   eigenaar?: Eigenaar;
   publicatiestatus: PublicatieStatus;
   registratiedatum?: string;
+  datumBeginGeldigheid?: string | null;
+  datumEindeGeldigheid?: string | null;
   informatieCategorieen: string[];
   onderwerpen: string[];
   gebruikersgroep: string;
@@ -41,10 +44,12 @@ export type PublicatieDocument = {
   publicatiestatus: PublicatieStatus;
   pendingAction?: PendingDocumentAction;
   creatiedatum: string;
+  ontvangstdatum?: string | null;
+  datumOndertekend?: string | null;
   bestandsnaam: string;
   bestandsformaat: string;
   bestandsomvang: number;
-  bestandsdelen?: Bestandsdeel[];
+  bestandsdelen?: Bestandsdeel[] | null;
   kenmerken: Kenmerk[];
 };
 
