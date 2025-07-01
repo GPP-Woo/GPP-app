@@ -51,24 +51,6 @@
       :disabled="isReadonly"
     />
 
-    <date-input
-      v-model="doc.ontvangstdatum"
-      :id="`ontvangstdatum-${detailsId}`"
-      label="Datum ontvangst"
-      :max-date="ISOToday"
-      :to-date-time="true"
-      :disabled="isReadonly"
-    />
-
-    <date-input
-      v-model="doc.datumOndertekend"
-      :id="`datumOndertekend-${detailsId}`"
-      label="Datum ondertekening (intern)"
-      :max-date="ISOToday"
-      :to-date-time="true"
-      :disabled="isReadonly"
-    />
-
     <div class="form-group">
       <label :for="`titel-${detailsId}`">Titel *</label>
 
@@ -107,6 +89,24 @@
         v-bind="disabledAttrs"
       ></textarea>
     </div>
+
+    <date-input
+      v-model="doc.ontvangstdatum"
+      :id="`ontvangstdatum-${detailsId}`"
+      label="Datum ontvangst"
+      :max-date="ISOToday"
+      :to-date-time="true"
+      :disabled="isReadonly"
+    />
+
+    <date-input
+      v-model="doc.datumOndertekend"
+      :id="`datumOndertekend-${detailsId}`"
+      label="Datum ondertekening (intern)"
+      :max-date="ISOToday"
+      :to-date-time="true"
+      :disabled="isReadonly"
+    />
 
     <add-remove-items
       v-model="kenmerken"
