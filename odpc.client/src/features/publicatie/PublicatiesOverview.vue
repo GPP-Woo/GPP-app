@@ -10,7 +10,7 @@
   </menu>
 
   <form>
-    <fieldset :disabled="isFetching">
+    <fieldset :disabled="isLoading" class="search">
       <legend>Zoek op</legend>
 
       <div class="form-group">
@@ -27,17 +27,65 @@
           class="icon-after loupe"
           aria-label="Zoek"
           @click="onSearch"
-          :disabled="isFetching"
+          :disabled="isLoading"
         >
           Zoek
         </button>
       </div>
     </fieldset>
+
+    <fieldset :disabled="isLoading" class="filter">
+      <legend>Filter op</legend>
+
+      <div class="form-group">
+        <label for="sorteer">Organisatie</label>
+
+        <select name="filter" id="filter" v-model="queryParams.publishers">
+          <option v-if="queryParams.publishers" value="">Verwijder filter</option>
+
+          <option
+            v-for="{ uuid, naam } in mijnWaardelijsten.organisaties"
+            :key="uuid"
+            :value="uuid"
+          >
+            {{ naam }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="sorteer">Informatiecategorie</label>
+
+        <select name="filter" id="filter" v-model="queryParams.informatieCategorieen">
+          <option v-if="queryParams.informatieCategorieen" value="">Verwijder filter</option>
+
+          <option
+            v-for="{ uuid, naam } in mijnWaardelijsten.informatiecategorieen"
+            :key="uuid"
+            :value="uuid"
+          >
+            {{ naam }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="sorteer">Onderwerp</label>
+
+        <select name="filter" id="filter" v-model="queryParams.onderwerpen">
+          <option v-if="queryParams.onderwerpen" value="">Verwijder filter</option>
+
+          <option v-for="{ uuid, naam } in mijnWaardelijsten.onderwerpen" :key="uuid" :value="uuid">
+            {{ naam }}
+          </option>
+        </select>
+      </div>
+    </fieldset>
   </form>
 
-  <simple-spinner v-if="isFetching"></simple-spinner>
+  <simple-spinner v-if="isLoading"></simple-spinner>
 
-  <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
+  <alert-inline v-else-if="hasError">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
 
   <template v-else-if="pageCount">
     <section>
@@ -156,7 +204,17 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import DateRangePicker from "@/components/DateRangePicker.vue";
 import { usePagedSearch } from "@/composables/use-paged-search";
+import { useMijnWaardelijsten } from "./composables/use-mijn-waardelijsten";
 import { PublicatieStatus, type Publicatie } from "./types";
+
+const isLoading = computed(() => loadingMijnWaardelijsten.value || loadingPageResult.value);
+const hasError = computed(() => !!mijnWaardelijstenError.value || !!pagedResultError.value);
+
+const {
+  mijnWaardelijsten,
+  isFetching: loadingMijnWaardelijsten,
+  error: mijnWaardelijstenError
+} = useMijnWaardelijsten();
 
 const searchString = ref("");
 const fromDate = ref("");
@@ -181,7 +239,10 @@ const searchParamsConfig = {
   sorteer: "-registratiedatum",
   search: "",
   registratiedatumVanaf: "",
-  registratiedatumTot: ""
+  registratiedatumTot: "",
+  publishers: "",
+  informatieCategorieen: "",
+  onderwerpen: ""
 };
 
 const addDays = (dateString: string, days: number) => {
@@ -193,10 +254,15 @@ const addDays = (dateString: string, days: number) => {
   return nextDateUtc.toISOString().substring(0, 10);
 };
 
-const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
-  Publicatie,
-  typeof searchParamsConfig
->("publicaties", searchParamsConfig);
+const {
+  pagedResult,
+  queryParams,
+  pageCount,
+  onNext,
+  onPrev,
+  isFetching: loadingPageResult,
+  error: pagedResultError
+} = usePagedSearch<Publicatie, typeof searchParamsConfig>("publicaties", searchParamsConfig);
 
 // Init: set refs linked to queryParams from urlQueryParams/config once on mounted
 watch(
@@ -241,13 +307,21 @@ menu {
 }
 
 fieldset {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
   gap: var(--spacing-default);
+
+  &.search {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
 
   .form-group {
     flex-grow: 1;
+  }
+
+  &.filter {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
   }
 }
 
