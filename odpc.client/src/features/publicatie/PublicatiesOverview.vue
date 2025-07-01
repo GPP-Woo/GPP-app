@@ -37,49 +37,19 @@
     <fieldset :disabled="isLoading" class="filter">
       <legend>Filter op</legend>
 
-      <div class="form-group">
-        <label for="sorteer">Organisatie</label>
+      <template v-for="{ label, searchParam, listKey } in filterConfig" :key="listKey">
+        <div class="form-group" v-if="mijnWaardelijsten[listKey]?.length">
+          <label for="sorteer">{{ label }}</label>
 
-        <select name="filter" id="filter" v-model="queryParams.publishers">
-          <option v-if="queryParams.publishers" value="">Verwijder filter</option>
+          <select :name="listKey" :id="listKey" v-model="queryParams[searchParam]">
+            <option v-if="queryParams[searchParam]" value="">Verwijder filter</option>
 
-          <option
-            v-for="{ uuid, naam } in mijnWaardelijsten.organisaties"
-            :key="uuid"
-            :value="uuid"
-          >
-            {{ naam }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="sorteer">Informatiecategorie</label>
-
-        <select name="filter" id="filter" v-model="queryParams.informatieCategorieen">
-          <option v-if="queryParams.informatieCategorieen" value="">Verwijder filter</option>
-
-          <option
-            v-for="{ uuid, naam } in mijnWaardelijsten.informatiecategorieen"
-            :key="uuid"
-            :value="uuid"
-          >
-            {{ naam }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="sorteer">Onderwerp</label>
-
-        <select name="filter" id="filter" v-model="queryParams.onderwerpen">
-          <option v-if="queryParams.onderwerpen" value="">Verwijder filter</option>
-
-          <option v-for="{ uuid, naam } in mijnWaardelijsten.onderwerpen" :key="uuid" :value="uuid">
-            {{ naam }}
-          </option>
-        </select>
-      </div>
+            <option v-for="{ uuid, naam } in mijnWaardelijsten[listKey]" :key="uuid" :value="uuid">
+              {{ naam }}
+            </option>
+          </select>
+        </div>
+      </template>
     </fieldset>
   </form>
 
@@ -199,13 +169,34 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, type UnwrapRef } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import DateRangePicker from "@/components/DateRangePicker.vue";
 import { usePagedSearch } from "@/composables/use-paged-search";
 import { useMijnWaardelijsten } from "./composables/use-mijn-waardelijsten";
 import { PublicatieStatus, type Publicatie } from "./types";
+
+const addDays = (dateString: string, days: number) => {
+  if (!dateString) return dateString;
+
+  const date = new Date(dateString);
+  const nextDateUtc = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + days)
+  );
+
+  return nextDateUtc.toISOString().substring(0, 10);
+};
+
+const searchString = ref("");
+const fromDate = ref("");
+const untilDateInclusive = ref("");
+
+// we zoeken met een datum in een datum-tijd veld, daarom corrigeren we de datum hier
+const untilDateExclusive = computed({
+  get: () => addDays(untilDateInclusive.value, 1),
+  set: (v) => (untilDateInclusive.value = addDays(v, -1))
+});
 
 const isLoading = computed(() => loadingMijnWaardelijsten.value || loadingPageResult.value);
 const hasError = computed(() => !!mijnWaardelijstenError.value || !!pagedResultError.value);
@@ -215,24 +206,6 @@ const {
   isFetching: loadingMijnWaardelijsten,
   error: mijnWaardelijstenError
 } = useMijnWaardelijsten();
-
-const searchString = ref("");
-const fromDate = ref("");
-const untilDateInclusive = ref("");
-// we zoeken met een datum in een datum-tijd veld, daarom corrigeren we de datum hier
-const untilDateExclusive = computed({
-  get: () => addDays(untilDateInclusive.value, 1),
-  set: (v) => (untilDateInclusive.value = addDays(v, -1))
-});
-
-const sortingOptions = {
-  officiele_titel: "Title (a-z)",
-  "-officiele_titel": "Title (z-a)",
-  verkorte_titel: "Verkorte title (a-z)",
-  "-verkorte_titel": "Verkorte title (z-a)",
-  registratiedatum: "Registratiedatum (oud-nieuw)",
-  "-registratiedatum": "Registratiedatum (nieuw-oud)"
-};
 
 const searchParamsConfig = {
   page: "1",
@@ -245,48 +218,65 @@ const searchParamsConfig = {
   onderwerpen: ""
 };
 
-const addDays = (dateString: string, days: number) => {
-  if (!dateString) return dateString;
-  const date = new Date(dateString);
-  const nextDateUtc = new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + days)
-  );
-  return nextDateUtc.toISOString().substring(0, 10);
+const filterConfig: {
+  label: string;
+  searchParam: keyof Pick<
+    typeof searchParamsConfig,
+    "publishers" | "informatieCategorieen" | "onderwerpen"
+  >;
+  listKey: keyof UnwrapRef<typeof mijnWaardelijsten>;
+}[] = [
+  { label: "Organisatie", searchParam: "publishers", listKey: "organisaties" },
+  {
+    label: "Informatiecategorie",
+    searchParam: "informatieCategorieen",
+    listKey: "informatiecategorieen"
+  },
+  { label: "Onderwerp", searchParam: "onderwerpen", listKey: "onderwerpen" }
+];
+
+const sortingOptions = {
+  officiele_titel: "Title (a-z)",
+  "-officiele_titel": "Title (z-a)",
+  verkorte_titel: "Verkorte title (a-z)",
+  "-verkorte_titel": "Verkorte title (z-a)",
+  registratiedatum: "Registratiedatum (oud-nieuw)",
+  "-registratiedatum": "Registratiedatum (nieuw-oud)"
 };
 
 const {
-  pagedResult,
   queryParams,
+  pagedResult,
   pageCount,
-  onNext,
-  onPrev,
   isFetching: loadingPageResult,
-  error: pagedResultError
+  error: pagedResultError,
+  onNext,
+  onPrev
 } = usePagedSearch<Publicatie, typeof searchParamsConfig>("publicaties", searchParamsConfig);
 
-// Init: set refs linked to queryParams from urlQueryParams/config once on mounted
-watch(
-  () => ({
-    search: queryParams.value.search,
-    registratiedatumVanaf: queryParams.value.registratiedatumVanaf,
-    registratiedatumTot: queryParams.value.registratiedatumTot
-  }),
-  ({ search, registratiedatumVanaf, registratiedatumTot }) => {
-    searchString.value = search;
-    fromDate.value = registratiedatumVanaf;
-    untilDateExclusive.value = registratiedatumTot;
-  },
-  { once: true }
-);
+const syncFromQuery = () => {
+  const { search, registratiedatumVanaf, registratiedatumTot } = queryParams.value;
 
-// onSearch: set queryParams linked to refs
-const onSearch = () =>
-  (queryParams.value = {
-    ...queryParams.value,
+  [searchString.value, fromDate.value, untilDateExclusive.value] = [
+    search,
+    registratiedatumVanaf,
+    registratiedatumTot
+  ];
+};
+
+const syncToQuery = () => {
+  Object.assign(queryParams.value, {
     search: searchString.value,
     registratiedatumVanaf: fromDate.value,
     registratiedatumTot: untilDateExclusive.value
   });
+};
+
+// init: sync linked refs from queryParams / urlSearchParams once
+watch(queryParams, syncFromQuery, { once: true });
+
+// sync linked refs to queryParams onSearch
+const onSearch = syncToQuery;
 </script>
 
 <style lang="scss" scoped>
