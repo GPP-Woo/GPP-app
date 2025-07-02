@@ -9,32 +9,15 @@
     </li>
   </menu>
 
-  <form>
-    <fieldset :disabled="isLoading" class="search">
-      <legend>Zoek op</legend>
+  <form @submit.prevent="search">
+    <publicaties-overview-search
+      v-model:search-string="searchString"
+      v-model:from-date="fromDate"
+      v-model:until-date-inclusive="untilDateInclusive"
+      :disabled="isLoading"
+    />
 
-      <div class="form-group">
-        <label for="zoeken">Titel</label>
-
-        <input type="text" id="zoeken" v-model="searchString" @keydown.enter.prevent="onSearch" />
-      </div>
-
-      <date-range-picker v-model:from-date="fromDate" v-model:until-date="untilDateInclusive" />
-
-      <div class="form-group-button">
-        <button
-          type="button"
-          class="icon-after loupe"
-          aria-label="Zoek"
-          @click="onSearch"
-          :disabled="isLoading"
-        >
-          Zoek
-        </button>
-      </div>
-    </fieldset>
-
-    <publicatie-filter-fieldset
+    <publicaties-overview-filter
       v-model:query-params="queryParams"
       :informatiecategorieen="mijnWaardelijsten.informatiecategorieen"
       :onderwerpen="mijnWaardelijsten.onderwerpen"
@@ -48,15 +31,7 @@
 
   <template v-else-if="pageCount">
     <section>
-      <div class="form-group form-group-inline" role="group" aria-labelledby="sorteer-label">
-        <label id="sorteer-label" for="sorteer" aria-label="Sorteer publicaties">Sorteer op</label>
-
-        <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
-          <option v-for="(value, key) in sortingOptions" :key="key" :value="key">
-            {{ value }}
-          </option>
-        </select>
-      </div>
+      <publicaties-overview-sort v-model:query-params="queryParams" />
 
       <div class="page-nav">
         <p aria-live="polite">
@@ -161,11 +136,12 @@
 import { computed, ref, watch } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
-import DateRangePicker from "@/components/DateRangePicker.vue";
 import { usePagedSearch } from "@/composables/use-paged-search";
 import { useMijnWaardelijsten } from "./composables/use-mijn-waardelijsten";
 import { PublicatieStatus, type Publicatie } from "./types";
-import PublicatieFilterFieldset from "./components/PublicatieFilterFieldset.vue";
+import PublicatiesOverviewSearch from "./components/PublicatiesOverviewSearch.vue";
+import PublicatiesOverviewFilter from "./components/PublicatiesOverviewFilter.vue";
+import PublicatiesOverviewSort from "./components/PublicatiesOverviewSort.vue";
 
 const addDays = (dateString: string, days: number) => {
   if (!dateString) return dateString;
@@ -197,15 +173,6 @@ const {
   error: mijnWaardelijstenError
 } = useMijnWaardelijsten();
 
-const sortingOptions = {
-  officiele_titel: "Title (a-z)",
-  "-officiele_titel": "Title (z-a)",
-  verkorte_titel: "Verkorte title (a-z)",
-  "-verkorte_titel": "Verkorte title (z-a)",
-  registratiedatum: "Registratiedatum (oud-nieuw)",
-  "-registratiedatum": "Registratiedatum (nieuw-oud)"
-};
-
 const syncFromQuery = () => {
   const { search, registratiedatumVanaf, registratiedatumTot } = queryParams.value;
 
@@ -233,7 +200,7 @@ const QueryParamsConfig = {
   informatieCategorieen: "",
   onderwerpen: "",
   publicatiestatus: ""
-} as const;
+};
 
 const {
   queryParams,
@@ -249,16 +216,12 @@ const {
 watch(queryParams, syncFromQuery, { once: true });
 
 // sync linked refs to queryParams onSearch
-const onSearch = syncToQuery;
+const search = syncToQuery;
 </script>
 
 <style lang="scss" scoped>
 // reset margins, use gaps
-p,
-button,
-input,
-select,
-.form-group {
+:deep(*:not(fieldset, label)) {
   margin-block: 0;
 }
 
@@ -269,40 +232,11 @@ menu {
   margin-block-end: var(--spacing-default);
 }
 
-fieldset {
-  gap: var(--spacing-default);
-
-  &.search {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-  }
-
-  .form-group {
-    flex-grow: 1;
-  }
-
-  &.filter {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
-  }
-}
-
 section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   gap: var(--spacing-default);
   margin-block-end: var(--spacing-default);
-
-  .form-group-inline {
-    flex-direction: row;
-    align-items: center;
-
-    label {
-      margin-block: 0;
-      margin-inline-end: var(--spacing-default);
-    }
-  }
 }
 
 .page-nav {

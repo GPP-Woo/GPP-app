@@ -1,5 +1,5 @@
 <template>
-  <fieldset class="filter">
+  <fieldset>
     <legend>Filter op</legend>
 
     <div
@@ -83,4 +83,10 @@ const queryParams = defineModel<{
 }>("queryParams", { required: true });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
+  gap: var(--spacing-default);
+}
+</style>
