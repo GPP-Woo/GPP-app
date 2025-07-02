@@ -210,9 +210,9 @@ const {
 const searchParamsConfig = {
   page: "1",
   sorteer: "-registratiedatum",
-  search: "",
-  registratiedatumVanaf: "",
-  registratiedatumTot: "",
+  search: "", // searchString
+  registratiedatumVanaf: "", // fromDate
+  registratiedatumTot: "", // untilDateExclusive
   publishers: "",
   informatieCategorieen: "",
   onderwerpen: ""
@@ -244,16 +244,6 @@ const sortingOptions = {
   "-registratiedatum": "Registratiedatum (nieuw-oud)"
 };
 
-const {
-  queryParams,
-  pagedResult,
-  pageCount,
-  isFetching: loadingPageResult,
-  error: pagedResultError,
-  onNext,
-  onPrev
-} = usePagedSearch<Publicatie, typeof searchParamsConfig>("publicaties", searchParamsConfig);
-
 const syncFromQuery = () => {
   const { search, registratiedatumVanaf, registratiedatumTot } = queryParams.value;
 
@@ -272,7 +262,17 @@ const syncToQuery = () => {
   });
 };
 
-// init: sync linked refs from queryParams / urlSearchParams once
+const {
+  queryParams,
+  pagedResult,
+  pageCount,
+  isFetching: loadingPageResult,
+  error: pagedResultError,
+  onNext,
+  onPrev
+} = usePagedSearch<Publicatie, typeof searchParamsConfig>("publicaties", searchParamsConfig);
+
+// sync linked refs from queryParams / urlSearchParams once on init
 watch(queryParams, syncFromQuery, { once: true });
 
 // sync linked refs to queryParams onSearch

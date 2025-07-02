@@ -18,7 +18,6 @@ export const usePagedSearch = <T, QueryParams extends { [key: string]: string; p
 
   const queryParams = ref({ ...params });
 
-  // Get initial params from search url
   const initQueryParams = () => {
     queryParams.value = Object.fromEntries(
       Object.keys(params).map((key) => [
@@ -44,7 +43,7 @@ export const usePagedSearch = <T, QueryParams extends { [key: string]: string; p
     () =>
       new URLSearchParams(
         Object.keys(params)
-          .filter((key) => queryParams.value[key]?.trim())
+          .filter((key) => !!queryParams.value[key]?.trim())
           .map((key) => [key, encodeURIComponent(queryParams.value[key])])
       )
   );
@@ -61,22 +60,9 @@ export const usePagedSearch = <T, QueryParams extends { [key: string]: string; p
     // Update history
     router.replace({ query: { ...Object.fromEntries(newParams.entries()) } });
 
-    // Wait for fetching to complete, then execute new search
-    await waitForFetching();
+    // Execute new search
     await get().execute();
   });
-
-  const waitForFetching = () =>
-    new Promise<void>((resolve) => {
-      if (!isFetching.value) return resolve();
-
-      const unwatch = watch(isFetching, (fetching) => {
-        if (!fetching) {
-          unwatch();
-          resolve();
-        }
-      });
-    });
 
   const { get, data, isFetching, error } = useFetchApi(
     () => `/api/v1/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
@@ -85,6 +71,7 @@ export const usePagedSearch = <T, QueryParams extends { [key: string]: string; p
     }
   ).json<PagedResult<T>>();
 
+  // Get initial params from search url
   onMounted(initQueryParams);
 
   return {
