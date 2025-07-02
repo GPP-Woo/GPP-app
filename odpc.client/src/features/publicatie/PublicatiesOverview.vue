@@ -34,23 +34,12 @@
       </div>
     </fieldset>
 
-    <fieldset :disabled="isLoading" class="filter">
-      <legend>Filter op</legend>
-
-      <template v-for="{ label, searchParam, listKey } in filterConfig" :key="listKey">
-        <div class="form-group" v-if="mijnWaardelijsten[listKey]?.length">
-          <label for="sorteer">{{ label }}</label>
-
-          <select :name="listKey" :id="listKey" v-model="queryParams[searchParam]">
-            <option v-if="queryParams[searchParam]" value="">Verwijder filter</option>
-
-            <option v-for="{ uuid, naam } in mijnWaardelijsten[listKey]" :key="uuid" :value="uuid">
-              {{ naam }}
-            </option>
-          </select>
-        </div>
-      </template>
-    </fieldset>
+    <publicatie-filter-fieldset
+      v-model:query-params="queryParams"
+      :informatiecategorieen="mijnWaardelijsten.informatiecategorieen"
+      :onderwerpen="mijnWaardelijsten.onderwerpen"
+      :disabled="isLoading"
+    />
   </form>
 
   <simple-spinner v-if="isLoading"></simple-spinner>
@@ -59,8 +48,8 @@
 
   <template v-else-if="pageCount">
     <section>
-      <div class="form-group form-group-inline">
-        <label for="sorteer">Sorteer op</label>
+      <div class="form-group form-group-inline" role="group" aria-labelledby="sorteer-label">
+        <label id="sorteer-label" for="sorteer" aria-label="Sorteer publicaties">Sorteer op</label>
 
         <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
           <option v-for="(value, key) in sortingOptions" :key="key" :value="key">
@@ -70,7 +59,7 @@
       </div>
 
       <div class="page-nav">
-        <p>
+        <p aria-live="polite">
           <strong>{{ pagedResult?.count || 0 }}</strong>
           {{ pagedResult?.count === 1 ? "resultaat" : "resultaten" }}
         </p>
@@ -169,13 +158,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, type UnwrapRef } from "vue";
+import { computed, ref, watch } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import DateRangePicker from "@/components/DateRangePicker.vue";
 import { usePagedSearch } from "@/composables/use-paged-search";
 import { useMijnWaardelijsten } from "./composables/use-mijn-waardelijsten";
 import { PublicatieStatus, type Publicatie } from "./types";
+import PublicatieFilterFieldset from "./components/PublicatieFilterFieldset.vue";
 
 const addDays = (dateString: string, days: number) => {
   if (!dateString) return dateString;
@@ -207,34 +197,6 @@ const {
   error: mijnWaardelijstenError
 } = useMijnWaardelijsten();
 
-const searchParamsConfig = {
-  page: "1",
-  sorteer: "-registratiedatum",
-  search: "", // searchString
-  registratiedatumVanaf: "", // fromDate
-  registratiedatumTot: "", // untilDateExclusive
-  publishers: "",
-  informatieCategorieen: "",
-  onderwerpen: ""
-};
-
-const filterConfig: {
-  label: string;
-  searchParam: keyof Pick<
-    typeof searchParamsConfig,
-    "publishers" | "informatieCategorieen" | "onderwerpen"
-  >;
-  listKey: keyof UnwrapRef<typeof mijnWaardelijsten>;
-}[] = [
-  { label: "Organisatie", searchParam: "publishers", listKey: "organisaties" },
-  {
-    label: "Informatiecategorie",
-    searchParam: "informatieCategorieen",
-    listKey: "informatiecategorieen"
-  },
-  { label: "Onderwerp", searchParam: "onderwerpen", listKey: "onderwerpen" }
-];
-
 const sortingOptions = {
   officiele_titel: "Title (a-z)",
   "-officiele_titel": "Title (z-a)",
@@ -262,6 +224,17 @@ const syncToQuery = () => {
   });
 };
 
+const QueryParamsConfig = {
+  page: "1",
+  sorteer: "-registratiedatum",
+  search: "", // searchString
+  registratiedatumVanaf: "", // fromDate
+  registratiedatumTot: "", // untilDateExclusive
+  informatieCategorieen: "",
+  onderwerpen: "",
+  publicatiestatus: ""
+} as const;
+
 const {
   queryParams,
   pagedResult,
@@ -270,7 +243,7 @@ const {
   error: pagedResultError,
   onNext,
   onPrev
-} = usePagedSearch<Publicatie, typeof searchParamsConfig>("publicaties", searchParamsConfig);
+} = usePagedSearch<Publicatie, typeof QueryParamsConfig>("publicaties", QueryParamsConfig);
 
 // sync linked refs from queryParams / urlSearchParams once on init
 watch(queryParams, syncFromQuery, { once: true });

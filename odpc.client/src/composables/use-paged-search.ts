@@ -7,20 +7,21 @@ const PAGE_SIZE = 10;
 
 export const usePagedSearch = <T, QueryParams extends { [key: string]: string; page: string }>(
   endpoint: string,
-  params: QueryParams
+  queryParamsConfig: QueryParams
 ) => {
   const router = useRouter();
 
   const urlSearchParams = useUrlSearchParams("history", {
-    initialValue: params,
+    initialValue: queryParamsConfig,
     removeFalsyValues: true
   });
 
-  const queryParams = ref({ ...params });
+  const queryParams = ref({ ...queryParamsConfig });
+  const queryParamKeys = Object.keys(queryParamsConfig);
 
   const initQueryParams = () => {
     queryParams.value = Object.fromEntries(
-      Object.keys(params).map((key) => [
+      queryParamKeys.map((key) => [
         key,
         urlSearchParams[key] ? decodeURIComponent(urlSearchParams[key] as string) : ""
       ])
@@ -42,7 +43,7 @@ export const usePagedSearch = <T, QueryParams extends { [key: string]: string; p
   const searchParams = computed(
     () =>
       new URLSearchParams(
-        Object.keys(params)
+        queryParamKeys
           .filter((key) => !!queryParams.value[key]?.trim())
           .map((key) => [key, encodeURIComponent(queryParams.value[key])])
       )
@@ -65,7 +66,7 @@ export const usePagedSearch = <T, QueryParams extends { [key: string]: string; p
   });
 
   const { get, data, isFetching, error } = useFetchApi(
-    () => `/api/v1/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
+    () => `/api/v1/${endpoint}${searchParams.value.size ? "?" + searchParams.value : ""}`,
     {
       immediate: false
     }

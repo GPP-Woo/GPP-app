@@ -18,9 +18,9 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
             [FromQuery] string? search = "",
             [FromQuery] string? registratiedatumVanaf = "",
             [FromQuery] string? registratiedatumTot = "",
-            [FromQuery] string? publishers = "",
             [FromQuery] string? informatieCategorieen = "",
-            [FromQuery] string? onderwerpen = "")
+            [FromQuery] string? onderwerpen = "",
+            [FromQuery] string? publicatiestatus = "")
         {
             // publicaties ophalen uit het ODRC
             using var client = clientFactory.Create("Publicaties ophalen");
@@ -32,10 +32,10 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
                 { "sorteer", sorteer },
                 { "search", search },
                 { "registratiedatumVanaf", registratiedatumVanaf },
-                { "registratiedatumTot", registratiedatumTot },
-                { "publishers", publishers },
+                { "registratiedatumTot", registratiedatumTot },                
                 { "informatieCategorieen", informatieCategorieen },
                 { "onderwerpen", onderwerpen },
+                { "publicatiestatus", publicatiestatus },
                 { "pageSize", "10" }
             };
 

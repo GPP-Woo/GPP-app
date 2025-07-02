@@ -3,12 +3,10 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import { useAppData } from "@/composables/use-app-data";
 import type { MijnGebruikersgroep } from "../types";
 
-const API_URL = `/api/v1`;
-
 export const useMijnWaardelijsten = () => {
   const { lijsten } = useAppData();
 
-  const { data, isFetching, error } = useFetchApi(() => `${API_URL}/mijn-gebruikersgroepen`).json<
+  const { data, isFetching, error } = useFetchApi(() => "/api/v1/mijn-gebruikersgroepen").json<
     MijnGebruikersgroep[]
   >();
 
