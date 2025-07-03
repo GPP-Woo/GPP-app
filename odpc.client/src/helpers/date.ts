@@ -1,5 +1,7 @@
 type DateLike = string | null | undefined | Date;
 
+const nlLongFormat = Intl.DateTimeFormat("nl-NL", { dateStyle: "long" });
+
 export const getTimezoneOffsetString = (date: DateLike) => {
   date = parseValidDate(date);
   if (!date) return undefined;
@@ -19,6 +21,13 @@ const parseValidDate = (date: DateLike) => {
 
   if (date instanceof Date && !isNaN(date.getTime())) return date;
   return undefined;
+};
+
+export const formatDate = (date: DateLike) => {
+  date = parseValidDate(date);
+  if (!date) return undefined;
+
+  return nlLongFormat.format(date);
 };
 
 export const formatIsoDate = (date: DateLike) => {

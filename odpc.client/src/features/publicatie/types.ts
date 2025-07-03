@@ -15,6 +15,11 @@ export const PendingDocumentActions: Record<PublicatieStatus, PendingDocumentAct
     ingetrokken: null
   });
 
+export const Archiefnominatie = Object.freeze({
+  blijvend_bewaren: "overbrengen",
+  vernietigen: "vernietigen"
+});
+
 export type Publicatie = {
   uuid?: string;
   publisher: string;
@@ -32,6 +37,11 @@ export type Publicatie = {
   gebruikersgroep: string;
   kenmerken: Kenmerk[];
   urlPublicatieExtern?: string;
+  bronBewaartermijn?: string;
+  selectiecategorie?: string;
+  archiefnominatie?: keyof typeof Archiefnominatie | "";
+  archiefactiedatum?: string | null;
+  toelichtingBewaartermijn?: string;
 };
 
 export type PublicatieDocument = {
