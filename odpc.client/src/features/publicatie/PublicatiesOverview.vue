@@ -9,80 +9,37 @@
     </li>
   </menu>
 
-  <form>
-    <fieldset :disabled="isFetching">
-      <legend>Zoek op</legend>
+  <form @submit.prevent="search">
+    <publicaties-overview-search
+      v-model:search-string="searchString"
+      v-model:from-date="fromDate"
+      v-model:until-date-inclusive="untilDateInclusive"
+      :disabled="isLoading"
+    />
 
-      <div class="form-group">
-        <label for="zoeken">Titel</label>
-
-        <input type="text" id="zoeken" v-model="searchString" @keydown.enter.prevent="onSearch" />
-      </div>
-
-      <date-range-picker v-model:from-date="fromDate" v-model:until-date="untilDateInclusive" />
-
-      <div class="form-group-button">
-        <button
-          type="button"
-          class="icon-after loupe"
-          aria-label="Zoek"
-          @click="onSearch"
-          :disabled="isFetching"
-        >
-          Zoek
-        </button>
-      </div>
-    </fieldset>
+    <publicaties-overview-filter
+      v-model:query-params="queryParams"
+      :informatiecategorieen="mijnWaardelijsten.informatiecategorieen"
+      :onderwerpen="mijnWaardelijsten.onderwerpen"
+      :disabled="isLoading"
+    />
   </form>
 
-  <simple-spinner v-if="isFetching"></simple-spinner>
+  <simple-spinner v-if="isLoading"></simple-spinner>
 
-  <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
+  <alert-inline v-else-if="hasError">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
 
   <template v-else-if="pageCount">
     <section>
-      <div class="form-group form-group-inline">
-        <label for="sorteer">Sorteer op</label>
+      <publicaties-overview-sort v-model:query-params="queryParams" />
 
-        <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
-          <option v-for="(value, key) in sortingOptions" :key="key" :value="key">
-            {{ value }}
-          </option>
-        </select>
-      </div>
-
-      <div class="page-nav">
-        <p>
-          <strong>{{ pagedResult?.count || 0 }}</strong>
-          {{ pagedResult?.count === 1 ? "resultaat" : "resultaten" }}
-        </p>
-
-        <menu class="reset">
-          <li>
-            <button
-              type="button"
-              aria-label="Vorige pagina"
-              :disabled="!pagedResult?.previous"
-              @click="onPrev"
-            >
-              &laquo;
-            </button>
-          </li>
-
-          <li>pagina {{ queryParams.page }} van {{ pageCount }}</li>
-
-          <li>
-            <button
-              type="button"
-              aria-label="Volgende pagina"
-              :disabled="!pagedResult?.next"
-              @click="onNext"
-            >
-              &raquo;
-            </button>
-          </li>
-        </menu>
-      </div>
+      <publicaties-overview-pagination
+        :paged-result="pagedResult"
+        :page-count="pageCount"
+        :page="queryParams.page"
+        @onPrev="onPrev"
+        @onNext="onNext"
+      />
     </section>
 
     <ul class="reset card-link-list" aria-live="polite">
@@ -154,101 +111,100 @@
 import { computed, ref, watch } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
-import DateRangePicker from "@/components/DateRangePicker.vue";
 import { usePagedSearch } from "@/composables/use-paged-search";
+import { useMijnWaardelijsten } from "./composables/use-mijn-waardelijsten";
 import { PublicatieStatus, type Publicatie } from "./types";
+import PublicatiesOverviewSearch from "./components/PublicatiesOverviewSearch.vue";
+import PublicatiesOverviewFilter from "./components/PublicatiesOverviewFilter.vue";
+import PublicatiesOverviewSort from "./components/PublicatiesOverviewSort.vue";
+import PublicatiesOverviewPagination from "./components/PublicatiesOverviewPagination.vue";
 
-const searchString = ref("");
-const fromDate = ref("");
+const addDays = (dateString: string, days: number) => {
+  if (!dateString) return dateString;
+
+  const date = new Date(dateString);
+  const nextDateUtc = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + days)
+  );
+
+  return nextDateUtc.toISOString().substring(0, 10);
+};
+
+const searchString = ref(""); // search
+const fromDate = ref(""); // registratiedatumVanaf
 const untilDateInclusive = ref("");
+
 // we zoeken met een datum in een datum-tijd veld, daarom corrigeren we de datum hier
+// registratiedatumTot
 const untilDateExclusive = computed({
   get: () => addDays(untilDateInclusive.value, 1),
   set: (v) => (untilDateInclusive.value = addDays(v, -1))
 });
 
-const sortingOptions = {
-  officiele_titel: "Title (a-z)",
-  "-officiele_titel": "Title (z-a)",
-  verkorte_titel: "Verkorte title (a-z)",
-  "-verkorte_titel": "Verkorte title (z-a)",
-  registratiedatum: "Registratiedatum (oud-nieuw)",
-  "-registratiedatum": "Registratiedatum (nieuw-oud)"
+const isLoading = computed(() => loadingMijnWaardelijsten.value || loadingPageResult.value);
+const hasError = computed(() => !!mijnWaardelijstenError.value || !!pagedResultError.value);
+
+const {
+  mijnWaardelijsten,
+  isFetching: loadingMijnWaardelijsten,
+  error: mijnWaardelijstenError
+} = useMijnWaardelijsten();
+
+const syncFromQuery = () => {
+  const { search, registratiedatumVanaf, registratiedatumTot } = queryParams.value;
+
+  [searchString.value, fromDate.value, untilDateExclusive.value] = [
+    search,
+    registratiedatumVanaf,
+    registratiedatumTot
+  ];
 };
 
-const searchParamsConfig = {
-  page: "1",
-  sorteer: "-registratiedatum",
-  search: "",
-  registratiedatumVanaf: "",
-  registratiedatumTot: ""
-};
-
-const addDays = (dateString: string, days: number) => {
-  if (!dateString) return dateString;
-  const date = new Date(dateString);
-  const nextDateUtc = new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + days)
-  );
-  return nextDateUtc.toISOString().substring(0, 10);
-};
-
-const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
-  Publicatie,
-  typeof searchParamsConfig
->("publicaties", searchParamsConfig);
-
-// Init: set refs linked to queryParams from urlQueryParams/config once on mounted
-watch(
-  () => ({
-    search: queryParams.value.search,
-    registratiedatumVanaf: queryParams.value.registratiedatumVanaf,
-    registratiedatumTot: queryParams.value.registratiedatumTot
-  }),
-  ({ search, registratiedatumVanaf, registratiedatumTot }) => {
-    searchString.value = search;
-    fromDate.value = registratiedatumVanaf;
-    untilDateExclusive.value = registratiedatumTot;
-  },
-  { once: true }
-);
-
-// onSearch: set queryParams linked to refs
-const onSearch = () =>
-  (queryParams.value = {
-    ...queryParams.value,
+const syncToQuery = () => {
+  Object.assign(queryParams.value, {
     search: searchString.value,
     registratiedatumVanaf: fromDate.value,
     registratiedatumTot: untilDateExclusive.value
   });
+};
+
+const QueryParamsConfig = {
+  page: "1",
+  sorteer: "-registratiedatum",
+  search: "", // searchString
+  registratiedatumVanaf: "", // fromDate
+  registratiedatumTot: "", // untilDateExclusive
+  informatieCategorieen: "",
+  onderwerpen: "",
+  publicatiestatus: ""
+};
+
+const {
+  queryParams,
+  pagedResult,
+  pageCount,
+  isFetching: loadingPageResult,
+  error: pagedResultError,
+  onNext,
+  onPrev
+} = usePagedSearch<Publicatie, typeof QueryParamsConfig>("publicaties", QueryParamsConfig);
+
+// sync linked refs from queryParams / urlSearchParams once on init
+watch(queryParams, syncFromQuery, { once: true });
+
+// sync linked refs to queryParams onSearch
+const search = syncToQuery;
 </script>
 
 <style lang="scss" scoped>
-// reset margins, use gaps
-p,
-button,
-input,
-select,
-.form-group {
+// clear margins, use gaps
+:deep(*:not(fieldset, label)) {
   margin-block: 0;
 }
 
 menu {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-default);
   margin-block-end: var(--spacing-default);
-}
-
-fieldset {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--spacing-default);
-
-  .form-group {
-    flex-grow: 1;
-  }
 }
 
 section {
@@ -256,31 +212,6 @@ section {
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   gap: var(--spacing-default);
   margin-block-end: var(--spacing-default);
-
-  .form-group-inline {
-    flex-direction: row;
-    align-items: center;
-
-    label {
-      margin-block: 0;
-      margin-inline-end: var(--spacing-default);
-    }
-  }
-}
-
-.page-nav {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  column-gap: var(--spacing-large);
-
-  menu {
-    margin-block-end: 0;
-  }
-
-  button {
-    padding-block: var(--spacing-extrasmall);
-  }
 }
 
 .card-link-list {

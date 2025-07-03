@@ -91,3 +91,8 @@ export type Kenmerk = {
   kenmerk: string;
   bron: string;
 };
+
+export type WaardelijstItem = {
+  uuid: string;
+  naam: string;
+};

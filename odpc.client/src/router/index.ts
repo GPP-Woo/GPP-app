@@ -11,7 +11,11 @@ const resetFocus = () => {
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  scrollBehavior() {
+  scrollBehavior(to, from) {
+    if (to.path === from.path) {
+      return false;
+    }
+
     resetFocus();
 
     return { top: 0 };
