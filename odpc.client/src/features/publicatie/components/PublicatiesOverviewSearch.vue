@@ -11,13 +11,17 @@
     <date-range-picker v-model:from-date="fromDate" v-model:until-date="untilDateInclusive" />
 
     <div class="form-group-submit">
-      <button type="submit" class="icon-after loupe" aria-label="Zoek">Zoek</button>
+      <button type="submit" class="icon-after loupe" aria-label="Zoek" :disabled="disabled">
+        Zoek
+      </button>
     </div>
   </fieldset>
 </template>
 
 <script setup lang="ts">
 import DateRangePicker from "@/components/DateRangePicker.vue";
+
+defineProps<{ disabled?: boolean }>();
 
 const searchString = defineModel<string>("searchString", { required: true });
 const fromDate = defineModel<string>("fromDate", { required: true });

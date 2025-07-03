@@ -33,38 +33,13 @@
     <section>
       <publicaties-overview-sort v-model:query-params="queryParams" />
 
-      <div class="page-nav">
-        <p aria-live="polite">
-          <strong>{{ pagedResult?.count || 0 }}</strong>
-          {{ pagedResult?.count === 1 ? "resultaat" : "resultaten" }}
-        </p>
-
-        <menu class="reset">
-          <li>
-            <button
-              type="button"
-              aria-label="Vorige pagina"
-              :disabled="!pagedResult?.previous"
-              @click="onPrev"
-            >
-              &laquo;
-            </button>
-          </li>
-
-          <li>pagina {{ queryParams.page }} van {{ pageCount }}</li>
-
-          <li>
-            <button
-              type="button"
-              aria-label="Volgende pagina"
-              :disabled="!pagedResult?.next"
-              @click="onNext"
-            >
-              &raquo;
-            </button>
-          </li>
-        </menu>
-      </div>
+      <publicaties-overview-pagination
+        :paged-result="pagedResult"
+        :page-count="pageCount"
+        :page="queryParams.page"
+        @onPrev="onPrev"
+        @onNext="onNext"
+      />
     </section>
 
     <ul class="reset card-link-list" aria-live="polite">
@@ -142,6 +117,7 @@ import { PublicatieStatus, type Publicatie } from "./types";
 import PublicatiesOverviewSearch from "./components/PublicatiesOverviewSearch.vue";
 import PublicatiesOverviewFilter from "./components/PublicatiesOverviewFilter.vue";
 import PublicatiesOverviewSort from "./components/PublicatiesOverviewSort.vue";
+import PublicatiesOverviewPagination from "./components/PublicatiesOverviewPagination.vue";
 
 const addDays = (dateString: string, days: number) => {
   if (!dateString) return dateString;
@@ -154,11 +130,12 @@ const addDays = (dateString: string, days: number) => {
   return nextDateUtc.toISOString().substring(0, 10);
 };
 
-const searchString = ref("");
-const fromDate = ref("");
+const searchString = ref(""); // search
+const fromDate = ref(""); // registratiedatumVanaf
 const untilDateInclusive = ref("");
 
 // we zoeken met een datum in een datum-tijd veld, daarom corrigeren we de datum hier
+// registratiedatumTot
 const untilDateExclusive = computed({
   get: () => addDays(untilDateInclusive.value, 1),
   set: (v) => (untilDateInclusive.value = addDays(v, -1))
@@ -220,15 +197,13 @@ const search = syncToQuery;
 </script>
 
 <style lang="scss" scoped>
-// reset margins, use gaps
+// clear margins, use gaps
 :deep(*:not(fieldset, label)) {
   margin-block: 0;
 }
 
 menu {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-default);
   margin-block-end: var(--spacing-default);
 }
 
@@ -237,21 +212,6 @@ section {
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   gap: var(--spacing-default);
   margin-block-end: var(--spacing-default);
-}
-
-.page-nav {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  column-gap: var(--spacing-large);
-
-  menu {
-    margin-block-end: 0;
-  }
-
-  button {
-    padding-block: var(--spacing-extrasmall);
-  }
 }
 
 .card-link-list {
