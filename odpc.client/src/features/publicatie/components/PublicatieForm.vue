@@ -129,26 +129,10 @@
         :open="expandOptionGroup"
       />
 
-      <details>
-        <summary>Archivering</summary>
-
-        <dl>
-          <dt>Bron bewaartermijn:</dt>
-          <dd>{{ model.bronBewaartermijn }}</dd>
-
-          <dt>Categorie in bron:</dt>
-          <dd>{{ model.selectiecategorie }}</dd>
-
-          <dt>Archief-actie:</dt>
-          <dd>{{ model.archiefnominatie ? Archiefnominatie[model.archiefnominatie] : "" }}</dd>
-
-          <dt>Archief-actie gepland op:</dt>
-          <dd>{{ formatDate(model.archiefactiedatum) }}</dd>
-
-          <dt>Toelichting:</dt>
-          <dd>{{ model.toelichtingBewaartermijn }}</dd>
-        </dl>
-      </details>
+      <publicatie-archivering
+        v-if="model.publicatiestatus !== PublicatieStatus.concept"
+        v-bind="modelValue"
+      />
     </template>
   </fieldset>
 </template>
@@ -159,16 +143,11 @@ import AlertInline from "@/components/AlertInline.vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
 import DateInput from "@/components/DateInput.vue";
-import { formatDate } from "@/helpers";
 import { useAppData } from "@/composables/use-app-data";
 import { useKenmerken } from "../composables/use-kenmerken";
-import {
-  PublicatieStatus,
-  Archiefnominatie,
-  type MijnGebruikersgroep,
-  type Publicatie
-} from "../types";
+import { PublicatieStatus, type MijnGebruikersgroep, type Publicatie } from "../types";
 import type { OptionProps } from "@/components/option-group/types";
+import PublicatieArchivering from "./PublicatieArchivering.vue";
 
 const props = defineProps<{
   modelValue: Publicatie;
@@ -226,29 +205,5 @@ watch(
 <style lang="scss" scoped>
 input[type="text"]:read-only {
   background-color: var(--disabled);
-}
-
-dl {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: var(--spacing-default);
-  margin: 0;
-
-  dt {
-    grid-column: 1;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  dd {
-    grid-column: 2;
-    font-style: italic;
-    margin: 0;
-  }
-
-  dd:empty,
-  dt:has(+ dd:empty) {
-    display: none;
-  }
 }
 </style>
