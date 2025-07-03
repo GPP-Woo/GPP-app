@@ -17,6 +17,11 @@
         public List<string>? Onderwerpen { get; set; }
         public List<Identifier>? Kenmerken { get; set; }
         public string? UrlPublicatieExtern { get; set; }
+        public string? BronBewaartermijn { get; set; }
+        public string? Selectiecategorie { get; set; }
+        public string? Archiefnominatie { get; set; }
+        public string? Archiefactiedatum { get; set; }
+        public string? ToelichtingBewaartermijn { get; set; }
     }
 
     public class OdpcPublicatie : Publicatie
