@@ -13,9 +13,10 @@ requiring government organisations to actively and digitally publish their docum
 To support govenment organisations in executing this law, the "Generic Publications Platform Woo (GPP-Woo)" was developed. 
 This platform is an aggregation of four components, including the 'GPP App' component. This component provides public servants with a web-based user interface to manulaly upload and publish public records.
 
-For a full publication platform, two additional components are required:
+For a full publication platform, three additional components are required:
 
-* `GPP Publications <https://github.com/GPP-Woo/GPP-publicatiebank>`_, a storage repository and JSON API to manage and expose public records including their metadata.
+* `GPP Publicatiebank <https://github.com/GPP-Woo/GPP-publicatiebank>`_, a storage repository and JSON API to manage and expose public records including their metadata.
+* `GPP Search <https://github.com/GPP-Woo/GPP-zoeken>`_, a component responsible for indexing public records.
 * `GPP Citizen Portal <https://github.com/GPP-Woo/GPP-burgerportaal>`_, a component which provides citizens with a website where they can browse and search through public records.
 
 All components are designed in line with the `Common Ground`_ model.
