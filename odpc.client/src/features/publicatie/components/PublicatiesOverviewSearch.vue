@@ -1,5 +1,5 @@
 <template>
-  <fieldset>
+  <fieldset :disabled="disabled">
     <legend>Zoek op</legend>
 
     <div class="form-group">
@@ -34,6 +34,7 @@ fieldset {
   flex-wrap: wrap;
   align-items: flex-end;
   gap: var(--spacing-default);
+  background-color: var(--accent-bg);
 
   .form-group {
     flex-grow: 1;
