@@ -128,6 +128,11 @@
         v-model="model.onderwerpen"
         :open="expandOptionGroup"
       />
+
+      <publicatie-archivering
+        v-if="model.publicatiestatus !== PublicatieStatus.concept"
+        v-bind="modelValue"
+      />
     </template>
   </fieldset>
 </template>
@@ -142,6 +147,7 @@ import { useAppData } from "@/composables/use-app-data";
 import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, type MijnGebruikersgroep, type Publicatie } from "../types";
 import type { OptionProps } from "@/components/option-group/types";
+import PublicatieArchivering from "./PublicatieArchivering.vue";
 
 const props = defineProps<{
   modelValue: Publicatie;
