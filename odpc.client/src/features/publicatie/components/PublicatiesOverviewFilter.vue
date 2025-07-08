@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Filter op</legend>
+    <legend class="visually-hidden">Filter op</legend>
 
     <div
       v-if="informatiecategorieen?.length"
@@ -9,7 +9,7 @@
       aria-labelledby="informatiecategorieen-label"
     >
       <label id="informatiecategorieen-label" for="informatiecategorieen"
-        >Informatiecategorie</label
+        >Filter op informatiecategorie</label
       >
 
       <select
@@ -32,7 +32,7 @@
       role="group"
       aria-labelledby="onderwerpen-label"
     >
-      <label id="onderwerpen-label" for="onderwerpen">Onderwerp</label>
+      <label id="onderwerpen-label" for="onderwerpen">Filter op onderwerp</label>
 
       <select
         name="onderwerpen"
@@ -49,7 +49,7 @@
     </div>
 
     <div class="form-group" role="group" aria-labelledby="publicatiestatus-label">
-      <label id="publicatiestatus-label" for="publicatiestatus">Publicatiestatus</label>
+      <label id="publicatiestatus-label" for="publicatiestatus">Filter op publicatiestatus</label>
 
       <select
         name="publicatiestatus"
@@ -88,5 +88,8 @@ fieldset {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
   gap: var(--spacing-default);
+  margin-block-end: var(--spacing-large);
+  padding: 0;
+  border: none;
 }
 </style>
