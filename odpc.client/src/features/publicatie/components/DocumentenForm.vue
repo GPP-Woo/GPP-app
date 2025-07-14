@@ -64,7 +64,6 @@ const pendingDocuments = computed(() => documenten.value.filter((doc) => !doc.uu
 const existingDocuments = computed(() => documenten.value.filter((doc) => doc.uuid));
 
 const getInitialDocument = (): PublicatieDocument => ({
-  identifier: "",
   publicatie: "",
   officieleTitel: "",
   verkorteTitel: "",
