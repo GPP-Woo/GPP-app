@@ -23,6 +23,5 @@ Lees meer
 .. toctree::
    :caption: GPP-App documentatie
    :maxdepth: 2
-   :hidden:
 
    Introductie/index
