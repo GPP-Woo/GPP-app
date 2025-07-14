@@ -14,7 +14,10 @@ Om overheidsorganisaties te ondersteunen in de uitvoering van deze wet, is het "
 Dit platform is samengesteld uit vier componenten, waaronder de '**GPP-App**'. 
 Dit component biedt ambtenaren een web-based gebruikers-interface waar zij handmatig openbare documenten kunnen uploaden en publiceren.
 
-Alle componenten zijn ontwikkeld conform het `Common Ground`_ model.
+Alle componenten zijn ontwikkeld in lijn met het `Common Ground`_ model.
+
+
+:ref:`Lees meer <Introductie_index>`
 
 .. toctree::
    :caption: GPP-App documentatie
