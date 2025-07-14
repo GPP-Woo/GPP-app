@@ -1,4 +1,6 @@
-﻿namespace ODPC.Features.Publicaties
+﻿using System.Text.Json.Serialization;
+
+namespace ODPC.Features.Publicaties
 {
     public class Publicatie
     {
@@ -16,11 +18,16 @@
         public List<string>? InformatieCategorieen { get; set; }
         public List<string>? Onderwerpen { get; set; }
         public List<Identifier>? Kenmerken { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? UrlPublicatieExtern { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? BronBewaartermijn { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Selectiecategorie { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Archiefnominatie { get; set; }
         public string? Archiefactiedatum { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? ToelichtingBewaartermijn { get; set; }
     }
 
