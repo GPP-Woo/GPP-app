@@ -17,7 +17,8 @@ Dit component biedt ambtenaren een web-based gebruikers-interface waar zij handm
 Alle componenten zijn ontwikkeld in lijn met het `Common Ground`_ model.
 
 
-:ref:`Lees meer <Introductie_index>`
+Lees meer
+---------------
 
 .. toctree::
    :caption: GPP-App documentatie
