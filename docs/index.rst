@@ -15,4 +15,10 @@ Dit platform is samengesteld uit vier componenten, waaronder de '**GPP-app**'.
 Dit component biedt ambtenaren een web-based gebruikers-interface waar zij handmatig openbare documenten kunnen uploaden en publiceren.
 
 
-`Meer informatie </Introduction/index.rst>`_,
+
+.. toctree::
+   :caption: GPP-App documentatie
+   :maxdepth: 2
+   :hidden:
+
+   Introductie/index
