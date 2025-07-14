@@ -13,7 +13,7 @@ Dit component biedt ambtenaren een web-based gebruikers-interface waar zij handm
 
 Het volledige platform bevat nog 3 andere componenten: 
 
-* `GPP Publiccatiebank <https://github.com/GPP-Woo/GPP-publicatiebank>`_, een opslagvoorziening inclusief API's voor openbare documenten en metadata.
+* `GPP Publicatiebank <https://github.com/GPP-Woo/GPP-publicatiebank>`_, een opslagvoorziening inclusief API's voor openbare documenten en metadata.
 * `GPP Burgerportaal <https://github.com/GPP-Woo/GPP-burgerportaal>`_, een gebruikersinterface voor burgers voor het zoeken en raadplegen van openbare documenten.
 * `GPP Search <https://github.com/GPP-Woo/GPP-zoeken>`_, de zoektechnologie voor het doorzoekbaar en vindbaar maken van openbare documenten. Zowel de metadata als de inhoud van de documenten worden geïndexeerd.
 
