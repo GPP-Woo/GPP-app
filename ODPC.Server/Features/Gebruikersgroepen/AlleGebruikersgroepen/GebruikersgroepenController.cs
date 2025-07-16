@@ -6,8 +6,7 @@ using ODPC.Data;
 
 namespace ODPC.Features.Gebruikersgroepen.AlleGebruikersgroepen
 {
-    [Route("api/v1/[controller]")]
-    [Route("api/v2/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize(AdminPolicy.Name)]
     public class GebruikersgroepenController(OdpcDbContext context) : ControllerBase

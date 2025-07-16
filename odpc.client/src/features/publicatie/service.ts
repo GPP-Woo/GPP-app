@@ -1,7 +1,7 @@
 import { useFetchApi } from "@/api/use-fetch-api";
 import type { Bestandsdeel, MimeType } from "./types";
 
-const { data: mimeTypes } = useFetchApi(() => "/api/v2/formats").json<MimeType[]>();
+const { data: mimeTypes } = useFetchApi(() => "/api/formats").json<MimeType[]>();
 
 const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
   let blobStart = 0;

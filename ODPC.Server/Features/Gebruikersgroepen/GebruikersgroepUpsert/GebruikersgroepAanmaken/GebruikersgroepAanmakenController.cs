@@ -20,8 +20,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepA
         /// <param name="token"></param>
         /// <returns></returns>
 
-        [HttpPost("api/v1/gebruikersgroepen")]
-        [HttpPost("api/v2/gebruikersgroepen")]
+        [HttpPost("api/gebruikersgroepen")]
         public async Task<IActionResult> Post([FromBody] GebruikersgroepUpsertModel model, CancellationToken token)
         {
             var groep = new Data.Entities.Gebruikersgroep { Naam = model.Naam, Omschrijving = model.Omschrijving };
