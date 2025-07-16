@@ -17,7 +17,7 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
     loading: loadingDocumenten,
     error: documentenError
   } = useAllPages<PublicatieDocument>(() =>
-    pubUuid.value ? `/api/v1/documenten/?publicatie=${pubUuid.value}` : null
+    pubUuid.value ? `/api/v2/documenten/?publicatie=${pubUuid.value}` : null
   );
 
   watch(data, (value) => (documenten.value = value ?? []));
@@ -33,7 +33,7 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
     data: documentData,
     isFetching: loadingDocument,
     error: documentError
-  } = useFetchApi(() => `/api/v1/documenten${docUuid.value ? "/" + docUuid.value : ""}`, {
+  } = useFetchApi(() => `/api/v2/documenten${docUuid.value ? "/" + docUuid.value : ""}`, {
     immediate: false
   }).json<PublicatieDocument>();
 

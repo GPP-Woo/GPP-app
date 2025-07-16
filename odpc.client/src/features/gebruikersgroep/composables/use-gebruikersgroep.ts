@@ -3,7 +3,7 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import type { Gebruikersgroep } from "../types";
 
-const API_URL = `/api/v1`;
+const API_URL = `/api/v2`;
 
 export const useGebruikersgroep = (uuid?: string) => {
   const gebruikersgroep = ref<Gebruikersgroep>({

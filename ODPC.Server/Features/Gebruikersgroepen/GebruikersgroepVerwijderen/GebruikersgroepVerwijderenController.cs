@@ -11,6 +11,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepVerwijderen
     public class GebruikersgroepVerwijderenController(OdpcDbContext context) : ControllerBase
     {
         [HttpDelete("api/v1/gebruikersgroepen/{uuid:guid}")]
+        [HttpDelete("api/v2/gebruikersgroepen/{uuid:guid}")]
         public async Task<IActionResult> Delete(Guid uuid, CancellationToken token)
         {
             await context.Gebruikersgroepen.Where(x => x.Uuid == uuid)
