@@ -6,7 +6,7 @@ import type { MijnGebruikersgroep } from "../types";
 export const useMijnWaardelijsten = () => {
   const { lijsten } = useAppData();
 
-  const { data, isFetching, error } = useFetchApi(() => "/api/v2/mijn-gebruikersgroepen").json<
+  const { data, isFetching, error } = useFetchApi(() => "/api/mijn-gebruikersgroepen").json<
     MijnGebruikersgroep[]
   >();
 
