@@ -8,7 +8,7 @@ De GPP-App kan in een Kubernetes-cluster geïnstalleerd worden m.b.v. `Helm <htt
 Omgevingsvariabelen
 --------------------
 
-Bij de installatie heeft de GPP-App verschillende omgevingsvariabelen (“environment variables”) nodig, om goed te functioneren. Deze staan opgesomd en uitgelegd bij de `Github-repository van de GPP-App <https://github.com/GPP-Woo/GPP-APP?tab=readme-ov-file#omgevingsvariabelen>`_. Het gaat hier om variabelen t.b.v.: 
+Bij de installatie heeft de GPP-App verschillende omgevingsvariabelen (“environment variables”) nodig, om goed te functioneren. Deze staan opgesomd en uitgelegd bij de `Github-repository van de GPP-App <https://github.com/GPP-Woo/GPP-APP?tab=readme-ov-file#omgevingsvariabelen>`_. Het gaat hier om variabelen t.b.v. onder andere: 
 - de koppeling met een  OpenID Connect Identity Provider
 - de koppeling met de GPP-Publicatiebank
 
@@ -18,4 +18,4 @@ GPP-app ondersteunt Single Sign On (SSO) met behulp van OpenID Connect identitei
 
 Allereerst moeten de IAM-beheerders in uw organisatie een set referenties in uw omgeving creëren voor GPP-App. Gewoonlijk vereist dit dat ze een Cliënt of een App in een of ander beheersportaal creëren. Deze app moet de callback-eindpunt op een toestemmingslijst plaatsen. Dit wordt meestal de Redirect URI genoemd. Dan moeten de beheerders een aantal gegevens inrichten waarmee GPP-app verbinding kan leggen met uw OpenID Connect identiteitsprovider. Die gegevens moeten worden overgenomen in de Omgevingsvariabelen. 
 
-Alle gebruikers die gekoppeld zijn aan de hierboven genoemde Client of App, hebben toegang tot GPP-App. Voor gebruikers die ook beheeractiviteiten moeten uitvoeren, is het van belang dat er een specifieke rol meekomt uit de Identity Provider. De naam van deze rol, bijvoorbeeld ``app-admin``, moet ook opgenomen worden in de Omgevingsvariabele ``OIDC_ADMIN_ROLE``. Daarnaast moet worden vastgelegd wat de naam is van de claim waarin deze rol wordt meegegegven.
+Alle gebruikers die gekoppeld zijn aan de hierboven genoemde Client of App, hebben toegang tot GPP-App. Voor gebruikers die ook beheeractiviteiten moeten uitvoeren, is het van belang dat er een specifieke rol meekomt uit de Identity Provider. De naam van deze rol, bijvoorbeeld ``app-beheerder``, moet ook opgenomen worden in de Omgevingsvariabele ``OIDC_ADMIN_ROLE``. Daarnaast moet worden vastgelegd wat de naam is van de claim waarin deze rol wordt meegegegven.
