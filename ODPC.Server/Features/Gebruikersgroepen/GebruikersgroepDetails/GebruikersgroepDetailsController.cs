@@ -13,7 +13,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails
     {
         private readonly OdpcDbContext _context = context;
 
-        [HttpGet("api/v1/gebruikersgroepen/{uuid:guid}")]
+        [HttpGet("api/gebruikersgroepen/{uuid:guid}")]
         public async Task<IActionResult> Get(Guid uuid, CancellationToken token)
         {
             var groep = await _context.Gebruikersgroepen

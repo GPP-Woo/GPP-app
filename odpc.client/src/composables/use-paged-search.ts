@@ -66,7 +66,7 @@ export const usePagedSearch = <T, QueryParams extends { [key: string]: string; p
   });
 
   const { get, data, isFetching, error } = useFetchApi(
-    () => `/api/v1/${endpoint}${searchParams.value.size ? "?" + searchParams.value : ""}`,
+    () => `/api/v2/${endpoint}${searchParams.value.size ? "?" + searchParams.value : ""}`,
     {
       immediate: false
     }

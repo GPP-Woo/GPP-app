@@ -14,7 +14,7 @@
 
         <span>
           (<a
-            :href="`/api/v1/documenten/${doc.uuid}/download`"
+            :href="`/api/v2/documenten/${doc.uuid}/download`"
             :title="`Download ${doc.bestandsnaam}`"
             >download</a
           >)

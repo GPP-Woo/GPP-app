@@ -28,7 +28,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import type { Gebruikersgroep } from "./types";
 
-const { data, isFetching, error } = useFetchApi("/api/v1/gebruikersgroepen").json<
+const { data, isFetching, error } = useFetchApi("/api/gebruikersgroepen").json<
   Gebruikersgroep[]
 >();
 </script>

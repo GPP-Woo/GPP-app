@@ -17,9 +17,9 @@ const fetcher = (url: string) =>
 
 const fetchLijsten = async () =>
   promiseAll({
-    organisaties: fetcher("/api/v1/organisaties"),
-    informatiecategorieen: fetcher("/api/v1/informatiecategorieen"),
-    onderwerpen: fetcher("/api/v1/onderwerpen")
+    organisaties: fetcher("/api/v2/organisaties"),
+    informatiecategorieen: fetcher("/api/v2/informatiecategorieen"),
+    onderwerpen: fetcher("/api/v2/onderwerpen")
   });
 
 const lijsten = ref<Awaited<ReturnType<typeof fetchLijsten>> | null>(null);

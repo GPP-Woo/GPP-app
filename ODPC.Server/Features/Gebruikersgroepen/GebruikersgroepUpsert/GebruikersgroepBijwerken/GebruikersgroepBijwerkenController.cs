@@ -21,7 +21,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
         /// <param name="token"></param>
         /// <returns></returns>
 
-        [HttpPut("api/v1/gebruikersgroepen/{uuid:guid}")]
+        [HttpPut("api/gebruikersgroepen/{uuid:guid}")]
         public async Task<IActionResult> Put(Guid uuid, [FromBody] GebruikersgroepUpsertModel model, CancellationToken token)
         {
             var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);

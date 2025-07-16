@@ -3,7 +3,7 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import { useAppData } from "@/composables/use-app-data";
 import type { MijnGebruikersgroep } from "../types";
 
-const API_URL = `/api/v1`;
+const API_URL = `/api`;
 
 export const useMijnGebruikersgroepen = (uuid: MaybeRefOrGetter<string>) => {
   const gebruikersgroepUuid = toRef(uuid);

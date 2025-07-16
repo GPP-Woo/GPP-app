@@ -11,7 +11,7 @@ namespace ODPC.Features.Gebruikersgroepen.MijnGebruikersgroepen
     [Authorize(AdminPolicy.Name)]
     public class MijnGebruikersgroepenController(OdpcUser user, OdpcDbContext context) : ControllerBase
     {
-        [HttpGet("api/{version}/mijn-gebruikersgroepen")]
+        [HttpGet("api/mijn-gebruikersgroepen")]
         public IAsyncEnumerable<MijnGebruikersgroepModel> Get()
         {
             var lowerCaseId = user.Id?.ToLowerInvariant();
