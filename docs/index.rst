@@ -6,16 +6,24 @@
 GPP App
 ================
 
-The Dutch government wishes to be open and transparent to its citizens. To achieve this,
-the law `Wet open overheid (Woo)`_ was established, 
-requiring government organisations to actively and digitally publish their documents and thus create *public records*.
+De overheid wil voor burgers transparant en open zijn. Daarom heeft zij de `Wet open overheid (Woo)`_ vastgesteld. Die vraagt dat gemeenten hun documenten openbaar en digitaal beschikbaar maken. Zo laten gemeenten zien wát zij doen en waaróm zij dat doen.
 
-To support govenment organisations in executing this law, the "Generic Publications Platform Woo (GPP-Woo)" was developed. 
-This platform is an aggregation of four components, including the 'GPP App' component. This component provides public servants with a web-based user interface to manulaly upload and publish public records.
+In de praktijk maken gemeenten al documenten openbaar. Dat doen zij op online platforms die vaak alleen geschikt zijn voor een beperkte set aan documenten.  
 
-For a full publication platform, two additional components are required:
+Om overheidsorganisaties te ondersteunen in de uitvoering van deze wet, is het "Generiek PublicatiePlatform Woo (GPP-Woo)" ontwikkeld. 
+Dit platform is samengesteld uit vier componenten, waaronder de '**GPP-App**'. 
+Dit component biedt ambtenaren een web-based gebruikers-interface waar zij handmatig openbare documenten kunnen uploaden en publiceren.
 
-* `GPP Publications <https://github.com/GPP-Woo/GPP-publicatiebank>`_, a storage repository and JSON API to manage and expose public records including their metadata.
-* `GPP Citizen Portal <https://github.com/GPP-Woo/GPP-burgerportaal>`_, a component which provides citizens with a website where they can browse and search through public records.
+Alle componenten zijn ontwikkeld in lijn met het `Common Ground`_ model.
 
-All components are designed in line with the `Common Ground`_ model.
+
+Lees meer
+---------------
+
+.. toctree::
+   :caption: GPP-App documentatie
+   :maxdepth: 1
+
+   Introductie/index
+   installation/index
+   handleiding/index
