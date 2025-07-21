@@ -3,8 +3,10 @@
 Handleiding voor beheerders
 ===========================
 
-Beheerders kunnen de GPP-App gebruikersgroepen aanmaken, en daar gebruikers aan toevogen. 
-Een gebruikersgroep is gekoppeld aan specfieke organisaties en informatiecategorieën. Gebruikers binnen de gebruikersgroep kunnen alleen publicaties aanmaken voor die organisatie, en binnen die informatiecategorieën. 
+Mogelijk mag niet iedere gebruiker op álle informatiecategorieën en namens álle (geactiveerde) organisaties publicaties aanmaken. In de GPP-app kunnen dan ook gebruikersgroepen aangemaakt worden en kunnen hier autorisaties aan toegekend worden. Een gebruikersgroep is gekoppeld aan specfieke organisaties en informatiecategorieën. Gebruikers binnen de gebruikersgroep kunnen alleen publicaties aanmaken voor die organisatie, en binnen die informatiecategorieën. 
+
+Alleen gebruikers met beheerders-rechten kunnen in de GPP-App gebruikersgroepen aanmaken, en daar gebruikers aan toevoegen. 
+
 
 Hoe krijgt een gebruiker beheerders-rechten
 --------------------------------------------
@@ -27,8 +29,17 @@ Gebruikersgroep gegevens
 * **Gebruiker toevoegen**: in dit veld vul je de identificatie van de nieuwe gebruiker in. 
 * **Toegevoegde gebruikers**: hier zie je de identificaties van de gebruikers die aan deze groep zijn toegevoegd. 
 
-Gebruikers worden toegeveogd aan een gebruikersgroep op basis van hun identificatie in de Identity Provider. Vaak is dit het e-mailadres. Stem dit af met de beheerders van de Identity Provider
+Gebruikers worden toegevoegd aan een gebruikersgroep op basis van hun identificatie in de Identity Provider. Vaak is dit het e-mailadres. Stem dit af met de beheerders van de Identity Provider
+
+Waardelijsten
+^^^^^^^^^^^^^^^
+
+Bij Waardelijsten zie je voor welke Organisaties, Informatiecategorieën en Onderwerpen deze gebruikersgroep geautoriseerd is. Dit betekent dat de gebruikers uit deze gebruikersgroep Publicaties kunnen aanmaken voor die Organisaties, Informatiecategorieën en Onderwerpen. Door één van deze onderdelen open te vouwen, kun je zien welke items er binnen dat onderdeel zijn
+
+* Door een item aan te vinken, wordt de gebruikersgroep geautoriseerd voor dat item
+* DOor een item uit te vinken, wordt de autorisatie voor dat item voor de gebruikersgroep ingetrokken. 
+  * Let op: houd er bij het intrekken van autorisaties rekening mee, dat gebruikers binnen deze gebruikersgroep al wel publicaties hebben aangemaakt binnen die autorisatie. Na het intrekken van die autorisatie, krijgen deze gebruikers een foutmelding bij die publicaties. Hierin staat de instructie om contact op te nemen met de beheerder. 
 
 
-
+Let op: het beheren van de waardes in de waardlijsten gebeurt in het registratiecomponent waar de GPP-App aan is gekoppeld. De `GPP-Publicatiebank <https://gpp-publicatiebank.readthedocs.io/en/latest/admin/index.html>`_` is zo'n component. 
 
