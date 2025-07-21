@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ODPC.Authentication;
 using ODPC.Data;
@@ -8,7 +6,6 @@ using ODPC.Data;
 namespace ODPC.Features.Gebruikersgroepen.MijnGebruikersgroepen
 {
     [ApiController]
-    [Authorize(AdminPolicy.Name)]
     public class MijnGebruikersgroepenController(OdpcUser user, OdpcDbContext context) : ControllerBase
     {
         [HttpGet("api/mijn-gebruikersgroepen")]
