@@ -6,10 +6,10 @@ Introductie
 De overheid wil voor burgers transparant en open zijn. Daarom heeft zij de `Wet open overheid (Woo)`_ vastgesteld. Die vraagt dat gemeenten hun documenten openbaar en digitaal beschikbaar maken. Zo laten gemeenten zien wát zij doen en waaróm zij dat doen.
 
 In de praktijk maken gemeenten al documenten openbaar. Dat doen zij op online platforms die vaak alleen geschikt zijn voor een beperkte set aan documenten.  
-
-Om overheidsorganisaties te ondersteunen in de uitvoering van deze wet, is het "Generiek PublicatiePlatform Woo (GPP-Woo)" ontwikkeld. 
+ 
+Om gemeenten te ondersteunen in de uitvoering van deze wet, is het "Generiek Publicatieplatform Woo (GPP-Woo)" ontwikkeld. 
 Dit platform is samengesteld uit vier componenten, waaronder de '**GPP-app**'. 
-Dit component biedt ambtenaren een web-based gebruikers-interface waar zij handmatig openbare documenten kunnen uploaden en publiceren.
+Dit component biedt ambtenaren een web-based gebruikersinterface waar zij handmatig openbare documenten kunnen uploaden en publiceren.
 
 Het volledige platform bevat nog 3 andere componenten: 
 
@@ -29,7 +29,6 @@ Alle componenten zijn ontwikkeld in lijn met het `Common Ground`_ model.
 .. toctree::
    :maxdepth: 1
    
-
    team.md
 
  
