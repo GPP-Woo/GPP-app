@@ -1,9 +1,9 @@
 import { ref, onMounted, watch } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
-import type { Publicatie } from "../types";
+import { PublicatieStatus, type Publicatie } from "../types";
 
-const API_URL = `/api/v1`;
+const API_URL = `/api/v2`;
 
 export const usePublicatie = (uuid?: string) => {
   const publicatie = ref<Publicatie>({
@@ -12,23 +12,34 @@ export const usePublicatie = (uuid?: string) => {
     officieleTitel: "",
     verkorteTitel: "",
     omschrijving: "",
-    publicatiestatus: "gepubliceerd",
+    publicatiestatus: PublicatieStatus.concept,
     informatieCategorieen: [],
-    onderwerpen: []
+    onderwerpen: [],
+    gebruikersgroep: "",
+    kenmerken: []
   });
 
   const {
-    get: getPublicatie,
-    post: postPublicatie,
-    put: putPublicatie,
-    data: publicatieData,
-    isFetching: loadingPublicatie,
-    error: publicatieError
+    data,
+    isFetching,
+    error,
+    get,
+    post,
+    put,
+    delete: deleteMethod
   } = useFetchApi(() => `${API_URL}/publicaties${uuid ? "/" + uuid : ""}`, {
     immediate: false
   }).json<Publicatie>();
 
-  watch(publicatieData, (value) => (publicatie.value = value || publicatie.value));
+  watch(data, (value) => {
+    if (value) {
+      publicatie.value = {
+        ...value,
+        ...{ publisher: value.publisher ?? publicatie.value.publisher },
+        ...{ gebruikersgroep: value.gebruikersgroep ?? publicatie.value.gebruikersgroep }
+      };
+    }
+  });
 
   const submitPublicatie = async () => {
     // Fill required verantwoordelijke with publisher value and add to publicatie
@@ -36,34 +47,49 @@ export const usePublicatie = (uuid?: string) => {
       ...publicatie.value,
       ...{
         verantwoordelijke: publicatie.value.publisher
-        // opsteller: publicatie.value.publisher
       }
     };
 
     if (uuid) {
-      await putPublicatie(publicatie).execute();
+      await put(publicatie).execute();
     } else {
-      await postPublicatie(publicatie).execute();
+      await post(publicatie).execute();
     }
 
-    if (publicatieError.value) {
+    if (error.value) {
       toast.add({
-        text: "De publicatie kon niet worden opgeslagen. Probeer het nogmaals of neem contact op met uw beheerder.",
+        text: "De publicatie kon niet worden opgeslagen. Probeer het nogmaals of neem contact op met de beheerder.",
         type: "error"
       });
 
-      publicatieError.value = null;
+      error.value = null;
 
       throw new Error(`submitPublicatie`);
     }
   };
 
-  onMounted(() => uuid && getPublicatie().execute());
+  const deletePublicatie = async () => {
+    await deleteMethod().text().execute();
+
+    if (error.value) {
+      toast.add({
+        text: "De publicatie kon niet worden verwijderd. Probeer het nogmaals of neem contact op met de beheerder.",
+        type: "error"
+      });
+
+      error.value = null;
+
+      throw new Error(`removePublicatie`);
+    }
+  };
+
+  onMounted(() => uuid && get().execute());
 
   return {
     publicatie,
-    loadingPublicatie,
-    publicatieError,
-    submitPublicatie
+    isFetching,
+    error,
+    submitPublicatie,
+    deletePublicatie
   };
 };

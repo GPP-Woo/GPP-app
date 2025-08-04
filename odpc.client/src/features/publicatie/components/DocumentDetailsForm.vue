@@ -14,61 +14,106 @@
 
         <span>
           (<a
-            :href="`/api/v1/documenten/${doc.uuid}/download`"
+            :href="`/api/v2/documenten/${doc.uuid}/download`"
             :title="`Download ${doc.bestandsnaam}`"
             >download</a
           >)
         </span>
       </summary>
 
-      <div v-if="!disabled" class="form-group form-group-radio">
-        <label>
-          <input
-            type="radio"
-            v-model="doc.publicatiestatus"
-            :value="PublicatieStatus.gepubliceerd"
-          />
-          Gepubliceerd
-        </label>
-
+      <div v-if="!isReadonly" class="form-group">
         <label
           ><input
-            type="radio"
-            v-model="doc.publicatiestatus"
-            :value="PublicatieStatus.ingetrokken"
+            type="checkbox"
+            v-model="pendingAction"
+            :value="PendingDocumentActions[doc.publicatiestatus]"
+            :aria-describedby="`pendingAction-${detailsId}`"
           />
-          Ingetrokken</label
+          {{
+            doc.publicatiestatus === PublicatieStatus.concept
+              ? `Document verwijderen`
+              : `Document intrekken`
+          }}
+        </label>
+
+        <span v-show="doc.pendingAction" :id="`pendingAction-${detailsId}`" class="alert"
+          >Let op: deze actie kan niet ongedaan worden gemaakt.</span
         >
       </div>
     </template>
 
+    <date-input
+      v-model="doc.creatiedatum"
+      :id="`creatiedatum-${detailsId}`"
+      label="Datum document"
+      :max-date="ISOToday"
+      :required="true"
+      :disabled="isReadonly"
+    />
+
     <div class="form-group">
-      <label for="titel">Titel *</label>
+      <label :for="`titel-${detailsId}`">Titel *</label>
 
       <input
-        id="titel"
+        :id="`titel-${detailsId}`"
         type="text"
-        v-model="doc.officieleTitel"
+        v-model.trim="doc.officieleTitel"
         required
         aria-required="true"
         :aria-describedby="`titelError-${detailsId}`"
         :aria-invalid="!doc.officieleTitel"
+        v-bind="disabledAttrs"
       />
 
-      <span :id="`titelError-${detailsId}`" class="error">Titel is een verplicht veld</span>
+      <span :id="`titelError-${detailsId}`" class="error">Titel is een verplicht veld.</span>
     </div>
 
     <div class="form-group">
-      <label for="verkorte_titel">Verkorte titel</label>
+      <label :for="`verkorte_titel-${detailsId}`">Verkorte titel</label>
 
-      <input id="verkorte_titel" type="text" v-model="doc.verkorteTitel" />
+      <input
+        :id="`verkorte_titel-${detailsId}`"
+        type="text"
+        v-model="doc.verkorteTitel"
+        v-bind="disabledAttrs"
+      />
     </div>
 
     <div class="form-group">
-      <label for="omschrijving">Omschrijving</label>
+      <label :for="`omschrijving-${detailsId}`">Omschrijving</label>
 
-      <textarea id="omschrijving" v-model="doc.omschrijving" rows="4"></textarea>
+      <textarea
+        :id="`omschrijving-${detailsId}`"
+        v-model="doc.omschrijving"
+        rows="4"
+        v-bind="disabledAttrs"
+      ></textarea>
     </div>
+
+    <date-input
+      v-model="doc.ontvangstdatum"
+      :id="`ontvangstdatum-${detailsId}`"
+      label="Datum ontvangst"
+      :max-date="ISOToday"
+      :to-date-time="true"
+      :disabled="isReadonly"
+    />
+
+    <date-input
+      v-model="doc.datumOndertekend"
+      :id="`datumOndertekend-${detailsId}`"
+      label="Datum ondertekening (intern)"
+      :max-date="ISOToday"
+      :to-date-time="true"
+      :disabled="isReadonly"
+    />
+
+    <add-remove-items
+      v-model="kenmerken"
+      item-name-singular="kenmerk"
+      item-name-plural="kenmerken"
+      :is-readonly="isReadonly"
+    />
 
     <button
       v-if="!doc.uuid"
@@ -82,14 +127,31 @@
 </template>
 
 <script setup lang="ts">
-import { useId, useModel } from "vue";
-import { PublicatieStatus, type PublicatieDocument } from "../types";
+import { computed, useId, useModel } from "vue";
+import AddRemoveItems from "@/components/AddRemoveItems.vue";
+import DateInput from "@/components/DateInput.vue";
+import { useKenmerken } from "../composables/use-kenmerken";
+import { PublicatieStatus, PendingDocumentActions, type PublicatieDocument } from "../types";
+import { ISOToday } from "@/helpers";
 
-const props = defineProps<{ doc: PublicatieDocument; disabled?: boolean }>();
+const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean }>();
 
 const doc = useModel(props, "doc");
 
+const kenmerken = useKenmerken(doc);
+
 const detailsId = useId();
+
+const pendingAction = computed({
+  get: () => !!doc.value.pendingAction,
+  set: (checked) => {
+    doc.value.pendingAction = checked ? PendingDocumentActions[doc.value.publicatiestatus] : null;
+  }
+});
+
+const disabledAttrs = computed(() =>
+  props.isReadonly ? { disabled: true, "aria-disabled": true } : {}
+);
 </script>
 
 <style lang="scss" scoped>

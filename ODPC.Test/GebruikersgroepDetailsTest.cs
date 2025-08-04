@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using ODPC.Data.Entities;
-using ODPC.Features.Gebruikersgroep;
-using ODPC.Features.Gebruikersgroep.GebruikersgroepDetails;
+using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
 
 namespace ODPC.Test
 {

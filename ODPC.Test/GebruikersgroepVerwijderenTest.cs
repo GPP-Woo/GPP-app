@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ODPC.Data.Entities;
-using ODPC.Features.Gebruikersgroep.GebruikersgroepVerwijderen;
+using ODPC.Features.Gebruikersgroepen.GebruikersgroepVerwijderen;
 
 namespace ODPC.Test
 {

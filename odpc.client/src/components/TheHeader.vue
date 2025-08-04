@@ -11,6 +11,10 @@
         <li v-if="user?.isAdmin">
           <router-link :to="{ name: 'gebruikersgroepen' }">Gebruikersgroepen</router-link>
         </li>
+
+        <li>
+          <a href="/api/logoff" title="Uitloggen" class="icon-after exit">Uitloggen</a>
+        </li>
       </ul>
     </nav>
   </header>

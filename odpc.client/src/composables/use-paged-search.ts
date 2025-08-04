@@ -1,59 +1,57 @@
-import { ref, watch, computed, onMounted, type Ref } from "vue";
+import { ref, watch, computed, onMounted, readonly } from "vue";
 import { useRouter } from "vue-router";
 import { useUrlSearchParams } from "@vueuse/core";
 import { useFetchApi, type PagedResult } from "@/api";
 
 const PAGE_SIZE = 10;
 
-export const usePagedSearch = <T, QueryParams extends { page: string }>(
+export const usePagedSearch = <T, QueryParams extends { [key: string]: string; page: string }>(
   endpoint: string,
-  params: QueryParams
+  queryParamsConfig: QueryParams
 ) => {
   const router = useRouter();
 
   const urlSearchParams = useUrlSearchParams("history", {
-    initialValue: params,
+    initialValue: queryParamsConfig,
     removeFalsyValues: true
   });
 
-  const pagedResult = ref(null) as Ref<PagedResult<T> | null>;
-
-  const queryParams = ref(params) as Ref<QueryParams>;
-  const paramKeys = Object.keys(params) as (keyof QueryParams)[];
+  const queryParams = ref({ ...queryParamsConfig });
+  const queryParamKeys = Object.keys(queryParamsConfig);
 
   const initQueryParams = () => {
-    queryParams.value = paramKeys.reduce(
-      (result, key) => ({
-        ...result,
-        [key]: urlSearchParams[key] ? decodeURIComponent(urlSearchParams[key] as string) : ""
-      }),
-      {} as QueryParams
+    queryParams.value = Object.fromEntries(
+      queryParamKeys.map((key) => [
+        key,
+        urlSearchParams[key] ? decodeURIComponent(urlSearchParams[key] as string) : ""
+      ])
     );
   };
 
-  const onNext = () => (queryParams.value.page = `${+queryParams.value.page + 1}`);
+  const onNext = () => {
+    queryParams.value.page = String(Number(queryParams.value.page) + 1);
+  };
 
-  const onPrev = () => (queryParams.value.page = `${+queryParams.value.page - 1}`);
+  const onPrev = () => {
+    queryParams.value.page = String(Math.max(1, Number(queryParams.value.page) - 1));
+  };
 
   const pageCount = computed(() =>
-    pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0
+    data.value?.count ? Math.ceil(data.value.count / PAGE_SIZE) : 0
   );
 
   const searchParams = computed(
     () =>
       new URLSearchParams(
-        paramKeys.reduce(
-          (result, key) =>
-            queryParams.value[key]
-              ? { ...result, [key]: encodeURIComponent(queryParams.value[key] as string) }
-              : result,
-          {}
-        )
+        queryParamKeys
+          .filter((key) => !!queryParams.value[key]?.trim())
+          .map((key) => [key, encodeURIComponent(queryParams.value[key])])
       )
   );
 
+  // Watch for search param changes
   watch(searchParams, async (newParams, oldParams) => {
-    // Reset to page 1 when a filter or the sorting changes
+    // Reset to page 1 when filters change (but not page)
     if (newParams.get("page") === oldParams.get("page") && queryParams.value.page !== "1") {
       queryParams.value.page = "1";
 
@@ -63,37 +61,27 @@ export const usePagedSearch = <T, QueryParams extends { page: string }>(
     // Update history
     router.replace({ query: { ...Object.fromEntries(newParams.entries()) } });
 
-    // Search but wait if fetching
-    await new Promise<void>((resolve) => {
-      const interval = setInterval(() => {
-        if (!isFetching.value) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 100);
-    });
-
+    // Execute new search
     await get().execute();
   });
 
   const { get, data, isFetching, error } = useFetchApi(
-    () => `/api/v1/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
+    () => `/api/v2/${endpoint}${searchParams.value.size ? "?" + searchParams.value : ""}`,
     {
       immediate: false
     }
   ).json<PagedResult<T>>();
 
-  watch(data, (value) => (pagedResult.value = value || pagedResult.value));
-
+  // Get initial params from search url
   onMounted(initQueryParams);
 
   return {
-    pagedResult,
     queryParams,
-    pageCount,
+    pagedResult: readonly(data),
+    pageCount: readonly(pageCount),
+    isFetching: readonly(isFetching),
+    error: readonly(error),
     onNext,
-    onPrev,
-    isFetching,
-    error
+    onPrev
   };
 };

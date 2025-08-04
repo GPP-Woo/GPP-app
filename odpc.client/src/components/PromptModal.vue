@@ -6,13 +6,13 @@
       <menu class="reset">
         <li>
           <button type="submit" value="cancel" class="button secondary">
-            {{ cancelMessage }}
+            {{ cancelText }}
           </button>
         </li>
 
         <li>
           <button type="submit" value="confirm">
-            {{ confirmMessage }}
+            {{ confirmText }}
           </button>
         </li>
       </menu>
@@ -24,30 +24,28 @@
 import { ref } from "vue";
 import { whenever, type UseConfirmDialogReturn } from "@vueuse/core";
 
-const props = withDefaults(
-  defineProps<{
-    dialog: UseConfirmDialogReturn<unknown, unknown, unknown>;
-    cancelMessage?: string;
-    confirmMessage?: string;
-  }>(),
-  {
-    cancelMessage: "Nee",
-    confirmMessage: "Ja"
-  }
-);
+const {
+  dialog,
+  cancelText = "Nee",
+  confirmText = "Ja"
+} = defineProps<{
+  dialog: UseConfirmDialogReturn<unknown, unknown, unknown>;
+  cancelText?: string;
+  confirmText?: string;
+}>();
 
 const dialogRef = ref<HTMLDialogElement>();
 
 const onClose = () => {
   if (dialogRef.value?.returnValue === "confirm") {
-    props.dialog.confirm();
+    dialog.confirm();
   } else {
-    props.dialog.cancel();
+    dialog.cancel();
   }
 };
 
 whenever(
-  () => props.dialog.isRevealed.value,
+  () => dialog.isRevealed.value,
   () => {
     dialogRef.value?.showModal();
   },
@@ -66,6 +64,10 @@ form {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-default);
+
+  > * {
+    margin-block: 0;
+  }
 }
 
 dialog {

@@ -1,8 +1,8 @@
 <template>
-  <fieldset v-if="documenten" aria-live="polite" :disabled="disabled">
+  <fieldset v-if="documenten" aria-live="polite">
     <legend>Documenten</legend>
 
-    <file-upload v-if="!disabled" @filesSelected="filesSelected" />
+    <file-upload v-if="!isReadonly" @filesSelected="filesSelected" />
 
     <template v-if="pendingDocuments.length">
       <h2>Nieuwe documenten</h2>
@@ -22,11 +22,11 @@
         v-for="(doc, index) in existingDocuments"
         :key="index"
         :doc="doc"
-        :disabled="disabled"
+        :is-readonly="isReadonly || doc.publicatiestatus === PublicatieStatus.ingetrokken"
       />
     </template>
 
-    <alert-inline v-if="disabled && !documenten.length"
+    <alert-inline v-if="isReadonly && !documenten.length"
       >Er zijn geen gekoppelde documenten.</alert-inline
     >
 
@@ -50,7 +50,7 @@ import DocumentDetailsForm from "./DocumentDetailsForm.vue";
 const props = defineProps<{
   files: File[];
   documenten: PublicatieDocument[];
-  disabled: boolean;
+  isReadonly: boolean;
 }>();
 
 const dialog = useConfirmDialog();
@@ -64,16 +64,16 @@ const pendingDocuments = computed(() => documenten.value.filter((doc) => !doc.uu
 const existingDocuments = computed(() => documenten.value.filter((doc) => doc.uuid));
 
 const getInitialDocument = (): PublicatieDocument => ({
-  identifier: "",
   publicatie: "",
   officieleTitel: "",
   verkorteTitel: "",
   omschrijving: "",
-  publicatiestatus: PublicatieStatus.gepubliceerd,
+  publicatiestatus: PublicatieStatus.concept,
   creatiedatum: new Date().toISOString().split("T")[0],
   bestandsnaam: "",
   bestandsformaat: "",
-  bestandsomvang: 0
+  bestandsomvang: 0,
+  kenmerken: []
 });
 
 // for file types zip and 7z mimetypes are sometimes not properly mapped
