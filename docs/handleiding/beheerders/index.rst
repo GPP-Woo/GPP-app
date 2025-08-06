@@ -3,7 +3,7 @@
 Handleiding voor beheerders
 ===========================
 
-Mogelijk mag niet iedere gebruiker op álle informatiecategorieën en namens álle (geactiveerde) organisaties publicaties aanmaken. In de GPP-app kunnen dan ook gebruikersgroepen aangemaakt worden en kunnen hier autorisaties aan toegekend worden. Een gebruikersgroep is gekoppeld aan specifieke organisaties en informatiecategorieën. Gebruikers binnen de gebruikersgroep kunnen alleen publicaties aanmaken voor die organisatie, en binnen die informatiecategorieën. 
+Mogelijk mag niet iedere gebruiker op álle informatiecategorieën en onderwerpen en namens álle (geactiveerde) organisaties publicaties aanmaken. In de GPP-app kunnen dan ook gebruikersgroepen aangemaakt worden en kunnen hier autorisaties aan toegekend worden. Een gebruikersgroep is gekoppeld aan specifieke organisaties, informatiecategorieën en onderwerpen. Gebruikers binnen de gebruikersgroep kunnen alleen publicaties aanmaken voor die organisatie, en binnen die informatiecategorieën. 
 
 Alleen gebruikers met beheerders-rechten kunnen in de GPP-App gebruikersgroepen aanmaken, en daar gebruikers aan toevoegen. 
 
@@ -34,7 +34,7 @@ Gebruikers worden toegevoegd aan een gebruikersgroep op basis van hun identifica
 Waardelijsten
 ^^^^^^^^^^^^^^^
 
-Bij Waardelijsten zie je voor welke Organisaties, Informatiecategorieën en Onderwerpen deze gebruikersgroep geautoriseerd is. Dit betekent dat de gebruikers uit deze gebruikersgroep Publicaties kunnen aanmaken voor die Organisaties, Informatiecategorieën en Onderwerpen. Door één van deze onderdelen open te vouwen, kun je zien welke items er binnen dat onderdeel zijn
+Bij Waardelijsten zie je voor welke Organisaties, Informatiecategorieën en Onderwerpen deze gebruikersgroep geautoriseerd is. Dit betekent dat de gebruikers uit deze gebruikersgroep Publicaties kunnen aanmaken voor die Organisaties, Informatiecategorieën en Onderwerpen. Door één van deze onderdelen open te vouwen, kun je zien welke items er binnen dat onderdeel zijn.
 
 * Door een item aan te vinken, wordt de gebruikersgroep geautoriseerd voor dat item
 * Door een item uit te vinken, wordt de autorisatie voor dat item voor de gebruikersgroep ingetrokken. 
