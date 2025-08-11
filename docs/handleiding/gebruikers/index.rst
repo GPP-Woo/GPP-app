@@ -15,7 +15,7 @@ Toegang tot de GPP-App
 Voordat je kunt gaan werken in de GPP-App, moeten er twee dingen gebeuren: 
 
 1. Je moet als gebruiker worden geautoriseerd voor de GPP-App, in de Identity Provider. Dit moet gebeuren door de beheerders van Identity en Access Management (IAM).
-2. Je moet, door de beheerder van de GPP-App worden geautoriseerd voor organisaties, informatiecategorieën en onderwerpen. 
+2. Je moet, door de beheerder van de GPP-App, worden geautoriseerd voor organisaties, informatiecategorieën en onderwerpen. 
 
 
 Publicaties aanmaken en beheren
@@ -26,10 +26,11 @@ Met de knop 'Nieuwe publicatie' open je het scherm om een publicatie aan te make
 Publicatie 
 ^^^^^^^^^^^^
 In het linkerdeel van het scherm vul je de gegevens van de publicatie in: 
-* **Titel** Bij titel vul je de officiële titel in van de publicatie. Deze is verplicht
-* **Meer details** Hier kun je een verkorte titel en een omschrijving invullen. 
-* **Organisatie** Je moet een publicatie aan organisatie koppelen. Je ziet hier alleen de organisaties waarvoor jij geautoriseerd bent.
-* **informatiecategorieën** Je moet een publicatie aan minimaal één publicatiecategorie koppelen. Je kunt er ook meerdere koppelen. Je ziet hier alleen de informatiecategorieën waarvoor jij geautoriseerd bent. 
+
+* **Titel**: Bij titel vul je de officiële titel in van de publicatie. Deze is verplicht
+* **Meer details**: Hier kun je een verkorte titel en een omschrijving invullen. 
+* **Organisatie**: Je moet een publicatie aan organisatie koppelen. Je ziet hier alleen de organisaties waarvoor jij geautoriseerd bent.
+* **informatiecategorieën**: Je moet een publicatie aan minimaal één publicatiecategorie koppelen. Je kunt er ook meerdere koppelen. Je ziet hier alleen de informatiecategorieën waarvoor jij geautoriseerd bent. 
 
 Documenten 
 ^^^^^^^^^^^^
@@ -37,9 +38,9 @@ Bij documenten kun je één of meer bestanden toevoegen aan je publicatie. Dit d
 
 Per bestand moet je vervolgens een aantal gegevens invullen. 
 
-* **Titel** Hier vul je de officiële titel in van het document. Deze is verplicht.
-* **Verkorte titel** Ook een document kan een verkorte titel hebben. 
-* **Omschrijving** Hier kun je een korte omschrijving geven van het document. 
+* **Titel**: Hier vul je de officiële titel in van het document. Deze is verplicht.
+* **Verkorte titel**: Ook een document kan een verkorte titel hebben. 
+* **Omschrijving**: Hier kun je een korte omschrijving geven van het document. 
 
-Klik op Opslaan om de publicatie je wijziging op te slaan. De bijbehorende bestanden worden nu geüpload naar het registratiecomponent. 
+Klik op Opslaan om de publicatie, of de wijziging in je publicatie, op te slaan. De bijbehorende bestanden worden nu geüpload naar het registratiecomponent. 
 Als je een nieuwe publicatie aanmaakt, wordt op dit moment ook de publicatiedatum vastgelegd. 
