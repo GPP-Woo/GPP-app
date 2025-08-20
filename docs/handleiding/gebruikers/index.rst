@@ -38,7 +38,7 @@ In het linkerdeel van het scherm vul je de gegevens van de publicatie in:
   * **Toegevoegde kenmerken**: Hieronder zie je alle toegevoegde kenmerken. Met het kruisje achter een kenmerk kun je deze verwijderen.
 
 
-* **Organisatie**: Een publicatie is altijd gekoppeld aan minimaal één organisatie organisatie. Je ziet hier alleen de organisaties waarvoor jij geautoriseerd bent. Dit veld is verplicht bij publiceren. 
+* **Organisatie**: Een publicatie is altijd gekoppeld aan minimaal één organisatie. Je ziet hier alleen de organisaties waarvoor jij geautoriseerd bent. Dit veld is verplicht bij publiceren. 
 * **Informatiecategorieën**: Een publicatie is altijd gekoppeld aan minimaal één publicatiecategorie. Je kunt er ook meerdere koppelen. Je ziet hier alleen de informatiecategorieën waarvoor jij geautoriseerd bent. Dit veld is verplicht bij publiceren. 
 * **Onderwerpen**: Je kunt een publicatie koppelen aan één of meer Onderwerpen. Onderwerpen zijn onderwerpen of thema's die bijzondere aandacht genieten in de gemeente. Denk bijvoorbeeld aan de aanleg van een park of de komst van een AZC. Publicaties over deze onderwerpen kunnen zo gebundeld worden. Zij krijgen een aparte presentatie in het Burgerportaal, zie bijvoorbeeld het `GPP-Burgerportaal <https://gpp-burgerportaal.readthedocs.io/en/stable/handleiding/index.html#lokale-thema-s-onderwerpen>`_.
 
