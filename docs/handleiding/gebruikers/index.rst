@@ -31,6 +31,13 @@ In het linkerdeel van het scherm vul je de gegevens van de publicatie in:
 * **Meer details**
 
   * **Verkorte titel**: Hier kun je een verkorte titel en een omschrijving invullen. 
+  * **Omschrijving**:  Hier kun je een omschrijving van de publicatie invullen.
+  * **Datum in werking**: Hier kun je de datum invullen waarop de rechten en plichten vastgelegd in de publicatie in werking treden.
+  * **Datum buiten werking**: Hier kun je de datum invullen waarop de rechten en plichten vastgelegd in de publicatie (zijn) komen te vervallen. 
+  * **Kenmerk toevoegen**: Hier kun je één of meer kenmerken aan de publicatie toekennen. Dit kan bijvoorbeeld een documentnummer (identificatie) uit een aanleverend zaaksysteem of DMS (bron) zijn.
+  * **Toegevoegde kenmerken**: Hieronder zie je alle toegevoegde kenmerken. Met het kruisje achter een kenmerk kun je deze verwijderen.
+
+
 * **Organisatie**: Een publicatie is altijd gekoppeld aan minimaal één organisatie organisatie. Je ziet hier alleen de organisaties waarvoor jij geautoriseerd bent. Dit veld is verplicht bij publiceren. 
 * **Informatiecategorieën**: Een publicatie is altijd gekoppeld aan minimaal één publicatiecategorie. Je kunt er ook meerdere koppelen. Je ziet hier alleen de informatiecategorieën waarvoor jij geautoriseerd bent. Dit veld is verplicht bij publiceren. 
 * **Onderwerpen**: Je kunt een publicatie koppelen aan één of meer Onderwerpen. Onderwerpen zijn onderwerpen of thema's die bijzondere aandacht genieten in de gemeente. Denk bijvoorbeeld aan de aanleg van een park of de komst van een AZC. Publicaties over deze onderwerpen kunnen zo gebundeld worden. Zij krijgen een aparte presentatie in het Burgerportaal, zie bijvoorbeeld het `GPP-Burgerportaal <https://gpp-burgerportaal.readthedocs.io/en/stable/handleiding/index.html#lokale-thema-s-onderwerpen>`_.
@@ -48,6 +55,8 @@ Per bestand moet je vervolgens een aantal gegevens invullen.
 * **Datum ontvangst**: Als van toepassing, kun je hier de datum invullen waarop het document door of namens de organisatie in ontvangst is genomen.
 * **Datum ondertekening (intern)**: Als van toepassing kun je hier de datum invullen waarop het document (door alle partijen) ondertekend is.
 * **Kenmerk toevoegen**: Hier kun je één of meer kenmerken aan het bestand toekennen. Dit kan bijvoorbeeld een documentnummer (identificatie) uit een aanleverend zaaksysteem of DMS (bron) zijn.
+* **Toegevoegde kenmerken**: Hieronder zie je alle toegevoegde kenmerken. Met het kruisje achter een kenmerk kun je deze verwijderen. 
+
 
 Opslaan en publiceren
 ^^^^^^^^^^^^^^^^^^^^^^
