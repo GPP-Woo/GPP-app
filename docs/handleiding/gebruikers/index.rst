@@ -27,10 +27,11 @@ Publicatie
 ^^^^^^^^^^^^
 In het linkerdeel van het scherm vul je de gegevens van de publicatie in: 
 
-* **Titel**: Bij titel vul je de officiële titel in van de publicatie. Deze is verplicht
+* **Titel**: Bij titel vul je de officiële titel in van de publicatie. Deze is altijd verplicht.
 * **Meer details**: Hier kun je een verkorte titel en een omschrijving invullen. 
-* **Organisatie**: Je moet een publicatie aan organisatie koppelen. Je ziet hier alleen de organisaties waarvoor jij geautoriseerd bent.
-* **informatiecategorieën**: Je moet een publicatie aan minimaal één publicatiecategorie koppelen. Je kunt er ook meerdere koppelen. Je ziet hier alleen de informatiecategorieën waarvoor jij geautoriseerd bent. 
+* **Organisatie**: Een publicatie is altijd gekoppeld aan minimaal één organisatie organisatie. Je ziet hier alleen de organisaties waarvoor jij geautoriseerd bent. Dit veld is verplicht bij publiceren. 
+* **Informatiecategorieën**: Een publicatie is altijd gekoppeld aan minimaal één publicatiecategorie. Je kunt er ook meerdere koppelen. Je ziet hier alleen de informatiecategorieën waarvoor jij geautoriseerd bent. Dit veld is verplicht bij publiceren. 
+* **Onderwerpen**: Je kunt een publicatie koppelen aan één of meer Onderwerpen. Onderwerpen zijn onderwerpen of thema's die bijzondere aandacht genieten in de gemeente. Denk bijvoorbeeld aan de aanleg van een park of de komst van een AZC. Publicaties over deze onderwerpen kunnen zo gebundeld worden. Zij krijgen een aparte presentatie in het Burgerportaal, zie bijvoorbeeld het `GPP-Burgerportaal <https://gpp-burgerportaal.readthedocs.io/en/stable/handleiding/index.html#lokale-thema-s-onderwerpen>`_.
 
 Documenten 
 ^^^^^^^^^^^^
@@ -38,9 +39,14 @@ Bij documenten kun je één of meer bestanden toevoegen aan je publicatie. Dit d
 
 Per bestand moet je vervolgens een aantal gegevens invullen. 
 
-* **Titel**: Hier vul je de officiële titel in van het document. Deze is verplicht.
+* **Datum document**: Hier vul je de creatiedatum in van het document. Deze datum mag niet in de toekomst liggen. Dit veld is altijd verplicht. Standaard is dit veld ingevuld met de datum van vandaag.
+* **Titel**: Hier vul je de officiële titel in van het document. Dit veld is verplicht bij publiceren.
 * **Verkorte titel**: Ook een document kan een verkorte titel hebben. 
 * **Omschrijving**: Hier kun je een korte omschrijving geven van het document. 
+* **Datum ontvangst**: Als van toepassing, kun je hier de datum invullen waarop het document door of namens de organisatie in ontvangst is genomen.
+* **Datum ondertekening (intern)**: Als van toepassing kun je hier de datum invullen waarop het document (door alle partijen) ondertekend is.
+* **Kenmerk toevoegen**: Hier kun je één of meer kenmerken aan het bestand toekennen. Dit kan bijvoorbeeld een documentnummer (identificatie) uit een aanleverend zaaksysteem of DMS (bron) zijn.
 
-Klik op Opslaan om de publicatie, of de wijziging in je publicatie, op te slaan. De bijbehorende bestanden worden nu geüpload naar het registratiecomponent. 
-Als je een nieuwe publicatie aanmaakt, wordt op dit moment ook de publicatiedatum vastgelegd. 
+
+Klik op Opslaan als concept om de publicatie, of de wijziging in je publicatie, op te slaan. De publicatie is nog niet gepubliceerd. De bijbehorende bestanden worden nu geüpload naar het registratiecomponent. 
+Klik op Publiceren als je de publicatie ook wilt publiceren. Dit kan alleen als alle voor publiceren verplichte velden gevuld zijn. Op Als je een nieuwe publicatie aanmaakt, wordt op dit moment ook de publicatiedatum vastgelegd. 
