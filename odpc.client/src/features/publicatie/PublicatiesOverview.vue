@@ -189,8 +189,8 @@ const {
   onPrev
 } = usePagedSearch<Publicatie, typeof QueryParamsConfig>("publicaties", QueryParamsConfig);
 
-// sync linked refs from queryParams / urlSearchParams once on init
-watch(queryParams, syncFromQuery, { once: true });
+// sync linked refs from queryParams / urlSearchParams
+watch(queryParams, syncFromQuery, { deep: true });
 
 // sync linked refs to queryParams onSearch
 const search = syncToQuery;
