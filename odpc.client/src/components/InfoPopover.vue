@@ -26,13 +26,12 @@ onKeyStroke("Tab", () => tooltipRef.value?.hidePopover());
 
 <style lang="scss" scoped>
 .info-popover {
-  inset-block: 50%;
-  inset-inline: 50%;
-  transform: translate(-50%, -50%);
+  position-area: block-start inline-end;
+  position-try: block-start, inline-end, block-end, inline-start;
   inline-size: max-content;
-  max-inline-size: min(90vw, 40rem);
+  max-inline-size: min(90vw, 32rem);
   padding: 1rem;
-  margin: 0;
+  margin: 0.5rem;
   border: 1px solid var(--border);
   box-shadow:
     0px 4px 6px rgba(0, 0, 0, 0.1),
