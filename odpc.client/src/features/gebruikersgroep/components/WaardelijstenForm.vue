@@ -21,7 +21,7 @@
     <option-group
       v-if="lijsten?.onderwerpen.length"
       :title="WAARDELIJSTEN.ONDERWERP"
-      :options="lijsten.onderwerpen"
+      :options="lijsten.onderwerpen.map(({ omschrijving, ...rest }) => rest)"
       v-model="model"
     />
   </fieldset>

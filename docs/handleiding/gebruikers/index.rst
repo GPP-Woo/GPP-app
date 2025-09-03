@@ -27,10 +27,20 @@ Publicatie
 ^^^^^^^^^^^^
 In het linkerdeel van het scherm vul je de gegevens van de publicatie in: 
 
-* **Titel**: Bij titel vul je de officiële titel in van de publicatie. Deze is verplicht
-* **Meer details**: Hier kun je een verkorte titel en een omschrijving invullen. 
-* **Organisatie**: Je moet een publicatie aan organisatie koppelen. Je ziet hier alleen de organisaties waarvoor jij geautoriseerd bent.
-* **informatiecategorieën**: Je moet een publicatie aan minimaal één publicatiecategorie koppelen. Je kunt er ook meerdere koppelen. Je ziet hier alleen de informatiecategorieën waarvoor jij geautoriseerd bent. 
+* **Titel**: Bij titel vul je de officiële titel in van de publicatie. Deze is altijd verplicht.
+* **Meer details**
+
+  * **Verkorte titel**: Hier kun je een verkorte titel en een omschrijving invullen. 
+  * **Omschrijving**:  Hier kun je een omschrijving van de publicatie invullen.
+  * **Datum in werking**: Hier kun je de datum invullen waarop de rechten en plichten vastgelegd in de publicatie in werking treden.
+  * **Datum buiten werking**: Hier kun je de datum invullen waarop de rechten en plichten vastgelegd in de publicatie (zijn) komen te vervallen. 
+  * **Kenmerk toevoegen**: Hier kun je één of meer kenmerken aan de publicatie toekennen. Dit kan bijvoorbeeld een documentnummer (identificatie) uit een aanleverend zaaksysteem of DMS (bron) zijn.
+  * **Toegevoegde kenmerken**: Hieronder zie je alle toegevoegde kenmerken. Met het kruisje achter een kenmerk kun je deze verwijderen.
+
+
+* **Organisatie**: Een publicatie is altijd gekoppeld aan minimaal één organisatie. Je ziet hier alleen de organisaties waarvoor jij geautoriseerd bent. Dit veld is verplicht bij publiceren. 
+* **Informatiecategorieën**: Een publicatie is altijd gekoppeld aan minimaal één publicatiecategorie. Je kunt er ook meerdere koppelen. Je ziet hier alleen de informatiecategorieën waarvoor jij geautoriseerd bent. Dit veld is verplicht bij publiceren. 
+* **Onderwerpen**: Je kunt een publicatie koppelen aan één of meer Onderwerpen. Onderwerpen zijn onderwerpen of thema's die bijzondere aandacht genieten in de gemeente. Denk bijvoorbeeld aan de aanleg van een park of de komst van een AZC. Publicaties over deze onderwerpen kunnen zo gebundeld worden. Zij krijgen een aparte presentatie in het Burgerportaal, zie bijvoorbeeld het `GPP-Burgerportaal <https://gpp-burgerportaal.readthedocs.io/en/stable/handleiding/index.html#lokale-thema-s-onderwerpen>`_.
 
 Documenten 
 ^^^^^^^^^^^^
@@ -38,9 +48,24 @@ Bij documenten kun je één of meer bestanden toevoegen aan je publicatie. Dit d
 
 Per bestand moet je vervolgens een aantal gegevens invullen. 
 
-* **Titel**: Hier vul je de officiële titel in van het document. Deze is verplicht.
+* **Datum document**: Hier vul je de creatiedatum in van het document. Deze datum mag niet in de toekomst liggen. Dit veld is altijd verplicht. Standaard is dit veld ingevuld met de datum van vandaag.
+* **Titel**: Hier vul je de officiële titel in van het document. Dit veld is verplicht bij publiceren.
 * **Verkorte titel**: Ook een document kan een verkorte titel hebben. 
 * **Omschrijving**: Hier kun je een korte omschrijving geven van het document. 
+* **Datum ontvangst**: Als van toepassing, kun je hier de datum invullen waarop het document door of namens de organisatie in ontvangst is genomen.
+* **Datum ondertekening (intern)**: Als van toepassing kun je hier de datum invullen waarop het document (door alle partijen) ondertekend is.
+* **Kenmerk toevoegen**: Hier kun je één of meer kenmerken aan het bestand toekennen. Dit kan bijvoorbeeld een documentnummer (identificatie) uit een aanleverend zaaksysteem of DMS (bron) zijn.
+* **Toegevoegde kenmerken**: Hieronder zie je alle toegevoegde kenmerken. Met het kruisje achter een kenmerk kun je deze verwijderen. 
 
-Klik op Opslaan om de publicatie, of de wijziging in je publicatie, op te slaan. De bijbehorende bestanden worden nu geüpload naar het registratiecomponent. 
-Als je een nieuwe publicatie aanmaakt, wordt op dit moment ook de publicatiedatum vastgelegd. 
+
+Opslaan en publiceren
+^^^^^^^^^^^^^^^^^^^^^^
+Onderaan de pagina's zie je knoppen om op te slaan en te publiceren. Welke knoppen er staan, is afhankelijk van de status van het document. 
+Voor conceptpublicaties zijn minder velden verplicht dan publicaties die gepubliceerd worden. Het is mogelijk een publicatie te publiceren zonder documenten. Dit moet men wel expliciet bevestigen. Als een nieuwe of conceptpublicatie gepubliceerd wordt, wordt op dit moment ook de publicatiedatum vastgelegd. 
+
+* Nieuwe publicatie: Opslaan als concept, of Publiceren. Voor concepten zijn minder velden verplicht dan voor publiceren.
+* Concept publicatie: Publicatie verwijderen, Opslaan als concept of publiceren.
+* Gepubliceerde publicatie: Publicatie intrekken of publiceren.
+
+Het is altijd mogelijk een wijziging te annuleren.
+
