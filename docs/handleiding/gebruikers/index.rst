@@ -65,7 +65,7 @@ Voor conceptpublicaties zijn minder velden verplicht dan publicaties die gepubli
 
 * Nieuwe publicatie: Opslaan als concept, of Publiceren. Voor concepten zijn minder velden verplicht dan voor publiceren.
 * Concept publicatie: Publicatie verwijderen, Opslaan als concept of publiceren.
-* Gepubliceerde publicatie: Publicatie verwijderen, Opslaan als concept of publiceren.
+* Gepubliceerde publicatie: Publicatie intrekken of publiceren.
 
 Het is altijd mogelijk een wijziging te annuleren.
 
