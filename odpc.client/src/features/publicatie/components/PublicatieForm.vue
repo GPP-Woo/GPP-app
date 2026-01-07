@@ -201,9 +201,3 @@ watch(
       model.value.onderwerpen.length === 0)
 );
 </script>
-
-<style lang="scss" scoped>
-input[type="text"]:read-only {
-  background-color: var(--disabled);
-}
-</style>
