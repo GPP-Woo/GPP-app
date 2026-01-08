@@ -2,6 +2,12 @@
   <fieldset>
     <legend>Gebruikersgroep gegevens</legend>
 
+    <div v-if="model.uuid" class="form-group">
+      <label for="uuid">ID</label>
+
+      <input id="uuid" type="text" v-model="model.uuid" readonly aria-readonly="true" />
+    </div>
+
     <div class="form-group">
       <label for="titel">Naam *</label>
 

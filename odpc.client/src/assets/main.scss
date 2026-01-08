@@ -109,6 +109,10 @@ body {
     max-inline-size: 15ch;
   }
 
+  input[type="text"]:read-only {
+    background-color: var(--disabled);
+  }
+
   .alert {
     color: var(--danger);
   }
