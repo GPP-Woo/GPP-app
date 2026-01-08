@@ -101,6 +101,82 @@ namespace ODPC.Test
             Assert.AreEqual(404, statusCodeResult.StatusCode);
         }
 
+        [TestMethod]
+        public async Task Post_retourneert_409_bij_dubbele_naam()
+        {
+            using var context = InMemoryDatabase.GetDbContext();
+            var bestaandeGroep = RandomGroep();
+
+            await context.AddAsync(bestaandeGroep);
+            await context.SaveChangesAsync();
+
+            var controller = new GebruikersgroepAanmakenController(context);
+            var upsertModel = RandomUpsertModel();
+
+            upsertModel.Naam = bestaandeGroep.Naam;
+
+            var result = await controller.Post(upsertModel, default);
+
+            if (result is not IStatusCodeActionResult statusCodeResult)
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(409, statusCodeResult.StatusCode);
+        }
+
+        [TestMethod]
+        public async Task Put_retourneert_409_bij_dubbele_naam()
+        {
+            using var context = InMemoryDatabase.GetDbContext();
+            var bestaandeGroep = RandomGroep();
+            var teWijzigenGroep = RandomGroep();
+
+            await context.AddRangeAsync(bestaandeGroep, teWijzigenGroep);
+            await context.SaveChangesAsync();
+
+            var controller = new GebruikersgroepBijwerkenController(context);
+            var upsertModel = RandomUpsertModel();
+
+            upsertModel.Naam = bestaandeGroep.Naam;
+
+            var result = await controller.Put(teWijzigenGroep.Uuid, upsertModel, default);
+
+            if (result is not IStatusCodeActionResult statusCodeResult)
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(409, statusCodeResult.StatusCode);
+        }
+
+        [TestMethod]
+        public async Task Put_staat_eigen_naam_toe()
+        {
+            using var context = InMemoryDatabase.GetDbContext();
+            var groep = RandomGroep();
+
+            await context.AddAsync(groep);
+            await context.SaveChangesAsync();
+
+            var controller = new GebruikersgroepBijwerkenController(context);
+            var upsertModel = RandomUpsertModel();
+
+            upsertModel.Naam = groep.Naam;
+
+            var result = await controller.Put(groep.Uuid, upsertModel, default);
+
+            if (result is not OkObjectResult objectResult || objectResult.Value is not GebruikersgroepDetailsModel detailsModel)
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(groep.Naam, detailsModel.Naam);
+        }
+
         private static GebruikersgroepUpsertModel RandomUpsertModel() => new()
         {
             Omschrijving = Guid.NewGuid().ToString(),
