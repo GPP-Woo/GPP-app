@@ -14,10 +14,21 @@ namespace ODPC.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.HasCollation("nl_case_insensitive",
+                locale: "nl-NL-u-ks-primary",
+                provider: "icu",
+                deterministic: false);
+
             modelBuilder.Entity<Gebruikersgroep>().HasKey(t => new { t.Uuid });
+            modelBuilder.Entity<Gebruikersgroep>().HasIndex(t => t.Naam).IsUnique();
             modelBuilder.Entity<GebruikersgroepWaardelijst>().HasKey(t => new { t.GebruikersgroepUuid, t.WaardelijstId });
             modelBuilder.Entity<GebruikersgroepGebruiker>().HasKey(t => new { t.GebruikerId, t.GebruikersgroepUuid });
             modelBuilder.Entity<GebruikersgroepPublicatie>().HasKey(t => new { t.GebruikersgroepUuid, t.PublicatieUuid });
+        }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<string>().UseCollation("nl_case_insensitive");
         }
     }
 }

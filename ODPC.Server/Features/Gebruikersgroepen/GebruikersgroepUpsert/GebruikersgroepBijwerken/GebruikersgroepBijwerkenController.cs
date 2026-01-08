@@ -14,7 +14,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
         private readonly OdpcDbContext _context = context;
 
         /// <summary>
-        /// gebruikersgroep aanmaken
+        /// Gebruikersgroep bijwerken
         /// </summary>
         /// <param name="uuid"></param>
         /// <param name="model"></param>
@@ -27,9 +27,18 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
             var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
             if (groep == null) return NotFound();
 
-            //update groep waardes
-            groep.Naam = model.Naam;
-            groep.Omschrijving = model.Omschrijving;
+            try
+            {
+                //update groep waardes en save voor duplicate check
+                groep.Naam = model.Naam;
+                groep.Omschrijving = model.Omschrijving;
+
+                await _context.SaveChangesAsync(token);
+            }
+            catch (DbUpdateException ex) when (ex.IsDuplicateException())
+            {
+                return Conflict(new { Message = "Naam bestaat al" });
+            }
 
             //verwijder bestaande waardelijsten voor deze groep
             await _context
@@ -49,7 +58,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
 
             await _context.SaveChangesAsync(token);
 
-            return base.Ok(GebruikersgroepDetailsModel.MapEntityToViewModel(groep));
+            return Ok(GebruikersgroepDetailsModel.MapEntityToViewModel(groep));
         }
     }
 }

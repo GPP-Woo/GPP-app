@@ -4,6 +4,7 @@ import toast from "@/stores/toast";
 import type { Gebruikersgroep } from "../types";
 
 const API_URL = `/api`;
+const HTTP_CONFLICT = 409;
 
 export const useGebruikersgroep = (uuid?: string) => {
   const gebruikersgroep = ref<Gebruikersgroep>({
@@ -20,7 +21,8 @@ export const useGebruikersgroep = (uuid?: string) => {
     delete: deleteGebruikersgroep,
     data: gebruikersgroepData,
     isFetching: loadingGebruikersgroep,
-    error: gebruikersgroepError
+    error: gebruikersgroepError,
+    statusCode
   } = useFetchApi(() => `${API_URL}/gebruikersgroepen${uuid ? "/" + uuid : ""}`, {
     immediate: false
   }).json<Gebruikersgroep>();
@@ -36,7 +38,10 @@ export const useGebruikersgroep = (uuid?: string) => {
 
     if (gebruikersgroepError.value) {
       toast.add({
-        text: "De gebruikersgroep kon niet worden opgeslagen, probeer het nogmaals...",
+        text:
+          statusCode.value === HTTP_CONFLICT
+            ? `De gebruikersgroep '${gebruikersgroep.value.naam}' bestaat al, kies een andere naam...`
+            : "De gebruikersgroep kon niet worden opgeslagen, probeer het nogmaals...",
         type: "error"
       });
 
