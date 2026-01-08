@@ -14,10 +14,14 @@ namespace ODPC.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.HasCollation("nl_case_insensitive",
-                locale: "nl-NL-u-ks-primary",
-                provider: "icu",
-                deterministic: false);
+            // PostgreSQL-specific collation
+            if (Database.IsNpgsql())
+            {
+                modelBuilder.HasCollation("nl_case_insensitive",
+                    locale: "nl-NL-u-ks-primary",
+                    provider: "icu",
+                    deterministic: false);
+            }
 
             modelBuilder.Entity<Gebruikersgroep>().HasKey(t => new { t.Uuid });
             modelBuilder.Entity<Gebruikersgroep>().HasIndex(t => t.Naam).IsUnique();
@@ -28,7 +32,10 @@ namespace ODPC.Data
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
-            configurationBuilder.Properties<string>().UseCollation("nl_case_insensitive");
+            if (Database.IsNpgsql())
+            {
+                configurationBuilder.Properties<string>().UseCollation("nl_case_insensitive");
+            }
         }
     }
 }
