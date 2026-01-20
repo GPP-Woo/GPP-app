@@ -32,7 +32,7 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
                 return NotFound();
             }
 
-            // ODPC
+            // OdpcPublicatie
             if (json.EigenaarGroep?.identifier != null)
             {
                 json.Gebruikersgroep = Guid.TryParse(json.EigenaarGroep?.identifier, out var identifier)

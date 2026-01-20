@@ -56,21 +56,10 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
                 return NotFound();
             }
 
-            // ODPC
+            // OdpcPublicatie
             viewModel.Gebruikersgroep = Guid.TryParse(publicatie.EigenaarGroep?.identifier, out var identifier)
                 ? identifier
                 : null;
-
-            //context.GebruikersgroepPublicatie.Add
-            //(
-            //    new Data.Entities.GebruikersgroepPublicatie
-            //    {
-            //        GebruikersgroepUuid = publicatie.Gebruikersgroep.Value,
-            //        PublicatieUuid = viewModel.Uuid
-            //    }
-            //);
-
-            //await context.SaveChangesAsync(token);
 
             return Ok(viewModel);
         }
