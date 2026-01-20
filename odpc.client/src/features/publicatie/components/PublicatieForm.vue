@@ -101,7 +101,7 @@
         v-if="waardelijsten.organisaties?.length"
         type="radio"
         title="Organisatie"
-        :key="model.gebruikersgroep"
+        :key="model.gebruikersgroep ?? undefined"
         :options="waardelijsten.organisaties"
         v-model="model.publisher"
         :required="!isDraftMode"
@@ -112,7 +112,7 @@
         v-if="waardelijsten.informatiecategorieen?.length"
         type="checkbox"
         title="Informatiecategorieën"
-        :key="model.gebruikersgroep"
+        :key="model.gebruikersgroep ?? undefined"
         :options="waardelijsten.informatiecategorieen"
         v-model="model.informatieCategorieen"
         :required="!isDraftMode"
@@ -123,7 +123,7 @@
         v-if="waardelijsten.onderwerpen?.length"
         type="checkbox"
         title="Onderwerpen"
-        :key="model.gebruikersgroep"
+        :key="model.gebruikersgroep ?? undefined"
         :options="waardelijsten.onderwerpen"
         v-model="model.onderwerpen"
         :open="expandOptionGroup"
@@ -207,8 +207,7 @@ watch(
   (identifier) =>
     (model.value.eigenaarGroep = {
       identifier,
-      weergaveNaam:
-        props.mijnGebruikersgroepen.find((g) => g.uuid === identifier)?.naam ?? "Onbekend"
+      weergaveNaam: props.mijnGebruikersgroepen.find((g) => g.uuid === identifier)?.naam ?? null
     }),
   { immediate: true }
 );
