@@ -27,7 +27,7 @@
         aria-describedby="profielError"
         :aria-invalid="!model.gebruikersgroep"
       >
-        <option v-if="!model.gebruikersgroep && !isReadonly" value="">Kies een profiel</option>
+        <option v-if="!model.gebruikersgroep && !isReadonly" :value="null">Kies een profiel</option>
 
         <option v-for="{ uuid, naam } in mijnGebruikersgroepen" :key="uuid" :value="uuid">
           {{ naam }}
