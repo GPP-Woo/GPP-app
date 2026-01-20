@@ -48,14 +48,14 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
                 .Where(x => x.PublicatieUuid == uuid)
                 .ExecuteDeleteAsync(token);
 
-            context.GebruikersgroepPublicatie.Add
-            (
-                new Data.Entities.GebruikersgroepPublicatie
-                {
-                    GebruikersgroepUuid = (Guid)publicatie.Gebruikersgroep,
-                    PublicatieUuid = uuid
-                }
-            );
+            //context.GebruikersgroepPublicatie.Add
+            //(
+            //    new Data.Entities.GebruikersgroepPublicatie
+            //    {
+            //        GebruikersgroepUuid = (Guid)publicatie.Gebruikersgroep,
+            //        PublicatieUuid = uuid
+            //    }
+            //);
            
             await context.SaveChangesAsync(token);
             
@@ -92,7 +92,9 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
                 return NotFound();
             }
 
-            viewModel.Gebruikersgroep = publicatie.Gebruikersgroep;
+            viewModel.Gebruikersgroep = Guid.TryParse(publicatie.EigenaarGroep?.identifier, out var identifier)
+                ? identifier
+                : null;
 
             return Ok(viewModel);
         }

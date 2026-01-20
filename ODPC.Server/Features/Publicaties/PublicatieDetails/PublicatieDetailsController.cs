@@ -33,13 +33,21 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
             }
 
             // ODPC
+            if (json.EigenaarGroep?.identifier != null)
+            {
+                json.Gebruikersgroep = Guid.TryParse(json.EigenaarGroep?.identifier, out var identifier)
+                    ? identifier
+                    : null;
+            }
+            else
+            {
+                var gebruikersgroepPublicatie = await context.GebruikersgroepPublicatie
+                    .SingleOrDefaultAsync(x => x.PublicatieUuid == uuid, cancellationToken: token);
 
-            var gebruikersgroepPublicatie = await context.GebruikersgroepPublicatie
-                .SingleOrDefaultAsync(x => x.PublicatieUuid == uuid, cancellationToken: token);
+                json.Gebruikersgroep = gebruikersgroepPublicatie?.GebruikersgroepUuid;
+            }
 
-            json.Gebruikersgroep = gebruikersgroepPublicatie?.GebruikersgroepUuid;
-
-            return json?.Eigenaar?.identifier == user.Id ? Ok(json) : NotFound();
+            return json.Eigenaar?.identifier == user.Id ? Ok(json) : NotFound();
         }
     }
 }

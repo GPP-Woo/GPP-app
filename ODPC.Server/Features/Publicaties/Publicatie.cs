@@ -11,6 +11,7 @@ namespace ODPC.Features.Publicaties
         public string? VerkorteTitel { get; set; }
         public string? Omschrijving { get; set; }
         public Eigenaar? Eigenaar { get; set; }
+        public EigenaarGroep? EigenaarGroep { get; set; }
         public string? Publicatiestatus { get; set; }
         public DateTimeOffset Registratiedatum { get; set; }
         public DateOnly? DatumBeginGeldigheid { get; set; }
@@ -37,6 +38,12 @@ namespace ODPC.Features.Publicaties
     }
 
     public class Eigenaar
+    {
+        public string? identifier { get; set; }
+        public string? weergaveNaam { get; set; }
+    }
+
+    public class EigenaarGroep
     {
         public string? identifier { get; set; }
         public string? weergaveNaam { get; set; }

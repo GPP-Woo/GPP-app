@@ -28,6 +28,7 @@ export type Publicatie = {
   verkorteTitel: string;
   omschrijving: string;
   eigenaar?: Eigenaar;
+  eigenaarGroep?: EigenaarGroep;
   publicatiestatus: PublicatieStatus;
   registratiedatum?: string;
   datumBeginGeldigheid?: string | null;
@@ -73,6 +74,11 @@ export type Onderwerp = {
 };
 
 type Eigenaar = {
+  identifier: string;
+  weergaveNaam: string;
+};
+
+type EigenaarGroep = {
   identifier: string;
   weergaveNaam: string;
 };

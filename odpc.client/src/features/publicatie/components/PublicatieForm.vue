@@ -200,4 +200,16 @@ watch(
       model.value.informatieCategorieen.length === 0 &&
       model.value.onderwerpen.length === 0)
 );
+
+// 'Sync' eigenaarGroep with ODPC gebruikersgroep, immediate and on change
+watch(
+  () => model.value.gebruikersgroep,
+  (identifier) =>
+    (model.value.eigenaarGroep = {
+      identifier,
+      weergaveNaam:
+        props.mijnGebruikersgroepen.find((g) => g.uuid === identifier)?.naam ?? "Onbekend"
+    }),
+  { immediate: true }
+);
 </script>
