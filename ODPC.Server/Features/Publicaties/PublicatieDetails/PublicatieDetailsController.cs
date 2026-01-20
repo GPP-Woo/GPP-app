@@ -33,6 +33,9 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
             }
 
             // OdpcPublicatie
+            // First try to get Gebruikersgroep reference from EigenaarGroep identifier, stored in the PUBLICATIEBANK
+            // Otherwise get it from (legacy) ODPC GebruikersgroepPublicatie, which will eventually be 'drained',
+            // as publicatie updates store this relationship in PUBLICATIEBANK and remove it from ODPC
             if (json.EigenaarGroep?.identifier != null)
             {
                 json.Gebruikersgroep = Guid.TryParse(json.EigenaarGroep?.identifier, out var identifier)

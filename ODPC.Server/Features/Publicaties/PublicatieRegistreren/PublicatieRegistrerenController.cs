@@ -6,7 +6,6 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
 {
     [ApiController]
     public class PublicatieRegistrerenController(
-        OdpcDbContext context,
         IOdrcClientFactory clientFactory,
         IGebruikerWaardelijstItemsService waardelijstItemsService) : ControllerBase
     {

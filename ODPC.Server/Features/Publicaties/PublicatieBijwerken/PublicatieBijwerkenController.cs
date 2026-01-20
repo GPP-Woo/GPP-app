@@ -44,6 +44,8 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
 
             // ODPC
 
+            // As we're now registering the publicatie <> EigenaarGroep relation in the PUBLICATIEBANK
+            // at each update of an existing publicatie the Gebruikersgroep <> Publicatie relationship will be removed from ODPC
             await context.GebruikersgroepPublicatie
                 .Where(x => x.PublicatieUuid == uuid)
                 .ExecuteDeleteAsync(token);
