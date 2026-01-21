@@ -25,32 +25,36 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
                 return StatusCode(502);
             }
 
-            var json = await response.Content.ReadFromJsonAsync<OdpcPublicatie>(token);
+            var json = await response.Content.ReadFromJsonAsync<Publicatie>(token);
 
             if (json == null)
             {
                 return NotFound();
             }
 
-            // OdpcPublicatie
-            // First try to get Gebruikersgroep reference from EigenaarGroep identifier, stored in the PUBLICATIEBANK
-            // Otherwise get it from (legacy) ODPC GebruikersgroepPublicatie, which will eventually be 'drained',
-            // as publicatie updates store this relationship in PUBLICATIEBANK and remove it from ODPC
-            if (json.EigenaarGroep?.identifier != null)
+            if (json.Eigenaar?.identifier != user.Id)
             {
-                json.Gebruikersgroep = Guid.TryParse(json.EigenaarGroep?.identifier, out var identifier)
-                    ? identifier
-                    : null;
+                return NotFound();
             }
-            else
+
+            // As we're now registering the publicatie <> EigenaarGroep (fka gebruikersgroep) relationship in the PUBLICATIEBANK
+            // existing publicaties might not yet have set EigenaarGroep until updated again from ODPC.
+            // If EigenaarGroep not set, try and get it's data from (legacy) ODPC GebruikersgroepPublicatie to prefill EigenaarGroep.
+            // If no reference is found, e.g. it's an externally created publicatie, the EigenaarGroep will have to be selected manually in the interface.
+            if (json.EigenaarGroep == null)
             {
                 var gebruikersgroepPublicatie = await context.GebruikersgroepPublicatie
                     .SingleOrDefaultAsync(x => x.PublicatieUuid == uuid, cancellationToken: token);
 
-                json.Gebruikersgroep = gebruikersgroepPublicatie?.GebruikersgroepUuid;
+                json.EigenaarGroep = gebruikersgroepPublicatie != null
+                    ? new EigenaarGroep
+                    {
+                        identifier = gebruikersgroepPublicatie.GebruikersgroepUuid.ToString(),
+                        weergaveNaam = gebruikersgroepPublicatie.Gebruikersgroep?.Naam ?? "Onbekend"
+                    } : null;
             }
 
-            return json.Eigenaar?.identifier == user.Id ? Ok(json) : NotFound();
+            return Ok(json);
         }
     }
 }

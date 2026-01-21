@@ -5,7 +5,7 @@ import type { MijnGebruikersgroep } from "../types";
 
 const API_URL = `/api`;
 
-export const useMijnGebruikersgroepen = (uuid: MaybeRefOrGetter<string | null>) => {
+export const useMijnGebruikersgroepen = (uuid: MaybeRefOrGetter<string | undefined>) => {
   const gebruikersgroepUuid = toRef(uuid);
 
   const { lijsten } = useAppData();

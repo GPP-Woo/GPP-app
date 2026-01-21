@@ -35,7 +35,6 @@ export type Publicatie = {
   datumEindeGeldigheid?: string | null;
   informatieCategorieen: string[];
   onderwerpen: string[];
-  gebruikersgroep: string | null;
   kenmerken: Kenmerk[];
   urlPublicatieExtern?: string;
   bronBewaartermijn?: string;
@@ -79,8 +78,8 @@ type Eigenaar = {
 };
 
 type EigenaarGroep = {
-  identifier: string | null;
-  weergaveNaam: string | null;
+  identifier: string;
+  weergaveNaam: string;
 };
 
 export type Bestandsdeel = {

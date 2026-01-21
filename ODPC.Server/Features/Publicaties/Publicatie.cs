@@ -32,11 +32,6 @@ namespace ODPC.Features.Publicaties
         public string? ToelichtingBewaartermijn { get; set; }
     }
 
-    public class OdpcPublicatie : Publicatie
-    {
-        public Guid? Gebruikersgroep { get; set; }
-    }
-
     public class Eigenaar
     {
         public string? identifier { get; set; }

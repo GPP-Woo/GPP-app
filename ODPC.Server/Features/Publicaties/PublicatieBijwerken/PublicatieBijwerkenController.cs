@@ -14,13 +14,17 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
         OdpcUser user) : ControllerBase
     {
         [HttpPut("api/{version}/publicaties/{uuid:guid}")]
-        public async Task<IActionResult> Put(string version, Guid uuid, OdpcPublicatie publicatie, CancellationToken token)
+        public async Task<IActionResult> Put(string version, Guid uuid, Publicatie publicatie, CancellationToken token)
         {
-            var gebruikersgroepWaardelijstUuids = await waardelijstItemsService.GetAsync(publicatie.Gebruikersgroep, token);
+            Guid? eigenaarGroepIdentifier = Guid.TryParse(publicatie.EigenaarGroep?.identifier, out var identifier)
+                ? identifier
+                : null;
 
-            if (publicatie.Gebruikersgroep == null)
+            var gebruikersgroepWaardelijstUuids = await waardelijstItemsService.GetAsync(eigenaarGroepIdentifier, token);
+
+            if (publicatie.EigenaarGroep == null)
             {
-                ModelState.AddModelError(nameof(publicatie.Gebruikersgroep), "Publicatie is niet gekoppeld aan een gebruikergroep");
+                ModelState.AddModelError(nameof(publicatie.EigenaarGroep), "Publicatie is niet gekoppeld aan een gebruikergroep");
                 return BadRequest(ModelState);
             }
 
@@ -42,16 +46,6 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
                 return BadRequest(ModelState);
             }
 
-            // ODPC
-
-            // As we're now registering the publicatie <> EigenaarGroep relation in the PUBLICATIEBANK
-            // at each update of an existing publicatie the Gebruikersgroep <> Publicatie relationship will be removed from ODPC
-            await context.GebruikersgroepPublicatie
-                .Where(x => x.PublicatieUuid == uuid)
-                .ExecuteDeleteAsync(token);
-           
-            await context.SaveChangesAsync(token);
-            
             // PUBLICATIEBANK
 
             using var client = clientFactory.Create("Publicatie bijwerken");
@@ -66,7 +60,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
                 return StatusCode(502);
             }
 
-            var json = await getResponse.Content.ReadFromJsonAsync<OdpcPublicatie>(token);
+            var json = await getResponse.Content.ReadFromJsonAsync<Publicatie>(token);
 
             if (json?.Eigenaar?.identifier != user.Id)
             {
@@ -78,17 +72,22 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
 
             putResponse.EnsureSuccessStatusCode();
 
-            var viewModel = await putResponse.Content.ReadFromJsonAsync<OdpcPublicatie>(token);
+            var viewModel = await putResponse.Content.ReadFromJsonAsync<Publicatie>(token);
 
             if (viewModel == null)
             {
                 return NotFound();
             }
 
-            // OdpcPublicatie
-            viewModel.Gebruikersgroep = Guid.TryParse(publicatie.EigenaarGroep?.identifier, out var identifier)
-                ? identifier
-                : null;
+            // ODPC
+
+            // As we're now registering the publicatie <> EigenaarGroep relation in the PUBLICATIEBANK
+            // at each update of an existing publicatie the Gebruikersgroep <> Publicatie relationship will be removed from ODPC
+            await context.GebruikersgroepPublicatie
+                .Where(x => x.PublicatieUuid == uuid)
+                .ExecuteDeleteAsync(token);
+
+            await context.SaveChangesAsync(token);
 
             return Ok(viewModel);
         }

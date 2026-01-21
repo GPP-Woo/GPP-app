@@ -46,7 +46,7 @@
       >
 
       <documenten-form
-        v-else-if="publicatie.gebruikersgroep || isReadonly"
+        v-else-if="publicatie.eigenaarGroep || isReadonly"
         v-model:files="files"
         v-model:documenten="documenten"
         :is-readonly="isReadonly"
@@ -61,7 +61,7 @@
           </button>
         </li>
 
-        <template v-if="publicatie.gebruikersgroep && !isReadonly && !hasError">
+        <template v-if="publicatie.eigenaarGroep && !isReadonly && !hasError">
           <!-- main actions -->
           <li v-if="canDraft">
             <button
@@ -206,7 +206,9 @@ const canRetract = computed(
 );
 
 const userHasAccessToGroup = computed(() =>
-  mijnGebruikersgroepen.value?.some((groep) => groep.uuid === publicatie.value.gebruikersgroep)
+  mijnGebruikersgroepen.value?.some(
+    (groep) => groep.uuid === publicatie.value.eigenaarGroep?.identifier
+  )
 );
 
 const groupHasWaardelijsten = computed(
@@ -231,7 +233,7 @@ const publicatieWaardelijstenMatch = computed(
 );
 
 const unauthorized = computed(() => {
-  if (!publicatie.value.gebruikersgroep) return false;
+  if (!publicatie.value.eigenaarGroep) return false;
 
   return (
     !userHasAccessToGroup.value ||
@@ -271,7 +273,7 @@ const {
   error: mijnGebruikersgroepenError,
   gekoppeldeWaardelijsten,
   gekoppeldeWaardelijstenUuids
-} = useMijnGebruikersgroepen(() => publicatie.value.gebruikersgroep);
+} = useMijnGebruikersgroepen(() => publicatie.value.eigenaarGroep?.identifier);
 
 const clearPublicatieWaardelijsten = () =>
   (publicatie.value = {
@@ -283,32 +285,34 @@ const clearPublicatieWaardelijsten = () =>
     }
   });
 
-// Externally created publicaties will not have a gebruikersgroep untill updated from ODPC
-const isPublicatieWithoutGebruikersgroep = ref(false);
+// Externally created publicaties will not have a eigenaarGroep untill updated from ODPC
+const isPublicatieWithoutEigenaarGroep = ref(false);
 
 watch(isLoading, () => {
   if (hasError.value) return;
 
-  isPublicatieWithoutGebruikersgroep.value =
-    !!publicatie.value.uuid && !publicatie.value.gebruikersgroep;
+  isPublicatieWithoutEigenaarGroep.value =
+    !!publicatie.value.uuid && !publicatie.value.eigenaarGroep;
 
-  // Preset gebruikersgroep of a new - or externally created publicatie when only one mijnGebruikersgroep
+  // Preset eigenaarGroep of a new - or externally created publicatie when only one mijnGebruikersgroep
   if (
-    (!publicatie.value.uuid || isPublicatieWithoutGebruikersgroep.value) &&
+    (!publicatie.value.uuid || isPublicatieWithoutEigenaarGroep.value) &&
     mijnGebruikersgroepen.value?.length === 1
   ) {
-    publicatie.value.gebruikersgroep = mijnGebruikersgroepen.value[0].uuid;
+    const { uuid, naam } = mijnGebruikersgroepen.value[0];
+
+    publicatie.value.eigenaarGroep = { identifier: uuid, weergaveNaam: naam };
   }
 });
 
 // Clear waardelijsten of publicatie when mismatch waardelijsten gebruikersgroep (unauthorized) on
 // a) switch from one to another gebruikersgroep or
-// b) initial select gebruikersgroep when isPublicatieWithoutGebruikersgroep
+// b) initial select gebruikersgroep when isPublicatieWithoutEigenaarGroep
 const shouldClearWaardelijsten = (isSwitchGebruikersgroep: boolean) =>
-  unauthorized.value && (isSwitchGebruikersgroep || isPublicatieWithoutGebruikersgroep.value);
+  unauthorized.value && (isSwitchGebruikersgroep || isPublicatieWithoutEigenaarGroep.value);
 
 watch(
-  () => publicatie.value.gebruikersgroep,
+  () => publicatie.value.eigenaarGroep,
   (_, oldValue) => {
     if (shouldClearWaardelijsten(!!oldValue)) clearPublicatieWaardelijsten();
   }

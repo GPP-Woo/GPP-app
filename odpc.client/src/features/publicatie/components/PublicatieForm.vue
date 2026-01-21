@@ -21,13 +21,15 @@
       <select
         name="gebruikersgroep"
         id="gebruikersgroep"
-        v-model="model.gebruikersgroep"
+        v-model="eigenaarGroepIdentifier"
         required
         aria-required="true"
         aria-describedby="profielError"
-        :aria-invalid="!model.gebruikersgroep"
+        :aria-invalid="!eigenaarGroepIdentifier"
       >
-        <option v-if="!model.gebruikersgroep && !isReadonly" :value="null">Kies een profiel</option>
+        <option v-if="!eigenaarGroepIdentifier && !isReadonly" :value="null">
+          Kies een profiel
+        </option>
 
         <option v-for="{ uuid, naam } in mijnGebruikersgroepen" :key="uuid" :value="uuid">
           {{ naam }}
@@ -37,7 +39,7 @@
       <span id="profielError" class="error">Profiel is een verplicht veld</span>
     </div>
 
-    <template v-if="model.gebruikersgroep || isReadonly">
+    <template v-if="eigenaarGroepIdentifier || isReadonly">
       <div v-if="model.uuid" class="form-group">
         <label for="uuid">ID</label>
 
@@ -101,7 +103,7 @@
         v-if="waardelijsten.organisaties?.length"
         type="radio"
         title="Organisatie"
-        :key="model.gebruikersgroep ?? undefined"
+        :key="eigenaarGroepIdentifier ?? undefined"
         :options="waardelijsten.organisaties"
         v-model="model.publisher"
         :required="!isDraftMode"
@@ -112,7 +114,7 @@
         v-if="waardelijsten.informatiecategorieen?.length"
         type="checkbox"
         title="Informatiecategorieën"
-        :key="model.gebruikersgroep ?? undefined"
+        :key="eigenaarGroepIdentifier ?? undefined"
         :options="waardelijsten.informatiecategorieen"
         v-model="model.informatieCategorieen"
         :required="!isDraftMode"
@@ -123,7 +125,7 @@
         v-if="waardelijsten.onderwerpen?.length"
         type="checkbox"
         title="Onderwerpen"
-        :key="model.gebruikersgroep ?? undefined"
+        :key="eigenaarGroepIdentifier ?? undefined"
         :options="waardelijsten.onderwerpen"
         v-model="model.onderwerpen"
         :open="expandOptionGroup"
@@ -168,6 +170,17 @@ const kenmerken = useKenmerken(model);
 
 const { lijsten } = useAppData();
 
+const eigenaarGroepIdentifier = computed({
+  get: () => model.value.eigenaarGroep?.identifier ?? null,
+  set: (identifier: string | null) =>
+    (model.value.eigenaarGroep = identifier
+      ? {
+          identifier,
+          weergaveNaam: props.mijnGebruikersgroepen.find((g) => g.uuid === identifier)?.naam ?? ""
+        }
+      : null)
+});
+
 // When gekoppeldeWaardelijsten don't match the publicatie (unauthorized)
 // or when publicatie has status 'ingetrokken', the form is displayed as readonly/disabled
 // In readonly mode waardelijsten are constructed based on all/existing waardelijsten because there is (unauthorized) -
@@ -188,27 +201,16 @@ const waardelijsten = computed(() =>
     : props.gekoppeldeWaardelijsten
 );
 
-// Expand option groups after gebruikersgroep changes and waardelijst values are empty
+// Expand option groups after eigenaarGroep changes and waardelijst values are empty
 const expandOptionGroup = ref(false);
 
 watch(
-  () => model.value.gebruikersgroep,
+  () => eigenaarGroepIdentifier,
   (_, oldGroep) =>
     (expandOptionGroup.value =
       !!oldGroep &&
       model.value.publisher.length === 0 &&
       model.value.informatieCategorieen.length === 0 &&
       model.value.onderwerpen.length === 0)
-);
-
-// 'Sync' eigenaarGroep with ODPC gebruikersgroep, immediate and on change
-watch(
-  () => model.value.gebruikersgroep,
-  (identifier) =>
-    (model.value.eigenaarGroep = {
-      identifier,
-      weergaveNaam: props.mijnGebruikersgroepen.find((g) => g.uuid === identifier)?.naam ?? null
-    }),
-  { immediate: true }
 );
 </script>

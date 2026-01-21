@@ -15,7 +15,6 @@ export const usePublicatie = (uuid?: string) => {
     publicatiestatus: PublicatieStatus.concept,
     informatieCategorieen: [],
     onderwerpen: [],
-    gebruikersgroep: null,
     kenmerken: [],
     eigenaarGroep: null
   });
@@ -32,15 +31,7 @@ export const usePublicatie = (uuid?: string) => {
     immediate: false
   }).json<Publicatie>();
 
-  watch(data, (value) => {
-    if (value) {
-      publicatie.value = {
-        ...value,
-        ...{ publisher: value.publisher ?? publicatie.value.publisher },
-        ...{ gebruikersgroep: value.gebruikersgroep ?? publicatie.value.gebruikersgroep }
-      };
-    }
-  });
+  watch(data, (value) => publicatie.value = value ?? publicatie.value);
 
   const submitPublicatie = async () => {
     // Fill required verantwoordelijke with publisher value and add to publicatie

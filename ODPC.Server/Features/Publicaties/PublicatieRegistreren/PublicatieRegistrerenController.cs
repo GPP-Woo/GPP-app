@@ -10,13 +10,17 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
         IGebruikerWaardelijstItemsService waardelijstItemsService) : ControllerBase
     {
         [HttpPost("api/{version}/publicaties")]
-        public async Task<IActionResult> Post(string version, OdpcPublicatie publicatie, CancellationToken token)
+        public async Task<IActionResult> Post(string version, Publicatie publicatie, CancellationToken token)
         {
-            var gebruikersgroepWaardelijstUuids = await waardelijstItemsService.GetAsync(publicatie.Gebruikersgroep, token);
+            Guid? eigenaarGroepIdentifier = Guid.TryParse(publicatie.EigenaarGroep?.identifier, out var identifier)
+                ? identifier
+                : null;
 
-            if (publicatie.Gebruikersgroep == null)
+            var gebruikersgroepWaardelijstUuids = await waardelijstItemsService.GetAsync(eigenaarGroepIdentifier, token);
+
+            if (publicatie.EigenaarGroep == null)
             {
-                ModelState.AddModelError(nameof(publicatie.Gebruikersgroep), "Publicatie is niet gekoppeld aan een gebruikergroep");
+                ModelState.AddModelError(nameof(publicatie.EigenaarGroep), "Publicatie is niet gekoppeld aan een gebruikergroep");
                 return BadRequest(ModelState);
             }
 
@@ -48,19 +52,9 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
 
             response.EnsureSuccessStatusCode();
 
-            var viewModel = await response.Content.ReadFromJsonAsync<OdpcPublicatie>(token);
+            var viewModel = await response.Content.ReadFromJsonAsync<Publicatie>(token);
 
-            if (viewModel == null)
-            {
-                return NotFound();
-            }
-
-            // OdpcPublicatie
-            viewModel.Gebruikersgroep = Guid.TryParse(publicatie.EigenaarGroep?.identifier, out var identifier)
-                ? identifier
-                : null;
-
-            return Ok(viewModel);
+            return viewModel == null ? NotFound() : Ok(viewModel);
         }
     }
 }
