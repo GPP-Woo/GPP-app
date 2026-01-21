@@ -28,13 +28,13 @@ export type Publicatie = {
   verkorteTitel: string;
   omschrijving: string;
   eigenaar?: Eigenaar;
+  eigenaarGroep: EigenaarGroep | null;
   publicatiestatus: PublicatieStatus;
   registratiedatum?: string;
   datumBeginGeldigheid?: string | null;
   datumEindeGeldigheid?: string | null;
   informatieCategorieen: string[];
   onderwerpen: string[];
-  gebruikersgroep: string;
   kenmerken: Kenmerk[];
   urlPublicatieExtern?: string;
   bronBewaartermijn?: string;
@@ -73,6 +73,11 @@ export type Onderwerp = {
 };
 
 type Eigenaar = {
+  identifier: string;
+  weergaveNaam: string;
+};
+
+type EigenaarGroep = {
   identifier: string;
   weergaveNaam: string;
 };
