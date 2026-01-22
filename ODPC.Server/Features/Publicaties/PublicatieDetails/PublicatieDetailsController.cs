@@ -44,6 +44,7 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
             if (json.EigenaarGroep == null)
             {
                 var gebruikersgroepPublicatie = await context.GebruikersgroepPublicatie
+                    .Include(x => x.Gebruikersgroep)
                     .SingleOrDefaultAsync(x => x.PublicatieUuid == uuid, cancellationToken: token);
 
                 json.EigenaarGroep = gebruikersgroepPublicatie != null
