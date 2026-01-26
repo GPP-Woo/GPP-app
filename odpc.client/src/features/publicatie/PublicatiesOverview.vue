@@ -120,6 +120,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import { useLoader } from "@/composables/use-loader";
@@ -132,6 +133,8 @@ import PublicatiesOverviewFilter from "./components/PublicatiesOverviewFilter.vu
 import PublicatiesOverviewSort from "./components/PublicatiesOverviewSort.vue";
 import PublicatiesOverviewPagination from "./components/PublicatiesOverviewPagination.vue";
 import getUser, { type User } from "@/stores/user";
+
+const route = useRoute();
 
 const { eigenaarGroepMode = false } = defineProps<{ eigenaarGroepMode?: boolean }>();
 
@@ -216,15 +219,22 @@ watch(queryParams, syncFromQuery, { deep: true });
 // sync linked refs to queryParams onSearch
 const search = syncToQuery;
 
-// auto-select eigenaarGroep in eigenaarGroepMode if only one mijn-gebruikersgroep
+// in eigenaarGroepMode preset eigenaarGroep when:
+// a. only one mijn-gebruikersgroep
+// b. valid eigenaarGroep from query
 watch(mijnGebruikersgroepen, (groepen) => {
-  if (!groepen || !eigenaarGroepMode) return;
+  if (!eigenaarGroepMode || !groepen?.length) return;
+
+  const { eigenaarGroep } = route.query;
 
   if (groepen.length === 1) {
     queryParams.value.eigenaarGroep = groepen[0].uuid;
+  } else if (eigenaarGroep && groepen.some((groep) => groep.uuid === eigenaarGroep)) {
+    queryParams.value.eigenaarGroep = eigenaarGroep as string;
   }
 });
 
+// in !eigenaarGroepMode start search immediately
 onMounted(() => !eigenaarGroepMode && initPagedSearch());
 </script>
 

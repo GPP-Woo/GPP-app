@@ -40,14 +40,16 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
                 { "pageSize", "10" }
             };
 
+            var emptyResult = new PagedResponseModel<JsonNode> { Results = [], Count = 0 };
+
             if (Guid.TryParse(eigenaarGroep, out var identifier))
             {
-                var lowerCaseId = user.Id?.ToLowerInvariant();
+                var lowerCaseUserId = user.Id?.ToLowerInvariant();
 
 #pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
                 var isGebruikersgroepGebruiker = await context.GebruikersgroepGebruikers
                     .AnyAsync(x => x.GebruikersgroepUuid == identifier &&
-                                   x.GebruikerId.ToLower() == lowerCaseId, token);
+                                   x.GebruikerId.ToLower() == lowerCaseUserId, token);
 #pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 
                 if (isGebruikersgroepGebruiker)
@@ -56,8 +58,12 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
                 }
                 else
                 {
-                    parameters.Add("eigenaar", WebUtility.UrlEncode(user.Id));
+                    return Ok(emptyResult);
                 }
+            }
+            else if (!string.IsNullOrEmpty(eigenaarGroep))
+            {
+                return Ok(emptyResult);
             }
             else
             {

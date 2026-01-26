@@ -32,30 +32,34 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
                 return NotFound();
             }
 
-            if (json.Eigenaar?.identifier != user.Id)
-            {
-                return NotFound();
-            }
-
             // As we're now registering the publicatie <> EigenaarGroep (fka gebruikersgroep) relationship in the PUBLICATIEBANK
             // existing publicaties might not yet have set EigenaarGroep until updated again from ODPC.
             // If EigenaarGroep not set, try and get it's data from (legacy) ODPC GebruikersgroepPublicatie to prefill EigenaarGroep.
             // If no reference is found, e.g. it's an externally created publicatie, the EigenaarGroep will have to be selected manually in the interface.
-            if (json.EigenaarGroep == null)
-            {
-                var gebruikersgroepPublicatie = await context.GebruikersgroepPublicatie
-                    .Include(x => x.Gebruikersgroep)
-                    .SingleOrDefaultAsync(x => x.PublicatieUuid == uuid, cancellationToken: token);
+            json.EigenaarGroep ??= await context.GebruikersgroepPublicatie
+                .Where(x => x.PublicatieUuid == uuid)
+                .Select(x => new EigenaarGroep
+                {
+                    identifier = x.GebruikersgroepUuid.ToString(),
+                    weergaveNaam = x.Gebruikersgroep!.Naam
+                })
+                .FirstOrDefaultAsync(cancellationToken: token);
 
-                json.EigenaarGroep = gebruikersgroepPublicatie != null
-                    ? new EigenaarGroep
-                    {
-                        identifier = gebruikersgroepPublicatie.GebruikersgroepUuid.ToString(),
-                        weergaveNaam = gebruikersgroepPublicatie.Gebruikersgroep?.Naam ?? "Onbekend"
-                    } : null;
-            }
+            var lowerCaseUserId = user.Id?.ToLowerInvariant();
 
-            return Ok(json);
+            var eigenaarGroepIdentifier = Guid.TryParse(json.EigenaarGroep?.identifier, out var identifier)
+                ? identifier
+                : (Guid?)null;
+
+#pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
+            var isUserGebruikersgroepGebruiker = await context.GebruikersgroepGebruikers
+                .AnyAsync(x => x.GebruikersgroepUuid == eigenaarGroepIdentifier &&
+                               x.GebruikerId.ToLower() == lowerCaseUserId, token);
+#pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
+
+            return json.Eigenaar?.identifier?.ToLowerInvariant() == lowerCaseUserId || isUserGebruikersgroepGebruiker
+                ? Ok(json)
+                : NotFound();
         }
     }
 }
