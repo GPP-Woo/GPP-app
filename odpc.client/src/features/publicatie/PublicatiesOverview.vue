@@ -1,7 +1,19 @@
 <template>
-  <h1>Overzicht publicaties</h1>
+  <h1>{{ eigenaarGroepMode ? "Publicaties van collega's" : "Mijn publicaties" }}</h1>
 
-  <menu class="reset">
+  <div v-if="eigenaarGroepMode" class="form-group">
+    <label for="eigenaarGroep">Gebruikersgroep</label>
+
+    <select id="eigenaarGroep" v-model="queryParams.eigenaarGroep" :disabled="isLoading">
+      <option value="">-- Selecteer een gebruikersgroep --</option>
+
+      <option v-for="groep in mijnGebruikersgroepen" :key="groep.uuid" :value="groep.uuid">
+        {{ groep.naam }}
+      </option>
+    </select>
+  </div>
+
+  <menu v-else class="reset">
     <li>
       <router-link :to="{ name: 'publicatie' }" class="button icon-after note"
         >Nieuwe publicatie</router-link
@@ -119,6 +131,8 @@ import PublicatiesOverviewFilter from "./components/PublicatiesOverviewFilter.vu
 import PublicatiesOverviewSort from "./components/PublicatiesOverviewSort.vue";
 import PublicatiesOverviewPagination from "./components/PublicatiesOverviewPagination.vue";
 
+defineProps<{ eigenaarGroepMode?: boolean }>();
+
 const addDays = (dateString: string, days: number) => {
   if (!dateString) return dateString;
 
@@ -145,6 +159,7 @@ const isLoading = computed(() => loadingMijnWaardelijsten.value || loadingPageRe
 const hasError = computed(() => !!mijnWaardelijstenError.value || !!pagedResultError.value);
 
 const {
+  mijnGebruikersgroepen,
   mijnWaardelijsten,
   isFetching: loadingMijnWaardelijsten,
   error: mijnWaardelijstenError
@@ -176,7 +191,8 @@ const QueryParamsConfig = {
   registratiedatumTot: "", // untilDateExclusive
   informatieCategorieen: "",
   onderwerpen: "",
-  publicatiestatus: ""
+  publicatiestatus: "",
+  eigenaarGroep: ""
 };
 
 const {
@@ -227,6 +243,16 @@ dl {
   dd {
     color: var(--text-light);
     margin-inline-start: var(--spacing-extrasmall);
+  }
+}
+
+.form-group {
+  flex-direction: row;
+  align-items: center;
+
+  label {
+    margin-block: 0;
+    margin-inline-end: var(--spacing-default);
   }
 }
 </style>

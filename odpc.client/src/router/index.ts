@@ -23,7 +23,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: { name: "publicaties" }
+      redirect: { name: "publicaties-mijn" }
     },
     {
       path: "/login",
@@ -43,11 +43,21 @@ const router = createRouter({
       }
     },
     {
-      path: "/publicaties/overzicht",
-      name: "publicaties",
+      path: "/publicaties/mijn",
+      name: "publicaties-mijn",
       component: PublicatiesView,
       meta: {
-        title: "Publicaties",
+        title: "Mijn publicaties",
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/publicaties/collegas",
+      name: "publicaties-collegas",
+      component: PublicatiesView,
+      props: { eigenaarGroepMode: true },
+      meta: {
+        title: "Publicaties van collega's",
         requiresAuth: true
       }
     },

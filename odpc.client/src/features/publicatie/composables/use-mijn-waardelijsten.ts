@@ -27,6 +27,7 @@ export const useMijnWaardelijsten = () => {
   }));
 
   return {
+    mijnGebruikersgroepen: readonly(data),
     mijnWaardelijsten: readonly(mijnWaardelijsten),
     isFetching: readonly(isFetching),
     error: readonly(error)
