@@ -1,4 +1,4 @@
-import { ref, watch, computed, onMounted, readonly } from "vue";
+import { ref, watch, computed, readonly } from "vue";
 import { useRouter } from "vue-router";
 import { useUrlSearchParams } from "@vueuse/core";
 import { useFetchApi, type PagedResult } from "@/api";
@@ -19,7 +19,7 @@ export const usePagedSearch = <T, QueryParams extends { [key: string]: string; p
   const queryParams = ref({ ...queryParamsConfig });
   const queryParamKeys = Object.keys(queryParamsConfig);
 
-  const initQueryParams = () => {
+  const initPagedSearch = () => {
     queryParams.value = Object.fromEntries(
       queryParamKeys.map((key) => [
         key,
@@ -72,15 +72,13 @@ export const usePagedSearch = <T, QueryParams extends { [key: string]: string; p
     }
   ).json<PagedResult<T>>();
 
-  // Get initial params from search url
-  onMounted(initQueryParams);
-
   return {
     queryParams,
     pagedResult: readonly(data),
     pageCount: readonly(pageCount),
     isFetching: readonly(isFetching),
     error: readonly(error),
+    initPagedSearch,
     onNext,
     onPrev
   };

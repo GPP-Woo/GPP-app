@@ -23,6 +23,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      name: "start",
       redirect: { name: "publicaties-mijn" }
     },
     {

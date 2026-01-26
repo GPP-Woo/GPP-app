@@ -1,17 +1,12 @@
 <template>
   <h1>{{ eigenaarGroepMode ? "Publicaties van collega's" : "Mijn publicaties" }}</h1>
 
-  <div v-if="eigenaarGroepMode" class="form-group">
-    <label for="eigenaarGroep">Gebruikersgroep</label>
-
-    <select id="eigenaarGroep" v-model="queryParams.eigenaarGroep" :disabled="isLoading">
-      <option value="">-- Selecteer een gebruikersgroep --</option>
-
-      <option v-for="groep in mijnGebruikersgroepen" :key="groep.uuid" :value="groep.uuid">
-        {{ groep.naam }}
-      </option>
-    </select>
-  </div>
+  <publicaties-overview-mijn-gebruikersgroepen
+    v-if="eigenaarGroepMode"
+    v-model:query-params="queryParams"
+    :mijn-gebruikersgroepen="mijnGebruikersgroepen"
+    :is-loading="isLoading"
+  />
 
   <menu v-else class="reset">
     <li>
@@ -21,7 +16,7 @@
     </li>
   </menu>
 
-  <form @submit.prevent="search">
+  <form v-if="!eigenaarGroepMode || queryParams.eigenaarGroep" @submit.prevent="search">
     <publicaties-overview-search
       v-model:search-string="searchString"
       v-model:from-date="fromDate"
@@ -61,15 +56,19 @@
           officieleTitel,
           verkorteTitel,
           registratiedatum,
-          publicatiestatus
+          publicatiestatus,
+          eigenaar
         } in pagedResult?.results"
         :key="uuid"
       >
         <router-link
           :to="{ name: 'publicatie', params: { uuid } }"
           :title="officieleTitel"
-          class="card-link icon-after pen"
-          :class="{ draft: publicatiestatus === PublicatieStatus.concept }"
+          class="card-link"
+          :class="{
+            draft: publicatiestatus === PublicatieStatus.concept,
+            'icon-after pen': eigenaar?.identifier === user?.id
+          }"
         >
           <h2 :aria-describedby="`status-${uuid}`">
             <s v-if="publicatiestatus === PublicatieStatus.ingetrokken">{{ officieleTitel }}</s>
@@ -120,18 +119,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
+import { useLoader } from "@/composables/use-loader";
 import { usePagedSearch } from "@/composables/use-paged-search";
 import { useMijnWaardelijsten } from "./composables/use-mijn-waardelijsten";
 import { PublicatieStatus, type Publicatie } from "./types";
+import PublicatiesOverviewMijnGebruikersgroepen from "./components/PublicatiesOverviewMijnGebruikersgroepen.vue";
 import PublicatiesOverviewSearch from "./components/PublicatiesOverviewSearch.vue";
 import PublicatiesOverviewFilter from "./components/PublicatiesOverviewFilter.vue";
 import PublicatiesOverviewSort from "./components/PublicatiesOverviewSort.vue";
 import PublicatiesOverviewPagination from "./components/PublicatiesOverviewPagination.vue";
+import getUser, { type User } from "@/stores/user";
 
-defineProps<{ eigenaarGroepMode?: boolean }>();
+const { eigenaarGroepMode = false } = defineProps<{ eigenaarGroepMode?: boolean }>();
 
 const addDays = (dateString: string, days: number) => {
   if (!dateString) return dateString;
@@ -157,6 +159,8 @@ const untilDateExclusive = computed({
 
 const isLoading = computed(() => loadingMijnWaardelijsten.value || loadingPageResult.value);
 const hasError = computed(() => !!mijnWaardelijstenError.value || !!pagedResultError.value);
+
+const { data: user } = useLoader<User | null>(() => getUser());
 
 const {
   mijnGebruikersgroepen,
@@ -201,6 +205,7 @@ const {
   pageCount,
   isFetching: loadingPageResult,
   error: pagedResultError,
+  initPagedSearch,
   onNext,
   onPrev
 } = usePagedSearch<Publicatie, typeof QueryParamsConfig>("publicaties", QueryParamsConfig);
@@ -210,6 +215,17 @@ watch(queryParams, syncFromQuery, { deep: true });
 
 // sync linked refs to queryParams onSearch
 const search = syncToQuery;
+
+// auto-select eigenaarGroep in eigenaarGroepMode if only one mijn-gebruikersgroep
+watch(mijnGebruikersgroepen, (groepen) => {
+  if (!groepen || !eigenaarGroepMode) return;
+
+  if (groepen.length === 1) {
+    queryParams.value.eigenaarGroep = groepen[0].uuid;
+  }
+});
+
+onMounted(() => !eigenaarGroepMode && initPagedSearch());
 </script>
 
 <style lang="scss" scoped>
@@ -243,16 +259,6 @@ dl {
   dd {
     color: var(--text-light);
     margin-inline-start: var(--spacing-extrasmall);
-  }
-}
-
-.form-group {
-  flex-direction: row;
-  align-items: center;
-
-  label {
-    margin-block: 0;
-    margin-inline-end: var(--spacing-default);
   }
 }
 </style>

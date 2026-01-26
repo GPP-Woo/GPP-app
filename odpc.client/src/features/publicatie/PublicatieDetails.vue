@@ -275,10 +275,13 @@ watch(
 );
 
 const navigate = () => {
-  if (previousRoute.value?.name === "publicaties") {
+  if (
+    previousRoute.value?.name === "publicaties-mijn" ||
+    previousRoute.value?.name === "publicaties-collegas"
+  ) {
     router.push({ name: previousRoute.value.name, query: previousRoute.value?.query });
   } else {
-    router.push({ name: "publicaties" });
+    router.push({ name: "start" });
   }
 };
 
