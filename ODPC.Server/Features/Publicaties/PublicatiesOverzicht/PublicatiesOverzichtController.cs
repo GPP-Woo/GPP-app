@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ODPC.Authentication;
-using ODPC.Apis.Odrc;
+﻿using System.Net;
 using System.Text.Json.Nodes;
-using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ODPC.Apis.Odrc;
+using ODPC.Authentication;
+using ODPC.Data;
 
 namespace ODPC.Features.Publicaties.PublicatiesOverzicht
 {
     [ApiController]
-    public class PublicatiesOverzichtController(IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
+    public class PublicatiesOverzichtController(OdpcDbContext context, IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
     {
         [HttpGet("api/{version}/publicaties")]
         public async Task<IActionResult> Get(
@@ -20,14 +22,13 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
             [FromQuery] string? registratiedatumTot = "",
             [FromQuery] string? informatieCategorieen = "",
             [FromQuery] string? onderwerpen = "",
-            [FromQuery] string? publicatiestatus = "")
+            [FromQuery] string? publicatiestatus = "",
+            [FromQuery] string? eigenaarGroep = null)
         {
-            // publicaties ophalen uit het ODRC
             using var client = clientFactory.Create("Publicaties ophalen");
 
             var parameters = new Dictionary<string, string?>
             {
-                { "eigenaar", WebUtility.UrlEncode(user.Id) },
                 { "page", page },
                 { "sorteer", sorteer },
                 { "search", search },
@@ -38,6 +39,32 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
                 { "publicatiestatus", publicatiestatus },
                 { "pageSize", "10" }
             };
+
+            if (Guid.TryParse(eigenaarGroep, out var identifier))
+            {
+                var lowerCaseId = user.Id?.ToLowerInvariant();
+
+#pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
+                var isGebruikersgroepGebruiker = await context.GebruikersgroepGebruikers
+                    .AnyAsync(x => x.GebruikersgroepUuid == identifier &&
+                                   x.GebruikerId.ToLower() == lowerCaseId, token);
+#pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
+
+                if (isGebruikersgroepGebruiker)
+                {
+                    parameters.Add("eigenaarGroep", identifier.ToString());
+                }
+                else
+                {
+                    parameters.Add("eigenaar", WebUtility.UrlEncode(user.Id));
+                }
+            }
+            else
+            {
+                parameters.Add("eigenaar", WebUtility.UrlEncode(user.Id));
+            }
+
+            // publicaties ophalen uit het ODRC
 
             var url = $"/api/{version}/publicaties?{UrlHelper.BuildQueryString(parameters)}";
 
