@@ -19,6 +19,13 @@
 
   <simple-spinner v-show="isLoading"></simple-spinner>
 
+  <div v-if="isGenerating" class="generating-overlay" aria-live="assertive">
+    <div class="generating-overlay-content">
+      <simple-spinner></simple-spinner>
+      <p>Metadata wordt gegenereerd...</p>
+    </div>
+  </div>
+
   <form v-if="!isLoading" @submit.prevent="submit" v-form-invalid-handler>
     <alert-inline v-if="mijnGebruikersgroepenError || !mijnGebruikersgroepen?.length"
       >Er is iets misgegaan bij het ophalen van de gegevens. Neem contact op met de
@@ -40,6 +47,31 @@
         :mijn-gebruikersgroepen="mijnGebruikersgroepen"
         :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
       />
+
+      <div v-if="existingDocuments.length && !isReadonly && !hasError" class="generate-metadata">
+        <label v-if="existingDocuments.length > 1" for="generate-document-select"
+          >Document voor metadata generatie</label
+        >
+
+        <select
+          v-if="existingDocuments.length > 1"
+          id="generate-document-select"
+          v-model="selectedDocumentUuid"
+        >
+          <option v-for="doc in existingDocuments" :key="doc.uuid" :value="doc.uuid">
+            {{ doc.bestandsnaam }}
+          </option>
+        </select>
+
+        <button
+          type="button"
+          class="button secondary"
+          :disabled="!selectedDocumentUuid"
+          @click="handleGenerateMetadata"
+        >
+          Genereer metadata
+        </button>
+      </div>
 
       <alert-inline v-if="documentenError"
         >Er is iets misgegaan bij het ophalen van de documenten bij deze publicatie...</alert-inline
@@ -162,6 +194,7 @@ import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
 import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroepen";
 import { useDialogs } from "./composables/use-dialogs";
+import { useGenerateMetadata } from "./composables/use-generate-metadata";
 import { PublicatieStatus } from "./types";
 
 const router = useRouter();
@@ -171,6 +204,7 @@ const props = defineProps<{ uuid?: string }>();
 const { previousRoute } = usePreviousRoute();
 
 const { deleteDialog, draftDialog, retractDialog, noDocumentsDialog } = useDialogs();
+const { isGenerating, generateMetadata } = useGenerateMetadata();
 
 const isLoading = computed(
   () =>
@@ -318,6 +352,44 @@ watch(
   }
 );
 
+// Metadata generation
+const existingDocuments = computed(() => documenten.value.filter((doc) => doc.uuid));
+
+const selectedDocumentUuid = ref(
+  existingDocuments.value.length ? existingDocuments.value[0].uuid : undefined
+);
+
+watch(existingDocuments, (docs) => {
+  if (!selectedDocumentUuid.value && docs.length) {
+    selectedDocumentUuid.value = docs[0].uuid;
+  }
+});
+
+const handleGenerateMetadata = async () => {
+  if (!selectedDocumentUuid.value) return;
+
+  const result = await generateMetadata(
+    selectedDocumentUuid.value,
+    publicatie.value,
+    documenten.value
+  );
+
+  if (!result) return;
+
+  // Apply publication-level metadata
+  publicatie.value = { ...publicatie.value, ...result.publicatie };
+
+  // Apply document-level metadata
+  if (result.document) {
+    const docIndex = documenten.value.findIndex((d) => d.uuid === selectedDocumentUuid.value);
+    if (docIndex !== -1) {
+      documenten.value[docIndex] = { ...documenten.value[docIndex], ...result.document };
+    }
+  }
+
+  toast.add({ text: "Metadata is succesvol gegenereerd." });
+};
+
 const navigate = () => {
   if (previousRoute.value?.name === "publicaties") {
     router.push({ name: previousRoute.value.name, query: previousRoute.value?.query });
@@ -439,6 +511,44 @@ menu {
 
   li:has([value="publish"]) {
     order: 5;
+  }
+}
+
+.generate-metadata {
+  display: flex;
+  align-items: end;
+  gap: var(--spacing-small);
+  margin-block-end: var(--spacing-default);
+
+  label {
+    font-weight: var(--font-bold);
+    margin-block-end: var(--spacing-small);
+  }
+
+  select {
+    flex: 1;
+  }
+}
+
+.generating-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.generating-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-default);
+
+  p {
+    font-size: var(--font-large);
+    font-weight: var(--font-bold);
   }
 }
 </style>

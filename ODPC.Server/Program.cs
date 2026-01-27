@@ -34,7 +34,8 @@ try
         return string.IsNullOrWhiteSpace(value)
             ? throw new Exception($"Environment variable {key} is missing or empty")
             : value;
-    };
+    }
+    ;
 
     builder.Services.AddAuth(options =>
     {
@@ -51,11 +52,12 @@ try
     builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
     builder.Services.AddScoped<IOdrcClientFactory, OdrcClientFactory>();
     builder.Services.AddScoped<IGebruikerWaardelijstItemsService, GebruikerWaardelijstItemsService>();
+    builder.Services.AddHttpClient("WooHoo");
 
 
     var app = builder.Build();
 
-    app.UseSerilogRequestLogging(x=> x.Logger = logger);
+    app.UseSerilogRequestLogging(x => x.Logger = logger);
     app.UseDefaultFiles();
     app.UseOdpcStaticFiles();
     app.UseOdpcSecurityHeaders();

@@ -28,11 +28,11 @@ namespace ODPC.Apis.Odrc
             if (string.IsNullOrWhiteSpace(input)) return input;
 
             if (Ascii.IsValid(input)) return input;
-            
+
             var normalized = input.Normalize(NormalizationForm.FormD);
-            
+
             if (normalized == input) return input;
-            
+
             var builder = new StringBuilder(capacity: normalized.Length);
 
             foreach (var c in normalized)

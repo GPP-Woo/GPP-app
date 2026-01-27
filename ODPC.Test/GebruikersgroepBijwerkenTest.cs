@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using ODPC.Data.Entities;
+using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepAanmaken;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepBijwerken;
-using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
 
 namespace ODPC.Test
 {

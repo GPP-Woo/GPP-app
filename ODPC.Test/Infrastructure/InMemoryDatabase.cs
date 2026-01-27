@@ -30,7 +30,7 @@ namespace ODPC.Test.Infrastructure
             {
                 await _sqliteConnection.CloseAsync();
                 await _sqliteConnection.DisposeAsync();
-                await  base.DisposeAsync();
+                await base.DisposeAsync();
             }
         }
     }

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ODPC.Authentication;
-using ODPC.Apis.Odrc;
+﻿using System.Net;
 using System.Text.Json.Nodes;
-using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using ODPC.Apis.Odrc;
+using ODPC.Authentication;
 
 namespace ODPC.Features.Publicaties.PublicatiesOverzicht
 {
@@ -32,7 +32,7 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
                 { "sorteer", sorteer },
                 { "search", search },
                 { "registratiedatumVanaf", registratiedatumVanaf },
-                { "registratiedatumTot", registratiedatumTot },                
+                { "registratiedatumTot", registratiedatumTot },
                 { "informatieCategorieen", informatieCategorieen },
                 { "onderwerpen", onderwerpen },
                 { "publicatiestatus", publicatiestatus },

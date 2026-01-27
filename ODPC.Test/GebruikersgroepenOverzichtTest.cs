@@ -14,7 +14,7 @@ namespace ODPC.Test
             await context.AddAsync(groep);
             await context.SaveChangesAsync();
             var controller = new GebruikersgroepenController(context);
-            var result = controller.Get().ToBlockingEnumerable().Single(x=> x.Uuid == groep.Uuid);
+            var result = controller.Get().ToBlockingEnumerable().Single(x => x.Uuid == groep.Uuid);
             Assert.AreEqual(groep.Uuid, result.Uuid);
             Assert.AreEqual(groep.Naam, result.Naam);
         }
