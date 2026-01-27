@@ -140,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useModel, watch } from "vue";
+import { computed, ref, useModel, watch, type DeepReadonly } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
@@ -156,8 +156,8 @@ const props = defineProps<{
   unauthorized: boolean;
   isReadonly: boolean;
   isDraftMode: boolean;
-  mijnGebruikersgroepen: MijnGebruikersgroep[];
-  gekoppeldeWaardelijsten: {
+  mijnGebruikersgroepen: DeepReadonly<MijnGebruikersgroep[]>;
+  groepWaardelijsten: {
     organisaties?: OptionProps[];
     informatiecategorieen?: OptionProps[];
     onderwerpen?: OptionProps[];
@@ -181,10 +181,10 @@ const eigenaarGroepIdentifier = computed({
       : null)
 });
 
-// When gekoppeldeWaardelijsten don't match the publicatie (unauthorized)
+// When groepWaardelijsten don't match the publicatie eigenaarGroep (unauthorized)
 // or when publicatie has status 'ingetrokken', the form is displayed as readonly/disabled
 // In readonly mode waardelijsten are constructed based on all/existing waardelijsten because there is (unauthorized) -
-// or there may be (ingestrokken) a mismatch in waardelijsten between the publicatie and gekoppeldeWaardelijsten
+// or there may be (ingestrokken) a mismatch in waardelijsten between the publicatie and groepWaardelijsten
 const waardelijsten = computed(() =>
   props.isReadonly
     ? {
@@ -198,7 +198,7 @@ const waardelijsten = computed(() =>
           model.value.onderwerpen.includes(item.uuid)
         )
       }
-    : props.gekoppeldeWaardelijsten
+    : props.groepWaardelijsten
 );
 
 // Expand option groups after eigenaarGroep changes and waardelijst values are empty

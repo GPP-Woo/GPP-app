@@ -1,17 +1,22 @@
-import { computed, type Ref } from "vue";
-import { PublicatieStatus, type Publicatie } from "../types";
-import type { useMijnGebruikersgroepen } from "./use-mijn-gebruikersgroepen";
-
-type UseMijnGebruikersgroepenReturn = ReturnType<typeof useMijnGebruikersgroepen>;
+import { computed, type DeepReadonly, type Ref } from "vue";
+import { useAppData } from "@/composables/use-app-data";
+import { PublicatieStatus, type MijnGebruikersgroep, type Publicatie } from "../types";
 
 export const usePublicatiePermissions = (
   publicatie: Ref<Publicatie>,
-  mijnGebruikersgroepen: UseMijnGebruikersgroepenReturn["data"],
-  gekoppeldeWaardelijsten: UseMijnGebruikersgroepenReturn["gekoppeldeWaardelijsten"],
-  gekoppeldeWaardelijstenUuids: UseMijnGebruikersgroepenReturn["gekoppeldeWaardelijstenUuids"]
+  mijnGebruikersgroepen: DeepReadonly<Ref<MijnGebruikersgroep[] | null>>
 ) => {
+  const { user, lijsten } = useAppData();
+
+  const isOwner = computed(
+    () => !publicatie.value.eigenaar || publicatie.value.eigenaar.identifier === user.value?.id
+  );
+
   const isReadonly = computed(
-    () => publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken || unauthorized.value
+    () =>
+      !isOwner.value ||
+      unauthorized.value ||
+      publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken
   );
 
   const canDraft = computed(
@@ -25,31 +30,50 @@ export const usePublicatiePermissions = (
   const canRetract = computed(
     () => publicatie.value.publicatiestatus === PublicatieStatus.gepubliceerd
   );
-  
-  const userHasAccessToGroup = computed(() =>
+
+  const userHasAccessToGroep = computed(() =>
     mijnGebruikersgroepen.value?.some(
       (groep) => groep.uuid === publicatie.value.eigenaarGroep?.identifier
     )
   );
 
-  const groupHasWaardelijsten = computed(
+  const groepWaardelijstenUuids = computed(
     () =>
-      gekoppeldeWaardelijsten.value.organisaties?.length &&
-      gekoppeldeWaardelijsten.value.informatiecategorieen?.length
+      mijnGebruikersgroepen.value?.find(
+        (groep) => groep.uuid === publicatie.value.eigenaarGroep?.identifier
+      )?.gekoppeldeWaardelijsten
+  );
+
+  const groepWaardelijsten = computed(() => ({
+    organisaties: lijsten.value?.organisaties.filter((item) =>
+      groepWaardelijstenUuids.value?.includes(item.uuid)
+    ),
+    informatiecategorieen: lijsten.value?.informatiecategorieen.filter((item) =>
+      groepWaardelijstenUuids.value?.includes(item.uuid)
+    ),
+    onderwerpen: lijsten.value?.onderwerpen.filter((item) =>
+      groepWaardelijstenUuids.value?.includes(item.uuid)
+    )
+  }));
+
+  const groepHasWaardelijsten = computed(
+    () =>
+      groepWaardelijsten.value.organisaties?.length &&
+      groepWaardelijsten.value.informatiecategorieen?.length
   );
 
   const publicatieWaardelijstenMatch = computed(
     () =>
       // Gebruikersgroep is assigned to publisher organisatie (or publisher not set yet)
-      (gekoppeldeWaardelijstenUuids.value?.includes(publicatie.value.publisher) ||
+      (groepWaardelijstenUuids.value?.includes(publicatie.value.publisher) ||
         !publicatie.value.publisher) &&
       // Gebruikersgroep is assigned to every informatiecategorie of publicatie
       publicatie.value.informatieCategorieen.every((uuid: string) =>
-        gekoppeldeWaardelijstenUuids.value?.includes(uuid)
+        groepWaardelijstenUuids.value?.includes(uuid)
       ) &&
       // Gebruikersgroep is assigned to every onderwerp of publicatie
       publicatie.value.onderwerpen.every((uuid: string) =>
-        gekoppeldeWaardelijstenUuids.value?.includes(uuid)
+        groepWaardelijstenUuids.value?.includes(uuid)
       )
   );
 
@@ -57,17 +81,19 @@ export const usePublicatiePermissions = (
     if (!publicatie.value.eigenaarGroep) return false;
 
     return (
-      !userHasAccessToGroup.value ||
-      !groupHasWaardelijsten.value ||
+      !userHasAccessToGroep.value ||
+      !groepHasWaardelijsten.value ||
       !publicatieWaardelijstenMatch.value
     );
   });
 
   return {
+    isOwner,
     isReadonly,
     canDraft,
     canDelete,
     canRetract,
-    unauthorized
+    unauthorized,
+    groepWaardelijsten
   };
 };

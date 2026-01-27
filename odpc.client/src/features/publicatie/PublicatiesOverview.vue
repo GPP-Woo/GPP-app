@@ -123,7 +123,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
-import { useLoader } from "@/composables/use-loader";
+import { useAppData } from "@/composables/use-app-data";
 import { usePagedSearch } from "@/composables/use-paged-search";
 import { useMijnWaardelijsten } from "./composables/use-mijn-waardelijsten";
 import { PublicatieStatus, type Publicatie } from "./types";
@@ -132,11 +132,12 @@ import PublicatiesOverviewSearch from "./components/PublicatiesOverviewSearch.vu
 import PublicatiesOverviewFilter from "./components/PublicatiesOverviewFilter.vue";
 import PublicatiesOverviewSort from "./components/PublicatiesOverviewSort.vue";
 import PublicatiesOverviewPagination from "./components/PublicatiesOverviewPagination.vue";
-import getUser, { type User } from "@/stores/user";
+
+const { eigenaarGroepMode = false } = defineProps<{ eigenaarGroepMode?: boolean }>();
 
 const route = useRoute();
 
-const { eigenaarGroepMode = false } = defineProps<{ eigenaarGroepMode?: boolean }>();
+const { user } = useAppData();
 
 const addDays = (dateString: string, days: number) => {
   if (!dateString) return dateString;
@@ -162,8 +163,6 @@ const untilDateExclusive = computed({
 
 const isLoading = computed(() => loadingMijnWaardelijsten.value || loadingPageResult.value);
 const hasError = computed(() => !!mijnWaardelijstenError.value || !!pagedResultError.value);
-
-const { data: user } = useLoader<User | null>(() => getUser());
 
 const {
   mijnGebruikersgroepen,

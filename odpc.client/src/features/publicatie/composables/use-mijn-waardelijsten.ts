@@ -1,14 +1,11 @@
 import { computed, readonly } from "vue";
-import { useFetchApi } from "@/api/use-fetch-api";
 import { useAppData } from "@/composables/use-app-data";
-import type { MijnGebruikersgroep } from "../types";
+import { useMijnGebruikersgroepen } from "./use-mijn-gebruikersgroepen";
 
 export const useMijnWaardelijsten = () => {
   const { lijsten } = useAppData();
 
-  const { data, isFetching, error } = useFetchApi(() => "/api/mijn-gebruikersgroepen").json<
-    MijnGebruikersgroep[]
-  >();
+  const { data, isFetching, error } = useMijnGebruikersgroepen();
 
   const distinctUuids = computed(() => [
     ...new Set(data.value?.flatMap((item) => item.gekoppeldeWaardelijsten))
@@ -27,7 +24,7 @@ export const useMijnWaardelijsten = () => {
   }));
 
   return {
-    mijnGebruikersgroepen: readonly(data),
+    mijnGebruikersgroepen: data,
     mijnWaardelijsten: readonly(mijnWaardelijsten),
     isFetching: readonly(isFetching),
     error: readonly(error)

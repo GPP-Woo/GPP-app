@@ -38,7 +38,7 @@
         :is-readonly="isReadonly"
         :is-draft-mode="isDraftMode"
         :mijn-gebruikersgroepen="mijnGebruikersgroepen"
-        :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
+        :groep-waardelijsten="groepWaardelijsten"
       />
 
       <alert-inline v-if="documentenError"
@@ -165,9 +165,9 @@ import { usePublicatiePermissions } from "./composables/use-publicatie-permissio
 import { useDialogs } from "./composables/use-dialogs";
 import { PublicatieStatus } from "./types";
 
-const router = useRouter();
-
 const props = defineProps<{ uuid?: string }>();
+
+const router = useRouter();
 
 const { previousRoute } = usePreviousRoute();
 
@@ -218,18 +218,12 @@ const {
 const {
   data: mijnGebruikersgroepen,
   isFetching: loadingMijnGebruikersgroepen,
-  error: mijnGebruikersgroepenError,
-  gekoppeldeWaardelijsten,
-  gekoppeldeWaardelijstenUuids
-} = useMijnGebruikersgroepen(() => publicatie.value.eigenaarGroep?.identifier);
+  error: mijnGebruikersgroepenError
+} = useMijnGebruikersgroepen();
 
 // Permissions
-const { isReadonly, canDraft, canDelete, canRetract, unauthorized } = usePublicatiePermissions(
-  publicatie,
-  mijnGebruikersgroepen,
-  gekoppeldeWaardelijsten,
-  gekoppeldeWaardelijstenUuids
-);
+const { isReadonly, canDraft, canDelete, canRetract, unauthorized, groepWaardelijsten } =
+  usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
 
 // Externally created publicaties will not have a eigenaarGroep untill updated from ODPC
 const isPublicatieWithoutEigenaarGroep = ref(false);

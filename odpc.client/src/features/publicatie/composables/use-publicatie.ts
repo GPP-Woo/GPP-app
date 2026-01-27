@@ -35,6 +35,7 @@ export const usePublicatie = (uuid?: string) => {
     if (value) {
       publicatie.value = {
         ...value,
+        // Publisher & verantwoordelijke could be null when created in publicatiebank
         ...{ publisher: value.publisher ?? publicatie.value.publisher },
         ...{ verantwoordelijke: value.publisher ?? publicatie.value.publisher }
       };
