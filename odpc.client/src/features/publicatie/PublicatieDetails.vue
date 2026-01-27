@@ -270,8 +270,8 @@ watch(
 
 const navigate = () => {
   if (
-    previousRoute.value?.name === "publicaties-mijn" ||
-    previousRoute.value?.name === "publicaties-collegas"
+    previousRoute.value?.name === "mijn-publicaties" ||
+    previousRoute.value?.name === "collega-publicaties"
   ) {
     router.push({ name: previousRoute.value.name, query: previousRoute.value?.query });
   } else {

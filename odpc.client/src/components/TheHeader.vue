@@ -5,11 +5,11 @@
     <nav v-if="user?.isLoggedIn">
       <ul>
         <li>
-          <router-link :to="{ name: 'publicaties-mijn' }">Mijn publicaties</router-link>
+          <router-link :to="{ name: 'mijn-publicaties' }">Mijn publicaties</router-link>
         </li>
 
         <li>
-          <router-link :to="{ name: 'publicaties-collegas' }"
+          <router-link :to="{ name: 'collega-publicaties' }"
             >Publicaties van collega's</router-link
           >
         </li>

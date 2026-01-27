@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "@/views/LoginView.vue";
 import ForbiddenView from "@/views/ForbiddenView.vue";
-import PublicatiesView from "@/views/PublicatiesView.vue";
+import MijnPublicatiesOverview from "@/features/publicatie/MijnPublicatiesOverview.vue";
 
 const resetFocus = () => {
   document.body.setAttribute("tabindex", "-1");
@@ -24,7 +24,7 @@ const router = createRouter({
     {
       path: "/",
       name: "start",
-      redirect: { name: "publicaties-mijn" }
+      redirect: { name: "mijn-publicaties" }
     },
     {
       path: "/login",
@@ -45,8 +45,8 @@ const router = createRouter({
     },
     {
       path: "/publicaties/mijn",
-      name: "publicaties-mijn",
-      component: PublicatiesView,
+      name: "mijn-publicaties",
+      component: MijnPublicatiesOverview,
       meta: {
         title: "Mijn publicaties",
         requiresAuth: true
@@ -54,9 +54,8 @@ const router = createRouter({
     },
     {
       path: "/publicaties/collegas",
-      name: "publicaties-collegas",
-      component: PublicatiesView,
-      props: { eigenaarGroepMode: true },
+      name: "collega-publicaties",
+      component: () => import("@/features/publicatie/CollegaPublicatiesOverview.vue"),
       meta: {
         title: "Publicaties van collega's",
         requiresAuth: true
@@ -65,7 +64,7 @@ const router = createRouter({
     {
       path: "/publicaties/:uuid?",
       name: "publicatie",
-      component: () => import("../views/PublicatieView.vue"),
+      component: () => import("@/features/publicatie/PublicatieDetails.vue"),
       props: true,
       meta: {
         title: "Publicatie",
