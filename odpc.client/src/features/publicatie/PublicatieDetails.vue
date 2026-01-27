@@ -48,7 +48,7 @@
         :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
       />
 
-      <div v-if="existingDocuments.length && !isReadonly && !hasError" class="generate-metadata">
+      <div v-if="isAvailable && existingDocuments.length && !isReadonly && !hasError" class="generate-metadata">
         <label v-if="existingDocuments.length > 1" for="generate-document-select"
           >Document voor metadata generatie</label
         >
@@ -177,7 +177,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
@@ -204,7 +204,9 @@ const props = defineProps<{ uuid?: string }>();
 const { previousRoute } = usePreviousRoute();
 
 const { deleteDialog, draftDialog, retractDialog, noDocumentsDialog } = useDialogs();
-const { isGenerating, generateMetadata } = useGenerateMetadata();
+const { isGenerating, isAvailable, checkAvailability, generateMetadata } = useGenerateMetadata();
+
+onMounted(checkAvailability);
 
 const isLoading = computed(
   () =>

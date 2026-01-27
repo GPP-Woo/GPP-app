@@ -47,7 +47,19 @@ const toDateTimeString = (value?: string) => {
 
 export const useGenerateMetadata = () => {
   const isGenerating = ref(false);
+  const isAvailable = ref(false);
   const { lijsten } = useAppData();
+
+  const checkAvailability = async () => {
+    try {
+      const response = await fetch("/api/v1/metadata/health", {
+        headers: { "is-api": "true" }
+      });
+      isAvailable.value = response.ok;
+    } catch {
+      isAvailable.value = false;
+    }
+  };
 
   const findMatchingUuids = (
     labels: string[],
@@ -191,6 +203,8 @@ export const useGenerateMetadata = () => {
 
   return {
     isGenerating,
+    isAvailable,
+    checkAvailability,
     generateMetadata
   };
 };

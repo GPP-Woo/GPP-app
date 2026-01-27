@@ -567,6 +567,39 @@ describe("useGenerateMetadata", () => {
     expect(result!.publicatie.informatieCategorieen).toEqual(["cat-uuid-1"]);
   });
 
+  it("checkAvailability sets isAvailable to true when health endpoint returns ok", async () => {
+    fetchSpy.mockResolvedValue({ ok: true });
+
+    const { isAvailable, checkAvailability } = useGenerateMetadata();
+
+    expect(isAvailable.value).toBe(false);
+
+    await checkAvailability();
+
+    expect(isAvailable.value).toBe(true);
+    expect(fetchSpy).toHaveBeenCalledWith("/api/v1/metadata/health", {
+      headers: { "is-api": "true" }
+    });
+  });
+
+  it("checkAvailability sets isAvailable to false when health endpoint returns non-ok", async () => {
+    fetchSpy.mockResolvedValue({ ok: false, status: 503 });
+
+    const { isAvailable, checkAvailability } = useGenerateMetadata();
+    await checkAvailability();
+
+    expect(isAvailable.value).toBe(false);
+  });
+
+  it("checkAvailability sets isAvailable to false on network error", async () => {
+    fetchSpy.mockRejectedValue(new TypeError("Failed to fetch"));
+
+    const { isAvailable, checkAvailability } = useGenerateMetadata();
+    await checkAvailability();
+
+    expect(isAvailable.value).toBe(false);
+  });
+
   it("handles response with multiple informatiecategorieen matching", async () => {
     const response = createWooHooResponse({
       classificatiecollectie: {
