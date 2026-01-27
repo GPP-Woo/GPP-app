@@ -184,12 +184,12 @@ const eigenaarGroepIdentifier = computed({
 // When groepWaardelijsten don't match the publicatie eigenaarGroep (unauthorized)
 // or when publicatie has status 'ingetrokken', the form is displayed as readonly/disabled
 // In readonly mode waardelijsten are constructed based on all/existing waardelijsten because there is (unauthorized) -
-// or there may be (ingestrokken) a mismatch in waardelijsten between the publicatie and groepWaardelijsten
+// or there may be (ingetrokken) a mismatch in waardelijsten between the publicatie and groepWaardelijsten
 const waardelijsten = computed(() =>
   props.isReadonly
     ? {
         organisaties: lijsten.value?.organisaties.filter((item) =>
-          model.value.publisher.includes(item.uuid)
+          model.value.publisher?.includes(item.uuid)
         ),
         informatiecategorieen: lijsten.value?.informatiecategorieen.filter((item) =>
           model.value.informatieCategorieen.includes(item.uuid)
@@ -209,7 +209,7 @@ watch(
   (_, oldGroep) =>
     (expandOptionGroup.value =
       !!oldGroep &&
-      model.value.publisher.length === 0 &&
+      !model.value.publisher &&
       model.value.informatieCategorieen.length === 0 &&
       model.value.onderwerpen.length === 0)
 );

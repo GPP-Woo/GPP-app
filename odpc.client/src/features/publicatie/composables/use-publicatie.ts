@@ -7,8 +7,8 @@ const API_URL = `/api/v2`;
 
 export const usePublicatie = (uuid?: string) => {
   const publicatie = ref<Publicatie>({
-    publisher: "",
-    verantwoordelijke: "",
+    publisher: null,
+    verantwoordelijke: null,
     officieleTitel: "",
     verkorteTitel: "",
     omschrijving: "",
@@ -31,16 +31,7 @@ export const usePublicatie = (uuid?: string) => {
     immediate: false
   }).json<Publicatie>();
 
-  watch(data, (value) => {
-    if (value) {
-      publicatie.value = {
-        ...value,
-        // Publisher & verantwoordelijke could be null when created in publicatiebank
-        ...{ publisher: value.publisher ?? publicatie.value.publisher },
-        ...{ verantwoordelijke: value.publisher ?? publicatie.value.publisher }
-      };
-    }
-  });
+  watch(data, (value) => publicatie.value = value ?? publicatie.value);
 
   const submitPublicatie = async () => {
     // Fill required verantwoordelijke with publisher value and add to publicatie

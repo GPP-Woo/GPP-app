@@ -22,8 +22,8 @@ export const Archiefnominatie = Object.freeze({
 
 export type Publicatie = {
   uuid?: string;
-  publisher: string;
-  verantwoordelijke: string;
+  publisher: string | null;
+  verantwoordelijke: string | null;
   officieleTitel: string;
   verkorteTitel: string;
   omschrijving: string;

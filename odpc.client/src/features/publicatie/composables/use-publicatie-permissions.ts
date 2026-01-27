@@ -65,8 +65,8 @@ export const usePublicatiePermissions = (
   const publicatieWaardelijstenMatch = computed(
     () =>
       // Gebruikersgroep is assigned to publisher organisatie (or publisher not set yet)
-      (groepWaardelijstenUuids.value?.includes(publicatie.value.publisher) ||
-        !publicatie.value.publisher) &&
+      (!publicatie.value.publisher ||
+        groepWaardelijstenUuids.value?.includes(publicatie.value.publisher)) &&
       // Gebruikersgroep is assigned to every informatiecategorie of publicatie
       publicatie.value.informatieCategorieen.every((uuid: string) =>
         groepWaardelijstenUuids.value?.includes(uuid)
