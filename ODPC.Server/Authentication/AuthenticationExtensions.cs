@@ -28,7 +28,7 @@ namespace ODPC.Authentication
                 var isLoggedIn = user?.Identity?.IsAuthenticated ?? false;
                 var name = user?.FindFirst(nameClaimType)?.Value;
                 var id = user?.FindFirst(x => idClaimTypes.Contains(x.Type))?.Value;
-                var roles = user?.FindAll(roleClaimType).Select(x=> x.Value).ToArray() ?? [];
+                var roles = user?.FindAll(roleClaimType).Select(x => x.Value).ToArray() ?? [];
                 var isAdmin = roles.Contains(authOptions.AdminRole);
                 return new OdpcUser { IsLoggedIn = isLoggedIn, FullName = name, Id = id, Roles = roles, IsAdmin = isAdmin };
             });

@@ -31,7 +31,7 @@ export const usePublicatie = (uuid?: string) => {
     immediate: false
   }).json<Publicatie>();
 
-  watch(data, (value) => publicatie.value = value ?? publicatie.value);
+  watch(data, (value) => (publicatie.value = value ?? publicatie.value));
 
   const submitPublicatie = async () => {
     // Fill required verantwoordelijke with publisher value and add to publicatie

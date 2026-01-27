@@ -23,11 +23,11 @@ namespace ODPC.Features.Gebruikersgroepen.MijnGebruikersgroepen
                 .Where(x => groepIds.Contains(x.Uuid))
                 .OrderBy(groep => groep.Naam)
                 .Select(groep => new MijnGebruikersgroepModel
-                    {
-                        Naam = groep.Naam,
-                        Uuid = groep.Uuid,
-                        GekoppeldeWaardelijsten = groep.Waardelijsten.Select(x => x.WaardelijstId).AsEnumerable()
-                    }
+                {
+                    Naam = groep.Naam,
+                    Uuid = groep.Uuid,
+                    GekoppeldeWaardelijsten = groep.Waardelijsten.Select(x => x.WaardelijstId).AsEnumerable()
+                }
                 )
                 .AsAsyncEnumerable();
         }

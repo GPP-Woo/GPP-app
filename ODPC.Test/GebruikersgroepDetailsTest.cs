@@ -59,7 +59,7 @@ namespace ODPC.Test
 
         [TestMethod]
         public async Task GebruikersgroepDetails_retourneert_notfound_voof_onbekende_uuid()
-        { 
+        {
             using var context = InMemoryDatabase.GetDbContext();
             var controller = new GebruikersgroepDetailsController(context);
             var result = await controller.Get(Guid.NewGuid(), default);
