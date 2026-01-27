@@ -104,7 +104,7 @@
             <dd>
               {{
                 registratiedatum &&
-                Intl.DateTimeFormat("default", { dateStyle: "long" }).format(
+                Intl.DateTimeFormat("nl-NL", { dateStyle: "long" }).format(
                   Date.parse(registratiedatum)
                 )
               }}
