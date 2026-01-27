@@ -27,11 +27,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import getUser, { type User } from "@/stores/user";
+import { useAppData } from "@/composables/use-app-data";
 
 const title = import.meta.env.VITE_APP_TITLE;
-const user = ref<User | null>(await getUser());
+
+const { user } = useAppData();
 </script>
 
 <style lang="scss" scoped></style>
