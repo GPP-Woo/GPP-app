@@ -8,15 +8,11 @@ async function authGuard(to: RouteLocationNormalized) {
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
   const requiresAdmin = to.matched.some((route) => route.meta.requiresAdmin);
 
-  const { fetchData, clearData } = useAppData();
+  const { fetchData, setUser } = useAppData();
 
   const user = await getUser(false);
 
-  if (user?.isLoggedIn) {
-    await fetchData();
-  } else {
-    clearData();
-  }
+  setUser(user);
 
   if ((requiresAuth || requiresAdmin) && !user?.isLoggedIn) {
     return { name: "login" };
@@ -24,6 +20,10 @@ async function authGuard(to: RouteLocationNormalized) {
 
   if (requiresAdmin && !user?.isAdmin) {
     return { name: "forbidden" };
+  }
+
+  if (user?.isLoggedIn) {
+    await fetchData();
   }
 }
 

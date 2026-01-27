@@ -1,7 +1,7 @@
 import { readonly, ref } from "vue";
 import { promiseAll } from "@/utils";
 import { fetchAllPages } from "@/composables/use-all-pages";
-import getUser, { type User } from "@/stores/user";
+import { type User } from "@/stores/user";
 
 type LijstItem = { uuid: string; omschrijving?: string };
 type LijstItemNaam = LijstItem & { naam: string };
@@ -39,7 +39,6 @@ export const useAppData = () => {
 
     try {
       lijsten.value = await fetchLijsten();
-      user.value = await getUser();
     } catch {
       error.value = true;
     } finally {
@@ -48,10 +47,7 @@ export const useAppData = () => {
     }
   };
 
-  const clearData = () => {
-    lijsten.value = null;
-    user.value = null;
-  };
+  const setUser = (fetchedUser: User | null) => (user.value = fetchedUser);
 
   return {
     lijsten: readonly(lijsten),
@@ -59,6 +55,6 @@ export const useAppData = () => {
     loading: readonly(loading),
     error: readonly(error),
     fetchData,
-    clearData
+    setUser
   };
 };
