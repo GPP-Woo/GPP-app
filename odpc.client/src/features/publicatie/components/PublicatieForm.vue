@@ -40,6 +40,11 @@
     </div>
 
     <template v-if="eigenaarGroepIdentifier || isReadonly">
+      <dl v-if="model.eigenaar">
+        <dt>Publicatie-eigenaar</dt>
+        <dd>{{ model.eigenaar.weergaveNaam }}</dd>
+      </dl>
+
       <div v-if="model.uuid" class="form-group">
         <label for="uuid">ID</label>
 
@@ -214,3 +219,25 @@ watch(
       model.value.onderwerpen.length === 0)
 );
 </script>
+
+<style lang="scss" scoped>
+dl {
+  display: flex;
+  flex-direction: column;
+  margin-block: 0 var(--spacing-default);
+
+  dt,
+  dd {
+    color: inherit;
+    margin-block-end: var(--spacing-small);
+  }
+
+  dt {
+    font-weight: var(--font-bold);
+  }
+
+  dd {
+    margin-inline: 0;
+  }
+}
+</style>

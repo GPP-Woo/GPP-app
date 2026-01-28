@@ -26,7 +26,6 @@ const QueryParamsConfig = {
   eigenaarGroep: ""
 };
 
-// eigenaarGroep?: Ref<string>
 export const usePublicatiesOverview = () => {
   const searchString = ref(""); // search
   const fromDate = ref(""); // registratiedatumVanaf
