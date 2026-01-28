@@ -1,15 +1,16 @@
 ﻿using System.Net;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ODPC.Apis.Odrc;
 using ODPC.Authentication;
-using ODPC.Data;
 
 namespace ODPC.Features.Publicaties.PublicatiesOverzicht
 {
     [ApiController]
-    public class PublicatiesOverzichtController(OdpcDbContext context, IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
+    public class PublicatiesOverzichtController(
+        IOdrcClientFactory clientFactory,
+        OdpcUser user,
+        IGebruikersgroepService gebruikersgroepService) : ControllerBase
     {
         [HttpGet("api/{version}/publicaties")]
         public async Task<IActionResult> Get(
@@ -44,13 +45,8 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
 
             if (Guid.TryParse(eigenaarGroep, out var identifier))
             {
-                var lowerCaseUserId = user.Id?.ToLowerInvariant();
-
-#pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
-                var isGebruikersgroepGebruiker = await context.GebruikersgroepGebruikers
-                    .AnyAsync(x => x.GebruikersgroepUuid == identifier &&
-                                   x.GebruikerId.ToLower() == lowerCaseUserId, token);
-#pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
+                var isGebruikersgroepGebruiker =
+                    await gebruikersgroepService.IsGebruikersgroepGebruikerAsync(identifier, token);
 
                 if (isGebruikersgroepGebruiker)
                 {

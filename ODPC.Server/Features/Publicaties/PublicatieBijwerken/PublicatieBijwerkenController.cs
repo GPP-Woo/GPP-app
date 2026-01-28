@@ -10,7 +10,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
     public class PublicatieBijwerkenController(
         OdpcDbContext context,
         IOdrcClientFactory clientFactory,
-        IGebruikerWaardelijstItemsService waardelijstItemsService,
+        IGebruikersgroepService gebruikersgroepService,
         OdpcUser user) : ControllerBase
     {
         [HttpPut("api/{version}/publicaties/{uuid:guid}")]
@@ -20,7 +20,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
                 ? identifier
                 : null;
 
-            var gebruikersgroepWaardelijstUuids = await waardelijstItemsService.GetAsync(eigenaarGroepIdentifier, token);
+            var gebruikersgroepWaardelijstUuids = await gebruikersgroepService.GetWaardelijstUuidsAsync(eigenaarGroepIdentifier, token);
 
             if (publicatie.EigenaarGroep == null)
             {
