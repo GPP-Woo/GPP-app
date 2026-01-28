@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ODPC.Apis.Odrc;
 using ODPC.Authentication;
 using ODPC.Data;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
@@ -9,7 +10,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
 {
     [ApiController]
     [Authorize(AdminPolicy.Name)]
-    public class GebruikersgroepBijwerkenController(OdpcDbContext context) : ControllerBase
+    public class GebruikersgroepBijwerkenController(OdpcDbContext context, IOdrcClientFactory clientFactory) : ControllerBase
     {
         private readonly OdpcDbContext _context = context;
 
@@ -25,6 +26,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
         public async Task<IActionResult> Put(Guid uuid, [FromBody] GebruikersgroepUpsertModel model, CancellationToken token)
         {
             var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
+
             if (groep == null) return NotFound();
 
             try
@@ -57,6 +59,19 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
             UpsertHelpers.AddGebruikersToGroep(model.GekoppeldeGebruikers, groep, _context);
 
             await _context.SaveChangesAsync(token);
+
+            //sync naam naar gerelateerde organisatie-eenheid in de publicatiebank, fire-and-forget
+            try
+            {
+                using var client = clientFactory.Create("Organisatie-eenheid bijwerken");
+
+                var url = $"/api/v2/accounts/organisatie-eenheden/{uuid}";
+
+                using var response = await client.PutAsJsonAsync(url, new { naam = model.Naam }, token);
+            }
+            catch {
+                //negeer fouten, organisatie-eenheid bestaat mogelijk (nog) niet in publicatiebank
+            }
 
             return Ok(GebruikersgroepDetailsModel.MapEntityToViewModel(groep));
         }
