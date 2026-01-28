@@ -42,6 +42,10 @@ export const useAppData = () => {
         lijsten.value = await fetchLijsten();
 
         loaded = true;
+      } else if (!user.value?.isLoggedIn) {
+        lijsten.value = null;
+
+        loaded = false;
       }
     } catch {
       error.value = true;
