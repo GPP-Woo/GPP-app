@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ODPC.Apis.Odrc;
-using ODPC.Data;
 
 namespace ODPC.Features.Publicaties.PublicatieRegistreren
 {
     [ApiController]
     public class PublicatieRegistrerenController(
         IOdrcClientFactory clientFactory,
-        IGebruikerWaardelijstItemsService waardelijstItemsService) : ControllerBase
+        IGebruikersgroepService gebruikersgroepService) : ControllerBase
     {
         [HttpPost("api/{version}/publicaties")]
         public async Task<IActionResult> Post(string version, Publicatie publicatie, CancellationToken token)
@@ -16,7 +15,7 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
                 ? identifier
                 : null;
 
-            var gebruikersgroepWaardelijstUuids = await waardelijstItemsService.GetAsync(eigenaarGroepIdentifier, token);
+            var gebruikersgroepWaardelijstUuids = await gebruikersgroepService.GetWaardelijstUuidsAsync(eigenaarGroepIdentifier, token);
 
             if (publicatie.EigenaarGroep == null)
             {

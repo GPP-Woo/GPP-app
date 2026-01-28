@@ -50,8 +50,7 @@ try
     var connStr = $"Username={builder.Configuration["POSTGRES_USER"]};Password={builder.Configuration["POSTGRES_PASSWORD"]};Host={builder.Configuration["POSTGRES_HOST"]};Database={builder.Configuration["POSTGRES_DB"]};Port={builder.Configuration["POSTGRES_PORT"]}";
     builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
     builder.Services.AddScoped<IOdrcClientFactory, OdrcClientFactory>();
-    builder.Services.AddScoped<IGebruikerWaardelijstItemsService, GebruikerWaardelijstItemsService>();
-
+    builder.Services.AddScoped<IGebruikersgroepService, GebruikersgroepService>();
 
     var app = builder.Build();
 
