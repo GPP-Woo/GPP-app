@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ODPC.Apis.Odrc;
 using ODPC.Authentication;
 using ODPC.Data;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
+using Serilog;
 
 namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepBijwerken
 {
@@ -23,7 +25,11 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
         /// <returns></returns>
 
         [HttpPut("api/gebruikersgroepen/{uuid:guid}")]
-        public async Task<IActionResult> Put(Guid uuid, [FromBody] GebruikersgroepUpsertModel model, CancellationToken token)
+        public async Task<IActionResult> Put(
+            Guid uuid,
+            [FromBody] GebruikersgroepUpsertModel model,
+            ILogger<GebruikersgroepBijwerkenController> logger,
+            CancellationToken token)
         {
             var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
 
@@ -60,7 +66,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
 
             await _context.SaveChangesAsync(token);
 
-            //sync naam naar gerelateerde organisatie-eenheid in de publicatiebank, fire-and-forget
+            //sync naam naar gerelateerde organisatie-eenheid in de publicatiebank
             try
             {
                 using var client = clientFactory.Create("Organisatie-eenheid bijwerken");
@@ -68,9 +74,17 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
                 var url = $"/api/v2/accounts/organisatie-eenheden/{uuid}";
 
                 using var response = await client.PutAsJsonAsync(url, new { naam = model.Naam }, token);
+
+                //organisatie-eenheid bestaat mogelijk (nog) niet in publicatiebank
+                //negeer 404, log andere excepties
+                if (response.StatusCode != HttpStatusCode.NotFound)
+                {
+                    response.EnsureSuccessStatusCode();
+                }
             }
-            catch {
-                //negeer fouten, organisatie-eenheid bestaat mogelijk (nog) niet in publicatiebank
+            catch (Exception exception)
+            {
+                logger.LogWarning(exception, "Onverwachte statuscode bij updaten organisatie-eenheid in publicatiebank.");
             }
 
             return Ok(GebruikersgroepDetailsModel.MapEntityToViewModel(groep));
