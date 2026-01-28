@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Logging.Abstractions;
 using ODPC.Apis.Odrc;
 using ODPC.Data.Entities;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
@@ -35,7 +36,7 @@ namespace ODPC.Test
 
             var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
             var upsertModel = RandomUpsertModel();
-            var result = await controller.Put(groep.Uuid, upsertModel, default);
+            var result = await controller.Put(groep.Uuid, upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
             if (result is not OkObjectResult objectResult || objectResult.Value is not GebruikersgroepDetailsModel detailsModel)
             {
@@ -98,7 +99,7 @@ namespace ODPC.Test
 
             var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
             var upsertModel = RandomUpsertModel();
-            var result = await controller.Put(Guid.NewGuid(), upsertModel, default);
+            var result = await controller.Put(Guid.NewGuid(), upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
             if (result is not IStatusCodeActionResult statusCodeResult)
             {
@@ -149,7 +150,7 @@ namespace ODPC.Test
 
             upsertModel.Naam = bestaandeGroep.Naam;
 
-            var result = await controller.Put(teWijzigenGroep.Uuid, upsertModel, default);
+            var result = await controller.Put(teWijzigenGroep.Uuid, upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
             if (result is not IStatusCodeActionResult statusCodeResult)
             {
@@ -174,7 +175,7 @@ namespace ODPC.Test
 
             upsertModel.Naam = groep.Naam;
 
-            var result = await controller.Put(groep.Uuid, upsertModel, default);
+            var result = await controller.Put(groep.Uuid, upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
             if (result is not OkObjectResult objectResult || objectResult.Value is not GebruikersgroepDetailsModel detailsModel)
             {
