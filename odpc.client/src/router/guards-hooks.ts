@@ -1,6 +1,5 @@
 import type { App } from "vue";
 import type { Router, RouteLocationNormalized } from "vue-router";
-import getUser from "@/stores/user";
 import { useAppData } from "@/composables/use-app-data";
 import { setPreviousRoute } from "@/composables/use-previous-route";
 
@@ -8,22 +7,16 @@ async function authGuard(to: RouteLocationNormalized) {
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
   const requiresAdmin = to.matched.some((route) => route.meta.requiresAdmin);
 
-  const { fetchData, setUser } = useAppData();
+  const { fetchData, user } = useAppData();
 
-  const user = await getUser(false);
+  await fetchData();
 
-  setUser(user);
-
-  if ((requiresAuth || requiresAdmin) && !user?.isLoggedIn) {
+  if ((requiresAuth || requiresAdmin) && !user.value?.isLoggedIn) {
     return { name: "login" };
   }
 
-  if (requiresAdmin && !user?.isAdmin) {
+  if (requiresAdmin && !user.value?.isAdmin) {
     return { name: "forbidden" };
-  }
-
-  if (user?.isLoggedIn) {
-    await fetchData();
   }
 }
 
