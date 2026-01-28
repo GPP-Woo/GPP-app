@@ -19,7 +19,7 @@ import type { DeepReadonly } from "vue";
 import { type MijnGebruikersgroep } from "../types";
 
 defineProps<{
-  mijnGebruikersgroepen?: DeepReadonly<MijnGebruikersgroep[]> | null;
+  mijnGebruikersgroepen: DeepReadonly<MijnGebruikersgroep[] | null>;
   isLoading: boolean;
 }>();
 
