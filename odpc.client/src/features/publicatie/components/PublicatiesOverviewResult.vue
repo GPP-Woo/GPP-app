@@ -97,6 +97,9 @@ const { user } = useAppData();
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/mixins";
+@include mixins.reset-block-margins;
+
 section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));

@@ -1,0 +1,5 @@
+@mixin reset-block-margins {
+  :deep(*:not(fieldset, label)) {
+    margin-block: 0;
+  }
+}

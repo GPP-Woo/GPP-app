@@ -29,15 +29,14 @@
 
   <alert-inline v-else-if="hasError">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
 
-  <template v-else-if="pageCount">
-    <publicaties-overview-result
-      :paged-result="pagedResult"
-      :page-count="pageCount"
-      :query-params="queryParams"
-      @onPrev="onPrev"
-      @onNext="onNext"
-    />
-  </template>
+  <publicaties-overview-result
+    v-else-if="pageCount"
+    :paged-result="pagedResult"
+    :page-count="pageCount"
+    :query-params="queryParams"
+    @onPrev="onPrev"
+    @onNext="onNext"
+  />
 
   <alert-inline v-else>Geen publicaties gevonden.</alert-inline>
 </template>
@@ -71,10 +70,8 @@ onMounted(() => initPagedSearch());
 </script>
 
 <style lang="scss" scoped>
-// clear margins, use gaps
-:deep(*:not(fieldset, label)) {
-  margin-block: 0;
-}
+@use "@/assets/mixins";
+@include mixins.reset-block-margins;
 
 menu {
   display: flex;
