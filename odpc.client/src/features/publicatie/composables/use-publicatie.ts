@@ -7,8 +7,8 @@ const API_URL = `/api/v2`;
 
 export const usePublicatie = (uuid?: string) => {
   const publicatie = ref<Publicatie>({
-    publisher: "",
-    verantwoordelijke: "",
+    publisher: null,
+    verantwoordelijke: null,
     officieleTitel: "",
     verkorteTitel: "",
     omschrijving: "",

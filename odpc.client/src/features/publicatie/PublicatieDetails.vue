@@ -38,7 +38,7 @@
         :is-readonly="isReadonly"
         :is-draft-mode="isDraftMode"
         :mijn-gebruikersgroepen="mijnGebruikersgroepen"
-        :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
+        :groep-waardelijsten="groepWaardelijsten"
       />
 
       <alert-inline v-if="documentenError"
@@ -161,12 +161,13 @@ import NoDocumentsDialogContent from "./components/dialogs/NoDocumentsDialogCont
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
 import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroepen";
+import { usePublicatiePermissions } from "./composables/use-publicatie-permissions";
 import { useDialogs } from "./composables/use-dialogs";
 import { PublicatieStatus } from "./types";
 
-const router = useRouter();
-
 const props = defineProps<{ uuid?: string }>();
+
+const router = useRouter();
 
 const { previousRoute } = usePreviousRoute();
 
@@ -188,59 +189,6 @@ const hasError = computed(
     !!documentError.value ||
     !!mijnGebruikersgroepenError.value
 );
-
-const isReadonly = computed(
-  () => publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken || unauthorized.value
-);
-
-const canDraft = computed(
-  () => !publicatie.value.uuid || publicatie.value.publicatiestatus === PublicatieStatus.concept
-);
-
-const canDelete = computed(
-  () => publicatie.value.uuid && publicatie.value.publicatiestatus === PublicatieStatus.concept
-);
-
-const canRetract = computed(
-  () => publicatie.value.publicatiestatus === PublicatieStatus.gepubliceerd
-);
-
-const userHasAccessToGroup = computed(() =>
-  mijnGebruikersgroepen.value?.some(
-    (groep) => groep.uuid === publicatie.value.eigenaarGroep?.identifier
-  )
-);
-
-const groupHasWaardelijsten = computed(
-  () =>
-    gekoppeldeWaardelijsten.value.organisaties?.length &&
-    gekoppeldeWaardelijsten.value.informatiecategorieen?.length
-);
-
-const publicatieWaardelijstenMatch = computed(
-  () =>
-    // Gebruikersgroep is assigned to publisher organisatie (or publisher not set yet)
-    (gekoppeldeWaardelijstenUuids.value?.includes(publicatie.value.publisher) ||
-      !publicatie.value.publisher) &&
-    // Gebruikersgroep is assigned to every informatiecategorie of publicatie
-    publicatie.value.informatieCategorieen.every((uuid: string) =>
-      gekoppeldeWaardelijstenUuids.value?.includes(uuid)
-    ) &&
-    // Gebruikersgroep is assigned to every onderwerp of publicatie
-    publicatie.value.onderwerpen.every((uuid: string) =>
-      gekoppeldeWaardelijstenUuids.value?.includes(uuid)
-    )
-);
-
-const unauthorized = computed(() => {
-  if (!publicatie.value.eigenaarGroep) return false;
-
-  return (
-    !userHasAccessToGroup.value ||
-    !groupHasWaardelijsten.value ||
-    !publicatieWaardelijstenMatch.value
-  );
-});
 
 // Publicatie
 const {
@@ -270,20 +218,12 @@ const {
 const {
   data: mijnGebruikersgroepen,
   isFetching: loadingMijnGebruikersgroepen,
-  error: mijnGebruikersgroepenError,
-  gekoppeldeWaardelijsten,
-  gekoppeldeWaardelijstenUuids
-} = useMijnGebruikersgroepen(() => publicatie.value.eigenaarGroep?.identifier);
+  error: mijnGebruikersgroepenError
+} = useMijnGebruikersgroepen();
 
-const clearPublicatieWaardelijsten = () =>
-  (publicatie.value = {
-    ...publicatie.value,
-    ...{
-      publisher: "",
-      informatieCategorieen: [],
-      onderwerpen: []
-    }
-  });
+// Permissions
+const { isReadonly, canDraft, canDelete, canRetract, unauthorized, groepWaardelijsten } =
+  usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
 
 // Externally created publicaties will not have a eigenaarGroep untill updated from ODPC
 const isPublicatieWithoutEigenaarGroep = ref(false);
@@ -305,6 +245,16 @@ watch(isLoading, () => {
   }
 });
 
+const clearPublicatieWaardelijsten = () =>
+  (publicatie.value = {
+    ...publicatie.value,
+    ...{
+      publisher: "",
+      informatieCategorieen: [],
+      onderwerpen: []
+    }
+  });
+
 // Clear waardelijsten of publicatie when mismatch waardelijsten gebruikersgroep (unauthorized) on
 // a) switch from one to another gebruikersgroep or
 // b) initial select gebruikersgroep when isPublicatieWithoutEigenaarGroep
@@ -319,10 +269,13 @@ watch(
 );
 
 const navigate = () => {
-  if (previousRoute.value?.name === "publicaties") {
+  if (
+    previousRoute.value?.name === "mijn-publicaties" ||
+    previousRoute.value?.name === "collega-publicaties"
+  ) {
     router.push({ name: previousRoute.value.name, query: previousRoute.value?.query });
   } else {
-    router.push({ name: "publicaties" });
+    router.push({ name: "start" });
   }
 };
 

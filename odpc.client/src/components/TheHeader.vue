@@ -5,7 +5,13 @@
     <nav v-if="user?.isLoggedIn">
       <ul>
         <li>
-          <router-link :to="{ name: 'publicaties' }">Publicaties</router-link>
+          <router-link :to="{ name: 'mijn-publicaties' }">Mijn publicaties</router-link>
+        </li>
+
+        <li>
+          <router-link :to="{ name: 'collega-publicaties' }"
+            >Publicaties van collega's</router-link
+          >
         </li>
 
         <li v-if="user?.isAdmin">
@@ -21,11 +27,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import getUser, { type User } from "@/stores/user";
+import { useAppData } from "@/composables/use-app-data";
 
 const title = import.meta.env.VITE_APP_TITLE;
-const user = ref<User | null>(await getUser());
+
+const { user } = useAppData();
 </script>
 
 <style lang="scss" scoped></style>

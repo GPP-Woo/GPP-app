@@ -18,7 +18,7 @@
           @click="toggleAll"
           :checked="allSelected"
           :aria-describedby="`description-${instanceId}`"
-          :aria-invalid="!model.length ? true : undefined"
+          :aria-invalid="!model?.length ? true : undefined"
         />
         selecteer alles
       </label>
@@ -31,7 +31,7 @@
           :value="uuid"
           v-model="model"
           :aria-describedby="`description-${instanceId}`"
-          :aria-invalid="!model.length ? true : undefined"
+          :aria-invalid="!model?.length ? true : undefined"
         />
         {{ naam }}
 
@@ -64,7 +64,7 @@ const props = withDefaults(
     type?: string;
     title: string;
     options: Readonly<OptionProps[]>;
-    modelValue: string | string[];
+    modelValue: string | string[] | null;
     required?: boolean;
     open?: boolean;
   }>(),
@@ -77,13 +77,13 @@ const model = useModel(props, "modelValue");
 
 const uuids = computed(() => props.options.map((option) => option.uuid));
 
-const allSelected = computed(() => uuids.value.every((uuid) => model.value.includes(uuid)));
+const allSelected = computed(() => uuids.value.every((uuid) => model.value?.includes(uuid)));
 
 const toggleAll = () => {
   model.value =
     Array.isArray(model.value) && allSelected.value
       ? model.value.filter((uuid) => !uuids.value.includes(uuid))
-      : [...new Set([...model.value, ...uuids.value])];
+      : [...new Set([...(model.value ?? ""), ...uuids.value])];
 };
 
 watch(

@@ -1,6 +1,7 @@
 import { readonly, ref } from "vue";
 import { promiseAll } from "@/utils";
 import { fetchAllPages } from "@/composables/use-all-pages";
+import getUser, { type User } from "@/stores/user";
 
 type LijstItem = { uuid: string; omschrijving?: string };
 type LijstItemNaam = LijstItem & { naam: string };
@@ -22,6 +23,7 @@ const fetchLijsten = async () =>
     onderwerpen: fetcher("/api/v2/onderwerpen")
   });
 
+const user = ref<User | null>(null);
 const lijsten = ref<Awaited<ReturnType<typeof fetchLijsten>> | null>(null);
 
 const loading = ref(false);
@@ -31,22 +33,30 @@ let loaded = false;
 
 export const useAppData = () => {
   const fetchData = async () => {
-    if (loaded) return;
-
     loading.value = true;
 
     try {
-      lijsten.value = await fetchLijsten();
+      user.value = await getUser(false);
+
+      if (user.value?.isLoggedIn && !loaded) {
+        lijsten.value = await fetchLijsten();
+
+        loaded = true;
+      } else if (!user.value?.isLoggedIn) {
+        lijsten.value = null;
+
+        loaded = false;
+      }
     } catch {
       error.value = true;
     } finally {
       loading.value = false;
-      loaded = true;
     }
   };
 
   return {
     lijsten: readonly(lijsten),
+    user: readonly(user),
     loading: readonly(loading),
     error: readonly(error),
     fetchData
