@@ -1,16 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Logging.Abstractions;
+using ODPC.Apis.Odrc;
 using ODPC.Data.Entities;
+using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepAanmaken;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepBijwerken;
-using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
 
 namespace ODPC.Test
 {
     [TestClass]
     public class GebruikersgroepBijwerkenTest
     {
+        private class StubOdrcClientFactory : IOdrcClientFactory
+        {
+            public HttpClient Create(string? handeling) => new();
+        }
+
+        private static readonly IOdrcClientFactory s_clientFactory = new StubOdrcClientFactory();
+
         [TestMethod]
         public async Task Put_test()
         {
@@ -25,9 +34,9 @@ namespace ODPC.Test
             await context.AddRangeAsync(waardelijst, groep);
             await context.SaveChangesAsync();
 
-            var controller = new GebruikersgroepBijwerkenController(context);
+            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
             var upsertModel = RandomUpsertModel();
-            var result = await controller.Put(groep.Uuid, upsertModel, default);
+            var result = await controller.Put(groep.Uuid, upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
             if (result is not OkObjectResult objectResult || objectResult.Value is not GebruikersgroepDetailsModel detailsModel)
             {
@@ -88,9 +97,9 @@ namespace ODPC.Test
         {
             using var context = InMemoryDatabase.GetDbContext();
 
-            var controller = new GebruikersgroepBijwerkenController(context);
+            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
             var upsertModel = RandomUpsertModel();
-            var result = await controller.Put(Guid.NewGuid(), upsertModel, default);
+            var result = await controller.Put(Guid.NewGuid(), upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
             if (result is not IStatusCodeActionResult statusCodeResult)
             {
@@ -136,12 +145,12 @@ namespace ODPC.Test
             await context.AddRangeAsync(bestaandeGroep, teWijzigenGroep);
             await context.SaveChangesAsync();
 
-            var controller = new GebruikersgroepBijwerkenController(context);
+            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
             var upsertModel = RandomUpsertModel();
 
             upsertModel.Naam = bestaandeGroep.Naam;
 
-            var result = await controller.Put(teWijzigenGroep.Uuid, upsertModel, default);
+            var result = await controller.Put(teWijzigenGroep.Uuid, upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
             if (result is not IStatusCodeActionResult statusCodeResult)
             {
@@ -161,12 +170,12 @@ namespace ODPC.Test
             await context.AddAsync(groep);
             await context.SaveChangesAsync();
 
-            var controller = new GebruikersgroepBijwerkenController(context);
+            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
             var upsertModel = RandomUpsertModel();
 
             upsertModel.Naam = groep.Naam;
 
-            var result = await controller.Put(groep.Uuid, upsertModel, default);
+            var result = await controller.Put(groep.Uuid, upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
             if (result is not OkObjectResult objectResult || objectResult.Value is not GebruikersgroepDetailsModel detailsModel)
             {
