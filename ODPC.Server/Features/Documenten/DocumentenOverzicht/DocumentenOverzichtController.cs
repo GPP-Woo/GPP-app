@@ -40,7 +40,8 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
                 return Ok(emptyResult);
             }
 
-            publicatieJson.EigenaarGroep ??= await gebruikersgroepService.TryAndGetEigenaarGroepFromOdpcAsync(publicatie, token);
+            publicatieJson.EigenaarGroep ??=
+                await gebruikersgroepService.TryAndGetEigenaarGroepFromOdpcAsync(publicatie, token);
 
             // gebruiker mag documenten raadplegen als:
             // a. in groep van publicatie zit
