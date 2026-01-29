@@ -19,6 +19,11 @@ up: ## Start full stack via Docker Compose
 up-deps: ## Start only dependencies (db, redis, openzaak, odrc) via Docker
 	docker compose up postgres-db redis openzaak-web openzaak-celery odrc
 
+up-woo-hoo: ## Start woo-hoo service (metadata generation) - run in separate terminal
+	@echo "Starting woo-hoo service on http://localhost:8003"
+	@echo "Note: This will run in foreground. Open a new terminal for other commands."
+	cd ../woo-hoo && uv run uvicorn woo_hoo.main:app --host 0.0.0.0 --port 8003 --reload
+
 dev: install ## Run frontend dev server (Vite with hot reload)
 	cd odpc.client && npm run dev
 
@@ -89,3 +94,27 @@ clean: ## Remove build artifacts
 ifdef DOTNET
 	dotnet clean ODPC.sln
 endif
+
+# --- Health checks & logs ---
+
+health: ## Check health of all services
+	@echo "=== Service Health Check ==="
+	@echo "\n1. woo-hoo AI service:"
+	@curl -s --max-time 5 http://localhost:8003/health && echo "" || echo "   ❌ Not running"
+	@echo "\n2. ODPC metadata endpoint:"
+	@curl -s --max-time 5 http://localhost:62230/api/v1/metadata/health && echo "   ✓ Healthy" || echo "   ❌ Not responding"
+	@echo "\n3. Vue dev server (with hot reload):"
+	@curl -s --max-time 5 -o /dev/null -w "%{http_code}" http://localhost:5173 2>/dev/null | grep -q "200\|302" && echo "   ✓ Running" || echo "   ❌ Not running (run 'make dev' to start)"
+	@echo "\n4. Production-like app (nginx):"
+	@curl -s --max-time 5 -o /dev/null -w "%{http_code}" http://localhost:8002 | grep -q "200\|302" && echo "   ✓ Running" || echo "   ❌ Not running"
+	@echo "\n5. Django backend (internal):"
+	@curl -s --max-time 5 -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -q "200\|302" && echo "   ✓ Running (internal only)" || echo "   ❌ Not running"
+	@echo "\n=== Summary ==="
+	@echo "🌐 For development (hot reload): http://localhost:5173 (run 'make dev')"
+	@echo "🌐 For production-like: http://localhost:8002 (via 'docker compose up')"
+
+logs: ## Show logs from all services
+	docker compose logs -f
+
+logs-odpc: ## Show ODPC backend logs
+	docker compose logs -f odpc

@@ -3,5 +3,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - WOO_HOO_BASE_URL=http://host.docker.internal:8003
+      - WOO_HOO_HEALTH_TIMEOUT_SECONDS=30
+      - WOO_HOO_GENERATE_TIMEOUT_SECONDS=120
+    # volumes:
+    #   - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro

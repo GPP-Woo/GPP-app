@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import { useAppData } from "@/composables/use-app-data";
 import toast from "@/stores/toast";
+import { config } from "@/config";
 import type { Publicatie, PublicatieDocument } from "../types";
 
 type WooHooResponse = {
@@ -52,9 +53,7 @@ export const useGenerateMetadata = () => {
 
   const checkAvailability = async () => {
     try {
-      const response = await fetch("/api/v1/metadata/health", {
-        headers: { "is-api": "true" }
-      });
+      const response = await fetch(`${config.odpcApiUrl}/api/v1/metadata/health`);
       isAvailable.value = response.ok;
     } catch {
       isAvailable.value = false;
@@ -67,6 +66,7 @@ export const useGenerateMetadata = () => {
   ): string[] => {
     if (!lijst) return [];
     return labels
+      .filter((label): label is string => !!label) // Filter out undefined/null labels
       .map((label) => lijst.find((item) => item.naam.toLowerCase() === label.toLowerCase())?.uuid)
       .filter((uuid): uuid is string => !!uuid);
   };
@@ -83,8 +83,8 @@ export const useGenerateMetadata = () => {
 
     try {
       const response = await fetch(
-        `/api/v1/metadata/generate/${encodeURIComponent(documentUuid)}`,
-        { method: "POST", headers: { "is-api": "true" } }
+        `${config.odpcApiUrl}/api/v1/metadata/generate/${encodeURIComponent(documentUuid)}`,
+        { method: "POST" }
       );
 
       if (!response.ok) {

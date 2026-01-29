@@ -59,6 +59,7 @@ services:
       - NOTIFICATIONS_DISABLED=true
       - JWT_EXPIRY=99999999999 # Roughly 3170 years. This is required for tests with time frozen to work
       - CELERY_WORKER_CONCURRENCY=${CELERY_WORKER_CONCURRENCY:-2}
+      - SENDFILE_BACKEND=django_sendfile.backends.simple
     volumes:
       &openzaak_web_volumes # mount fixtures dir to automatically populate the DB
       - ./docker/open-zaak/fixtures/:/app/fixtures
@@ -86,6 +87,8 @@ services:
   odrc-django: &odrc_build
     image: maykinmedia/woo-publications:${ODRC_VERSION:-latest}
     pull_policy: always
+    entrypoint: ["/app/entrypoint.sh"]
+    command: ["/start.sh"]
     environment: &odrc_env
       - DJANGO_SETTINGS_MODULE=woo_publications.conf.docker
       - SECRET_KEY=${SECRET_KEY:-django-insecure-fgggi4*bl2wdg&@0&)t7ewy5-2!b3l4lhx4_+^zpw%x2i28v8}
@@ -95,6 +98,8 @@ services:
       - DB_PASSWORD=localdev
       - CACHE_DEFAULT=redis:6379/0
       - CACHE_AXES=redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - ODRC_SUPERUSER_USERNAME=admin
       - ODRC_SUPERUSER_EMAIL=admin@host.docker.internal
       - DISABLE_2FA=true
@@ -108,6 +113,8 @@ services:
       - DEBUG=True
     volumes: &odrc_volumes
       - ./docker/odrc/fixtures/:/app/fixtures
+      - ./docker/odrc/patches/:/app/patches
+      - ./docker/odrc/entrypoint.sh:/app/entrypoint.sh
       - media:/app/media
       - log:/app/log
     extra_hosts:
@@ -127,10 +134,11 @@ services:
     restart: always
     ports:
       - 8002:80
-    volumes: 
+    volumes:
       - ./docker/nginx:/etc/nginx/conf.d/
     depends_on:
       - odrc-django
+      - odpc
 
 volumes:
   postgres-db:

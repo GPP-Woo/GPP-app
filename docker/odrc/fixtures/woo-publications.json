@@ -21,7 +21,32 @@
         "user_representation": "Woo Publications (dev)",
         "client_certificate": null,
         "server_certificate": null,
-        "timeout": 10
+        "timeout": 60
+    }
+},
+{
+    "model": "zgw_consumers.service",
+    "pk": 3,
+    "fields": {
+        "label": "Catalogus API [Open Zaak]",
+        "oas": "http://openzaak.docker.internal:8001/catalogi/api/v1/openapi.yaml",
+        "oas_file": "",
+        "uuid": "120d62ff-5f95-44ee-8439-19c162a020c2",
+        "slug": "catalogus-api",
+        "api_type": "ztc",
+        "api_root": "http://openzaak.docker.internal:8001/catalogi/api/v1/",
+        "api_connection_check_path": "",
+        "client_id": "woo-publications-dev",
+        "secret": "insecure-yQL9Rzh4eHGVmYx5w3J2gu",
+        "auth_type": "zgw",
+        "header_key": "",
+        "header_value": "",
+        "nlx": "",
+        "user_id": "woo-publications-dev",
+        "user_representation": "Woo Publications (dev)",
+        "client_certificate": null,
+        "server_certificate": null,
+        "timeout": 60
     }
 },
 {

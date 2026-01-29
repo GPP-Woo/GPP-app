@@ -43,7 +43,7 @@ namespace ODPC.Authentication
             }).AddCookie(CookieSchemeName, options =>
             {
                 options.Cookie.SameSite = SameSiteMode.Lax;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Allow HTTP in dev, HTTPS in prod
                 options.Cookie.IsEssential = true;
                 options.Cookie.HttpOnly = true;
                 // TODO: make configurable?
@@ -110,11 +110,29 @@ namespace ODPC.Authentication
                     };
                 });
             }
-            services.AddAuthorizationBuilder()
-                .AddPolicy(AdminPolicy.Name, policy => policy.RequireRole(authOptions.AdminRole))
-                .AddFallbackPolicy("LoggedIn", policy => policy.RequireAuthenticatedUser());
+
+            var authzBuilder = services.AddAuthorizationBuilder();
+
+            // In dev mode without OIDC, admin policy just requires being authenticated
+            // In production with OIDC, admin policy requires the actual admin role
+            if (!string.IsNullOrWhiteSpace(authOptions.Authority))
+            {
+                authzBuilder.AddPolicy(AdminPolicy.Name, policy => policy.RequireRole(authOptions.AdminRole));
+                authzBuilder.AddFallbackPolicy("LoggedIn", policy => policy.RequireAuthenticatedUser());
+            }
+            else
+            {
+                // Dev mode: admin policy just requires any authenticated user
+                authzBuilder.AddPolicy(AdminPolicy.Name, policy => policy.RequireAuthenticatedUser());
+            }
+
             services.AddDistributedMemoryCache();
             services.AddOpenIdConnectAccessTokenManagement();
+        }
+
+        public static IApplicationBuilder UseDevAutoLogin(this IApplicationBuilder app)
+        {
+            return app.UseMiddleware<DevAutoLoginMiddleware>();
         }
 
         public static IEndpointRouteBuilder MapOdpcAuthEndpoints(this IEndpointRouteBuilder endpoints)

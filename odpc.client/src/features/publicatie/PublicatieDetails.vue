@@ -48,31 +48,6 @@
         :gekoppelde-waardelijsten="gekoppeldeWaardelijsten"
       />
 
-      <div v-if="isAvailable && existingDocuments.length && !isReadonly && !hasError" class="generate-metadata">
-        <label v-if="existingDocuments.length > 1" for="generate-document-select"
-          >Document voor metadata generatie</label
-        >
-
-        <select
-          v-if="existingDocuments.length > 1"
-          id="generate-document-select"
-          v-model="selectedDocumentUuid"
-        >
-          <option v-for="doc in existingDocuments" :key="doc.uuid" :value="doc.uuid">
-            {{ doc.bestandsnaam }}
-          </option>
-        </select>
-
-        <button
-          type="button"
-          class="button secondary"
-          :disabled="!selectedDocumentUuid"
-          @click="handleGenerateMetadata"
-        >
-          Genereer metadata
-        </button>
-      </div>
-
       <alert-inline v-if="documentenError"
         >Er is iets misgegaan bij het ophalen van de documenten bij deze publicatie...</alert-inline
       >
@@ -84,6 +59,20 @@
         :is-readonly="isReadonly"
       />
     </section>
+
+    <!-- Document selection for metadata generation -->
+    <div
+      v-if="isAvailable && existingDocuments.length > 1 && !isReadonly && !hasError"
+      class="document-selector"
+    >
+      <label for="generate-document-select">Document voor AI metadata generatie</label>
+      <select id="generate-document-select" v-model="selectedDocumentUuid">
+        <option value="">-- Selecteer een document --</option>
+        <option v-for="doc in existingDocuments" :key="doc.uuid" :value="doc.uuid">
+          {{ doc.bestandsnaam }}
+        </option>
+      </select>
+    </div>
 
     <div class="form-submit">
       <menu class="reset">
@@ -104,6 +93,19 @@
               @click="setValidationMode"
             >
               Opslaan als concept
+            </button>
+          </li>
+
+          <!-- metadata generation -->
+          <li v-if="isAvailable && existingDocuments.length">
+            <button
+              type="button"
+              title="Genereer metadata met AI"
+              class="button secondary"
+              :disabled="!selectedDocumentUuid || isGenerating"
+              @click="handleGenerateMetadata"
+            >
+              {{ isGenerating ? "Bezig..." : "Genereer metadata" }}
             </button>
           </li>
 
@@ -516,19 +518,18 @@ menu {
   }
 }
 
-.generate-metadata {
-  display: flex;
-  align-items: end;
-  gap: var(--spacing-small);
+.document-selector {
+  max-width: 600px;
   margin-block-end: var(--spacing-default);
 
   label {
+    display: block;
     font-weight: var(--font-bold);
     margin-block-end: var(--spacing-small);
   }
 
   select {
-    flex: 1;
+    width: 100%;
   }
 }
 

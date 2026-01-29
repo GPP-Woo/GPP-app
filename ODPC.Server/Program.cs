@@ -39,10 +39,11 @@ try
 
     builder.Services.AddAuth(options =>
     {
-        options.Authority = GetRequiredConfig("OIDC_AUTHORITY");
-        options.ClientId = GetRequiredConfig("OIDC_CLIENT_ID");
-        options.ClientSecret = GetRequiredConfig("OIDC_CLIENT_SECRET");
-        options.AdminRole = GetRequiredConfig("OIDC_ADMIN_ROLE");
+        // For local dev, OIDC can be empty to disable authentication
+        options.Authority = builder.Configuration["OIDC_AUTHORITY"] ?? string.Empty;
+        options.ClientId = builder.Configuration["OIDC_CLIENT_ID"] ?? string.Empty;
+        options.ClientSecret = builder.Configuration["OIDC_CLIENT_SECRET"] ?? string.Empty;
+        options.AdminRole = builder.Configuration["OIDC_ADMIN_ROLE"] ?? "admin";
         options.NameClaimType = builder.Configuration["OIDC_NAME_CLAIM_TYPE"];
         options.RoleClaimType = builder.Configuration["OIDC_ROLE_CLAIM_TYPE"];
         options.IdClaimType = builder.Configuration["OIDC_ID_CLAIM_TYPE"];
@@ -62,6 +63,8 @@ try
     app.UseOdpcStaticFiles();
     app.UseOdpcSecurityHeaders();
 
+    app.UseDevAutoLogin(); // Must run BEFORE UseAuthentication to ensure cookie exists
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
