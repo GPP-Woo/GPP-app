@@ -15,6 +15,14 @@
       >Deze publicatie is nog in concept.</alert-inline
     >
 
+    <dl v-if="model.uuid">
+      <dt>ID</dt>
+      <dd>{{ model.uuid }}</dd>
+
+      <dt>Publicatie-eigenaar</dt>
+      <dd>{{ model.eigenaar?.weergaveNaam }}</dd>
+    </dl>
+
     <div class="form-group">
       <label for="gebruikersgroep">Profiel *</label>
 
@@ -40,17 +48,6 @@
     </div>
 
     <template v-if="eigenaarGroepIdentifier || isReadonly">
-      <dl v-if="model.eigenaar">
-        <dt>Publicatie-eigenaar</dt>
-        <dd>{{ model.eigenaar.weergaveNaam }}</dd>
-      </dl>
-
-      <div v-if="model.uuid" class="form-group">
-        <label for="uuid">ID</label>
-
-        <input id="uuid" type="text" v-model="model.uuid" readonly aria-readonly="true" />
-      </div>
-
       <div class="form-group">
         <label for="titel">Titel *</label>
 
@@ -224,20 +221,17 @@ watch(
 dl {
   display: flex;
   flex-direction: column;
-  margin-block: 0 var(--spacing-default);
-
-  dt,
-  dd {
-    color: inherit;
-    margin-block-end: var(--spacing-small);
-  }
+  margin-block: 0;
 
   dt {
+    color: inherit;
     font-weight: var(--font-bold);
+    margin-block-end: var(--spacing-small);
   }
 
   dd {
     margin-inline: 0;
+    margin-block-end: calc(var(--spacing-small) + var(--spacing-default));
   }
 }
 </style>
