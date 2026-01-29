@@ -14,7 +14,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
         [HttpGet("api/{version}/documenten")]
         public async Task<IActionResult> Get(
             string version,
-            [FromQuery] Guid publicatieUuid,
+            [FromQuery] Guid publicatie,
             OdpcUser user,
             CancellationToken token,
             [FromQuery] string? page = "1")
@@ -26,7 +26,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
             using var publicatieClient = clientFactory.Create("Publicatie ophalen");
 
             using var publicatieResponse =
-                await publicatieClient.GetAsync($"/api/{version}/publicaties/{publicatieUuid}", HttpCompletionOption.ResponseHeadersRead, token);
+                await publicatieClient.GetAsync($"/api/{version}/publicaties/{publicatie}", HttpCompletionOption.ResponseHeadersRead, token);
 
             if (!publicatieResponse.IsSuccessStatusCode)
             {
@@ -40,7 +40,12 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
                 return Ok(emptyResult);
             }
 
-            publicatieJson.EigenaarGroep ??= await gebruikersgroepService.TryAndGetEigenaarGroepFromOdpcAsync(publicatieUuid, token);
+            publicatieJson.EigenaarGroep ??= await gebruikersgroepService.TryAndGetEigenaarGroepFromOdpcAsync(publicatie, token);
+
+            // gebruiker mag documenten raadplegen als:
+            // a. in groep zit van publicatie
+            // b. er nog geen groep gekoppeld is en wel eigenaar
+            // n.b. niet in groep is niet raadplegen, ook al is gebruiker eigenaar
 
             var isGebruikersgroepGebruiker = Guid.TryParse(publicatieJson.EigenaarGroep?.identifier, out var identifier)
                 && await gebruikersgroepService.IsGebruikersgroepGebruikerAsync(identifier, token);
@@ -57,7 +62,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
 
             using var client = clientFactory.Create("Documenten ophalen");
 
-            var url = $"/api/{version}/documenten?publicatie={publicatieUuid}&page={page}";
+            var url = $"/api/{version}/documenten?publicatie={publicatie}&page={page}";
 
             using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
