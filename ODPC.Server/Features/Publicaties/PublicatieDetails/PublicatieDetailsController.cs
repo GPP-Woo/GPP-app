@@ -36,17 +36,13 @@ namespace ODPC.Features.Publicaties.PublicatieDetails
             json.EigenaarGroep ??= await gebruikersgroepService.TryAndGetEigenaarGroepFromOdpcAsync(uuid, token);
 
             // gebruiker mag publicatie raadplegen als:
-            // a. in groep zit van publicatie
-            // b. er nog geen groep gekoppeld is en wel eigenaar
-            // n.b. niet in groep is niet raadplegen, ook al is gebruiker eigenaar
+            // a. in groep van publicatie zit
+            // b. en/of eigenaar van publicatie is
 
             var isGebruikersgroepGebruiker = Guid.TryParse(json.EigenaarGroep?.identifier, out var identifier)
                 && await gebruikersgroepService.IsGebruikersgroepGebruikerAsync(identifier, token);
 
-            var isEigenaarZonderEigenaarGroep = json.EigenaarGroep == null
-                && json.Eigenaar?.identifier?.ToLowerInvariant() == user.Id?.ToLowerInvariant();
-
-            return isGebruikersgroepGebruiker || isEigenaarZonderEigenaarGroep
+            return isGebruikersgroepGebruiker || json.Eigenaar?.identifier?.ToLowerInvariant() == user.Id?.ToLowerInvariant()
                 ? Ok(json)
                 : NotFound();
         }

@@ -111,7 +111,8 @@ details {
 
 :disabled {
   .error,
-  .check-all {
+  .check-all,
+  .popover-trigger {
     display: none;
   }
 }
