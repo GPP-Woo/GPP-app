@@ -207,7 +207,7 @@ const waardelijsten = computed(() =>
 const expandOptionGroup = ref(false);
 
 watch(
-  () => eigenaarGroepIdentifier,
+  eigenaarGroepIdentifier,
   (_, oldGroep) =>
     (expandOptionGroup.value =
       !!oldGroep &&
