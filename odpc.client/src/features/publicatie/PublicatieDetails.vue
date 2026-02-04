@@ -226,45 +226,60 @@ const { isReadonly, canDraft, canDelete, canRetract, unauthorized, groepWaardeli
   usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
 
 // Externally created publicaties will not have a eigenaarGroep untill updated from ODPC
-const isPublicatieWithoutEigenaarGroep = ref(false);
+const isPublicatieWithoutEigenaarGroep = computed(
+  () => !!publicatie.value.uuid && !publicatie.value.eigenaarGroep
+);
 
+const presetSingleGebruikersgroep = () => {
+  if (mijnGebruikersgroepen.value?.length !== 1) return;
+
+  const { uuid, naam } = mijnGebruikersgroepen.value[0];
+
+  publicatie.value.eigenaarGroep = { identifier: uuid, weergaveNaam: naam };
+};
+
+const presetSingleWaardelijstOption = () => {
+  const { organisaties, informatiecategorieen } = groepWaardelijsten.value;
+
+  if (organisaties?.length === 1) publicatie.value.publisher = organisaties[0].uuid;
+
+  if (informatiecategorieen?.length === 1)
+    publicatie.value.informatieCategorieen.push(informatiecategorieen[0].uuid);
+};
+
+// Check to do some presets after all loading is finished
 watch(isLoading, () => {
   if (hasError.value) return;
 
-  isPublicatieWithoutEigenaarGroep.value =
-    !!publicatie.value.uuid && !publicatie.value.eigenaarGroep;
-
   // Preset eigenaarGroep of a new - or externally created publicatie when only one mijnGebruikersgroep
-  if (
-    (!publicatie.value.uuid || isPublicatieWithoutEigenaarGroep.value) &&
-    mijnGebruikersgroepen.value?.length === 1
-  ) {
-    const { uuid, naam } = mijnGebruikersgroepen.value[0];
+  if (!publicatie.value.uuid || isPublicatieWithoutEigenaarGroep.value) {
+    presetSingleGebruikersgroep();
+  }
 
-    publicatie.value.eigenaarGroep = { identifier: uuid, weergaveNaam: naam };
+  // Preset publisher and informatiecategorie of a new publicatie when only one option available
+  if (!publicatie.value.uuid) {
+    presetSingleWaardelijstOption();
   }
 });
 
-const clearPublicatieWaardelijsten = () =>
-  (publicatie.value = {
-    ...publicatie.value,
-    ...{
-      publisher: "",
-      informatieCategorieen: [],
-      onderwerpen: []
-    }
-  });
-
 // Clear waardelijsten of publicatie when mismatch waardelijsten gebruikersgroep (unauthorized) on
-// a) switch from one to another gebruikersgroep or
-// b) initial select gebruikersgroep when isPublicatieWithoutEigenaarGroep
-const shouldClearWaardelijsten = (isSwitchGebruikersgroep: boolean) =>
-  unauthorized.value && (isSwitchGebruikersgroep || isPublicatieWithoutEigenaarGroep.value);
-
+// a) change from one to another eigenaarGroep or
+// b) initial select eigenaarGroep when isPublicatieWithoutEigenaarGroep
 watch(
   () => publicatie.value.eigenaarGroep,
-  (_, oldValue) => {
-    if (shouldClearWaardelijsten(!!oldValue)) clearPublicatieWaardelijsten();
+  (_, oldGroep) => {
+    if (!unauthorized.value) return;
+
+    if (!!oldGroep || isPublicatieWithoutEigenaarGroep.value) {
+      publicatie.value = {
+        ...publicatie.value,
+        ...{
+          publisher: "",
+          informatieCategorieen: [],
+          onderwerpen: []
+        }
+      };
+    }
   }
 );
 
