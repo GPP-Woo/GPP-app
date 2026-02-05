@@ -58,6 +58,20 @@ var publicatiebank = builder.AddPublicatiebank("publicatiebank")
     .WithEntrypoint("sh")
     .WithBindMount(source: "./templates/publicatiebank", target: "/app/templates", isReadOnly: true);
 
+openzaak
+    .WithEnvironment("PUBLICATIEBANK_BASE_URL", publicatiebank.GetEndpoint("http"))
+    .WithEnvironment("PUBLICATIEBANK_CLIENT_ID", publicatiebankClientId)
+    .WithEnvironment("PUBLICATIEBANK_CLIENT_SECRET", unsafeTestPassword)
+    .WithArgs("-c", """
+        mkdir /app/fixtures &&
+        for f in /app/templates/*.json; do
+            envsubst < "$f" > "/app/fixtures/$(basename "$f")"
+        done &&
+        /start.sh
+        """)
+    .WithEntrypoint("sh")
+    .WithBindMount(source: "./templates/openzaak", target: "/app/templates", isReadOnly: true);
+
 var publicatiebankProxy = publicatiebank.AddNginxProxy("publicatiebank-nginx");
 
 
