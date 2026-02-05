@@ -2,8 +2,15 @@ import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { env } from "process";
 
 const proxyCalls = ["/api", "/signin-oidc", "/signout-callback-oidc", "/healthz"];
+
+const target = env.ASPNETCORE_HTTPS_PORT
+  ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
+  : env.ASPNETCORE_URLS
+    ? env.ASPNETCORE_URLS.split(";")[0]
+    : "http://localhost:62230";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,7 +25,7 @@ export default defineConfig({
       proxyCalls.map((key) => [
         key,
         {
-          target: "http://localhost:62230",
+          target,
           secure: false
         }
       ])
