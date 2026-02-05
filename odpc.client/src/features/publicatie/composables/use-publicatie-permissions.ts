@@ -31,6 +31,13 @@ export const usePublicatiePermissions = (
     () => publicatie.value.publicatiestatus === PublicatieStatus.gepubliceerd
   );
 
+  const canClaim = computed(
+    () =>
+      !isOwner.value &&
+      !unauthorized.value &&
+      publicatie.value.publicatiestatus !== PublicatieStatus.ingetrokken
+  );
+
   const userHasAccessToGroep = computed(() =>
     mijnGebruikersgroepen.value?.some(
       (groep) => groep.uuid === publicatie.value.eigenaarGroep?.identifier
@@ -88,11 +95,11 @@ export const usePublicatiePermissions = (
   });
 
   return {
-    isOwner,
     isReadonly,
     canDraft,
     canDelete,
     canRetract,
+    canClaim,
     unauthorized,
     groepWaardelijsten
   };
