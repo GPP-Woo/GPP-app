@@ -62,7 +62,18 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
 
             var json = await getResponse.Content.ReadFromJsonAsync<Publicatie>(token);
 
-            if (json?.Eigenaar?.identifier != user.Id)
+            if (json == null)
+            {
+                return NotFound();
+            }
+
+            json.EigenaarGroep ??= await gebruikersgroepService.TryAndGetEigenaarGroepFromOdpcAsync(uuid, token);
+
+            // gebruiker mag publicatie bijwerken/claimen als in groep van publicatie zit
+            var isGebruikersgroepGebruiker = Guid.TryParse(json.EigenaarGroep?.identifier, out var jsonIdentifier)
+                && await gebruikersgroepService.IsGebruikersgroepGebruikerAsync(jsonIdentifier, token);
+
+            if (!isGebruikersgroepGebruiker)
             {
                 return NotFound();
             }
