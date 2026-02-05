@@ -24,7 +24,7 @@ export const usePublicatiePermissions = (
   );
 
   const canDelete = computed(
-    () => publicatie.value.uuid && publicatie.value.publicatiestatus === PublicatieStatus.concept
+    () => !!publicatie.value.uuid && publicatie.value.publicatiestatus === PublicatieStatus.concept
   );
 
   const canRetract = computed(

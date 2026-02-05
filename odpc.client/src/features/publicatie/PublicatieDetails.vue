@@ -61,59 +61,16 @@
           </button>
         </li>
 
-        <template v-if="publicatie.eigenaarGroep && !hasError">
-          <template v-if="!isReadonly">
-            <!-- main actions -->
-            <li v-if="canDraft">
-              <button
-                type="submit"
-                title="Opslaan als concept"
-                class="button secondary"
-                value="draft"
-                @click="setValidationMode"
-              >
-                Opslaan als concept
-              </button>
-            </li>
-
-            <li>
-              <button type="submit" title="Publiceren" value="publish" @click="setValidationMode">
-                Publiceren
-              </button>
-            </li>
-
-            <!-- delete / retract actions -->
-            <li v-if="canDelete">
-              <button
-                type="button"
-                title="Publicatie verwijderen"
-                class="button danger"
-                @click="remove"
-              >
-                Publicatie verwijderen
-              </button>
-            </li>
-
-            <li v-if="canRetract">
-              <button
-                type="submit"
-                title="Publicatie intrekken"
-                class="button danger"
-                value="retract"
-                @click="setValidationMode"
-              >
-                Publicatie intrekken
-              </button>
-            </li>
-          </template>
-
-          <!-- claim action -->
-          <li v-else-if="canClaim">
-            <button type="submit" title="Publicatie claimen" value="claim">
-              Publicatie claimen
-            </button>
-          </li>
-        </template>
+        <publicatie-submit-buttons
+          v-if="publicatie.eigenaarGroep && !hasError"
+          :can-draft="canDraft"
+          :can-delete="canDelete"
+          :can-retract="canRetract"
+          :can-claim="canClaim"
+          :is-readonly="isReadonly"
+          @onSetValidationMode="setValidationMode"
+          @onRemove="remove"
+        />
       </menu>
 
       <p class="required-message">Velden met (*) zijn verplicht</p>
@@ -168,6 +125,7 @@ import { useAppData } from "@/composables/use-app-data";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentenForm from "./components/DocumentenForm.vue";
+import PublicatieSubmitButtons from "./components/PublicatieSubmitButtons.vue";
 import DraftDialogContent from "./components/dialogs/DraftDialogContent.vue";
 import DeleteDialogContent from "./components/dialogs/DeleteDialogContent.vue";
 import RetractDialogContent from "./components/dialogs/RetractDialogContent.vue";
@@ -370,23 +328,5 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   grid-gap: var(--spacing-default);
-}
-
-menu {
-  li:has([value="delete"]) {
-    order: 2;
-  }
-
-  li:has([value="draft"]) {
-    order: 3;
-  }
-
-  li:has([value="retract"]) {
-    order: 4;
-  }
-
-  li:has([value="publish"]) {
-    order: 5;
-  }
 }
 </style>
