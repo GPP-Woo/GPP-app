@@ -1,0 +1,35 @@
+[
+{
+  "model": "zgw_consumers.service",
+  "pk": 1,
+  "fields": {
+    "label": "Documenten API [Open Zaak]",
+    "uuid": "4f88855e-e0a3-4d4b-80fb-c7774d965a92",
+    "slug": "documenten-api",
+    "api_type": "drc",
+    "api_root": "${OPENZAAK_BASE_URL}/documenten/api/v1/",
+    "api_connection_check_path": "",
+    "client_id": "${OPENZAAK_CLIENT_ID}",
+    "secret": "${OPENZAAK_CLIENT_SECRET}",
+    "auth_type": "zgw",
+    "header_key": "",
+    "header_value": "",
+    "nlx": "",
+    "user_id": "woo-publications-dev",
+    "user_representation": "Woo Publications (dev)",
+    "client_certificate": null,
+    "server_certificate": null,
+    "timeout": 10
+  }
+},
+{
+  "model": "zgw_consumers.nlxconfig",
+  "pk": 1,
+  "fields": {
+    "directory": "",
+    "outway": "",
+    "certificate": "",
+    "certificate_key": ""
+  }
+}
+]

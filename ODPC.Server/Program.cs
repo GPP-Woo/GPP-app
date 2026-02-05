@@ -24,6 +24,8 @@ try
 {
     builder.Host.UseSerilog(logger);
 
+    builder.AddServiceDefaults();
+
     // Add services to the container.
     builder.Services.AddControllers();
     builder.Services.AddHealthChecks();
