@@ -465,9 +465,9 @@
       ],
       "disableableCredentialTypes": [],
       "requiredActions": [],
-      "realmRoles": [ "default-roles-app" ],
+      "realmRoles": ["default-roles-app"],
       "clientRoles": {
-        "${APP_CLIENT_ID}": [ "${APP_ADMIN_ROLE_NAME}" ]
+        "${APP_CLIENT_ID}": ["${APP_ADMIN_ROLE_NAME}"]
       },
       "notBefore": 0,
       "groups": []
@@ -637,7 +637,7 @@
       "clientId": "${APP_CLIENT_ID}",
       "name": "",
       "description": "",
-      "rootUrl": "${APP_FRONTEND_URL}",
+      "rootUrl": "",
       "adminUrl": "",
       "baseUrl": "",
       "surrogateAuthRequired": false,
@@ -645,7 +645,7 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "${APP_CLIENT_SECRET}",
-      "redirectUris": ["${APP_BACKEND_URL}/*", "${APP_FRONTEND_URL}/*"],
+      "redirectUris": ["*"],
       "webOrigins": ["/*"],
       "notBefore": 0,
       "bearerOnly": false,
