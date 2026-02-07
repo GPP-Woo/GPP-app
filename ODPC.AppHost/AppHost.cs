@@ -25,8 +25,9 @@ var keycloak = builder.AddKeycloak("keycloak", adminPassword: unsafeTestPassword
     ;
 
 var postgres = builder.AddPostgres("postgres")
+    .WithLifetime(ContainerLifetime.Persistent)
     .WithImage("postgis/postgis")
-    .WithPgAdmin()
+    .WithPgAdmin(a => a.WithLifetime(ContainerLifetime.Persistent))
     .WithDataVolume();
 
 var redis = builder.AddRedis("redis");

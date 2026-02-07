@@ -13,11 +13,14 @@ public static class OpenZaakExtensions
             .WithImage("openzaak/open-zaak", tag)
             .WithImageRegistry("docker.io")
             .WithMaykinDefaults(port)
-            //.WithEnvironment("DJANGO_SETTINGS_MODULE", "openzaak.conf.docker")
+            .WithEnvironment("DJANGO_SETTINGS_MODULE", "openzaak.conf.docker")
             .WithEnvironment("IMPORT_DOCUMENTEN_BASE_DIR", "/app/import-data")
             .WithEnvironment("IMPORT_DOCUMENTEN_BATCH_SIZE", "500")
             .WithEnvironment("OPENZAAK_SUPERUSER_USERNAME", "admin")
             .WithEnvironment("OPENZAAK_SUPERUSER_EMAIL", "admin@localhost")
+            .WithEnvironment("SENDFILE_BACKEND", "django_sendfile.backends.simple")
+            .WithVolume("/app/private-media")
+            .WithVolume("/app/media")
             ;
     }
 }
