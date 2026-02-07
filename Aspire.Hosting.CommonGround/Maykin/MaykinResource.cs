@@ -12,6 +12,7 @@ public abstract class MaykinResource(string name, string? entrypoint = null) : C
 
 public static class MaykinExtensions
 {
+    private static int redisDbCounter = -1;
     private static readonly string s_executionPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception("could not get executing directory");
     private static readonly string s_nginxPath = Path.Combine(s_executionPath, "nginx", "templates", "default.conf.template");
 
@@ -39,7 +40,8 @@ public static class MaykinExtensions
             .WithEnvironment("DJANGO_SUPERUSER_PASSWORD", "admin")
             .WithEnvironment("DISABLE_2FA", "true")
             .WithEnvironment("ENVIRONMENT", "dev")
-            .WithEnvironment("NOTIFICATIONS_DISABLED", "True");
+            .WithEnvironment("NOTIFICATIONS_DISABLED", "True")
+            .WithEnvironment("DEBUG", "True");
     }
 
     public static IResourceBuilder<T> WithReference<T>(this IResourceBuilder<T> maykin, IResourceBuilder<PostgresDatabaseResource> database) where T : MaykinResource
@@ -55,17 +57,26 @@ public static class MaykinExtensions
 
     public static IResourceBuilder<T> WithReference<T>(this IResourceBuilder<T> maykin, IResourceBuilder<RedisResource> redis) where T : MaykinResource
     {
+        var cacheDb = redis.CreateCacheConnectionString();
+        var celeryDb = redis.CreateCacheConnectionString();
+        var celeryDbFix = ReferenceExpression.Create($"redis://{celeryDb}");
+
+        return maykin
+            .WithEnvironment("CACHE_DEFAULT", cacheDb)
+            .WithEnvironment("CACHE_AXES", cacheDb)
+            .WithEnvironment("CELERY_BROKER_URL", celeryDbFix)
+            .WithEnvironment("CELERY_RESULT_BACKEND", celeryDbFix);
+    }
+
+    private static ReferenceExpression CreateCacheConnectionString(this IResourceBuilder<RedisResource> redis)
+    {
         var endpoint = redis.Resource.GetEndpoint("secondary");
         var hostAndPort = endpoint.Property(EndpointProperty.HostAndPort);
         var password = redis.Resource.PasswordParameter;
-
-        var cacheUrl = password is null
-            ? ReferenceExpression.Create($"{hostAndPort}/0")
-            : ReferenceExpression.Create($":{password}@{hostAndPort}/0");
-
-        return maykin
-            .WithEnvironment("CACHE_DEFAULT", cacheUrl)
-            .WithEnvironment("CACHE_AXES", cacheUrl);
+        var db = Interlocked.Increment(ref redisDbCounter).ToString();
+        return password is null
+            ? ReferenceExpression.Create($"{hostAndPort}/{db}")
+            : ReferenceExpression.Create($":{password}@{hostAndPort}/{db}");
     }
 
     public static IResourceBuilder<ContainerResource> AddNginxProxy(this IResourceBuilder<MaykinResource> maykin, string name, int? port = null)

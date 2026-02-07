@@ -3,5 +3,9 @@
     "source.fixAll": "explicit"
   },
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "dotnet.automaticallyCreateSolutionInWorkspace": false,
+  "dotnet.automaticallySyncWithActiveItem": true,
+  "dotnet.enableWorkspaceBasedDevelopment": true,
+  "csharp.experimental.debug.hotReload": true
 }
