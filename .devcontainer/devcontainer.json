@@ -32,7 +32,8 @@
         "Vue.volar",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        "microsoft-aspire.aspire-vscode"
       ]
     }
   }
