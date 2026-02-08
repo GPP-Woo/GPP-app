@@ -19,8 +19,8 @@ public static class OpenZaakExtensions
             .WithEnvironment("OPENZAAK_SUPERUSER_USERNAME", "admin")
             .WithEnvironment("OPENZAAK_SUPERUSER_EMAIL", "admin@localhost")
             .WithEnvironment("SENDFILE_BACKEND", "django_sendfile.backends.simple")
-            .WithVolume("/app/private-media")
-            .WithVolume("/app/media")
+            .WithVolume("openzaak-private-media", "/app/private-media")
+            .WithVolume("openzaak-media", "/app/media")
             ;
     }
 }

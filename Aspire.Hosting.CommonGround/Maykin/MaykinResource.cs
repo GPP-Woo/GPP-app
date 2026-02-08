@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using Aspire.Hosting.ApplicationModel;
 
 namespace Aspire.Hosting.CommonGround.Maykin;
@@ -66,6 +61,54 @@ public static class MaykinExtensions
             .WithEnvironment("CACHE_AXES", cacheDb)
             .WithEnvironment("CELERY_BROKER_URL", celeryDbFix)
             .WithEnvironment("CELERY_RESULT_BACKEND", celeryDbFix);
+    }
+
+    public static IResourceBuilder<T> WithTemplateFixtures<T>(this IResourceBuilder<T> maykin, string sourceFolder) where T : MaykinResource
+    {
+        return maykin.WithArgs("-c", """
+        mkdir /app/fixtures &&
+        for f in /app/templates/*.json; do
+            envsubst < "$f" > "/app/fixtures/$(basename "$f")"
+        done &&
+        /start.sh
+        """)
+        .WithEntrypoint("sh")
+        .WithBindMount(source: sourceFolder, target: "/app/templates", isReadOnly: true);
+    }
+
+    public static IResourceBuilder<ContainerResource> AddCeleryWorker<T>(this IResourceBuilder<T> maykin, string name) where T : MaykinResource
+    {
+        if (!maykin.Resource.TryGetContainerImageName(out var imageName)) throw new Exception();
+
+        var result = maykin.ApplicationBuilder
+            .AddContainer(name, imageName)  ;
+
+        if (maykin.Resource.TryGetAnnotationsOfType<WaitAnnotation>(out var waits))
+        {
+            foreach (var item in waits)
+            {
+                result.WithAnnotation(item);
+            }
+        }
+
+        if (maykin.Resource.TryGetAnnotationsOfType<CertificateTrustConfigurationCallbackAnnotation>(out var trusts))
+        {
+            foreach (var item in trusts)
+            {
+                result.WithAnnotation(item);
+            }
+        }
+
+        if (maykin.Resource.TryGetEnvironmentVariables(out var env))
+        {
+            foreach (var item in env)
+            {
+                result.WithAnnotation(item);
+            }
+        }
+
+        return result.WithEntrypoint("/celery_worker.sh")
+            .WithArgs();
     }
 
     private static ReferenceExpression CreateCacheConnectionString(this IResourceBuilder<RedisResource> redis)

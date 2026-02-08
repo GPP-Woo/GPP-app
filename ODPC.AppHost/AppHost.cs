@@ -42,6 +42,8 @@ var openzaak = builder.AddOpenZaak("openzaak")
     .WithReference(redis)
     .WaitFor(redis);
 
+
+
 var publicatiebankDb = postgres.AddDatabase("publicatiebank-db");
 
 var publicatiebank = builder.AddPublicatiebank("publicatiebank")
@@ -53,29 +55,15 @@ var publicatiebank = builder.AddPublicatiebank("publicatiebank")
     .WithEnvironment("OPENZAAK_CLIENT_ID", publicatiebankClientId)
     .WithEnvironment("OPENZAAK_CLIENT_SECRET", unsafeTestPassword)
     .WithEnvironment("OPENZAAK_BASE_URL", openzaak.GetEndpoint("http"))
-    .WithArgs("-c", """
-        mkdir /app/fixtures &&
-        for f in /app/templates/*.json; do
-            envsubst < "$f" > "/app/fixtures/$(basename "$f")"
-        done &&
-        /start.sh
-        """)
-    .WithEntrypoint("sh")
-    .WithBindMount(source: "./templates/publicatiebank", target: "/app/templates", isReadOnly: true);
+    .WithTemplateFixtures("./templates/publicatiebank");
+
+var publicatiebankCelery = publicatiebank.AddCeleryWorker("publicatiebank-celery");
 
 openzaak
     .WithEnvironment("PUBLICATIEBANK_BASE_URL", publicatiebank.GetEndpoint("http"))
     .WithEnvironment("PUBLICATIEBANK_CLIENT_ID", publicatiebankClientId)
     .WithEnvironment("PUBLICATIEBANK_CLIENT_SECRET", unsafeTestPassword)
-    .WithArgs("-c", """
-        mkdir /app/fixtures &&
-        for f in /app/templates/*.json; do
-            envsubst < "$f" > "/app/fixtures/$(basename "$f")"
-        done &&
-        /start.sh
-        """)
-    .WithEntrypoint("sh")
-    .WithBindMount(source: "./templates/openzaak", target: "/app/templates", isReadOnly: true);
+    .WithTemplateFixtures("./templates/openzaak");
 
 var publicatiebankProxy = publicatiebank.AddNginxProxy("publicatiebank-nginx");
 
