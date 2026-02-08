@@ -1,0 +1,10 @@
+[
+  {
+    "model": "config.GlobalConfiguration",
+    "pk": 1,
+    "fields": {
+      "documents_api_service": 1,
+      "organisation_rsin": "254034330"
+    }
+  }
+]

@@ -1,20 +1,11 @@
 # ODPC
 
-## Lokaal opstarten met Docker Compose
+## Lokaal opstarten met Aspire
 
-Je kan ODPC lokaal opstarten door het volgende commando uit te voeren in de rootmap van de repository: `docker compose up`
-
-### ODRC als afhankelijkheid in Docker Compose
-
-We hebben ervoor gekozen om ODRC als afhankelijkheid op te nemen in Docker Compose. Dit houdt in dat er een instantie van ODRC wordt opgestart.
-
-De configuratie en benodigde bestanden zijn overgenomen uit [De github repository van ODRC](https://github.com/GeneriekPublicatiePlatformWoo/registratie-component). Als daar iets in wijzigt, zullen we dat hier moeten doorvoeren.
-
-Als je met een separate installatie (bijvoorbeeld een testomgeving) van ODRC wil koppelen, moet je de variabelen `ODRC_BASE_URL` en `ODRC_API_KEY` aanpassen. Dit kun je ofwel in het docker-compose.yml bestand aanpassen (zorg dat je dit niet incheckt!), ofwel in je [user secrets bestand](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). In het laatste geval moet je de variabelen verwijderen uit het docker-compose.yml bestand.
-
-Standaard wordt bij het draaien van `docker compose up` de laatste versie van het image van ODRC opgehaald. Als je dit wil forceren kan je het commando `docker compose pull odrc-django` uitvoeren.
-
-Als je een specifieke versie van het image van ODRC wil vastpinnen, zet je dit in de enviroment variable `ODRC_VERSION`
+1. [Installeer aspire](https://aspire.dev/get-started/install-cli/#install-the-aspire-cli)
+1. start aspire: `aspire start`
+1. log in op de publicatiebank (admin/admin) en maak minimaal één organisatie actief
+1. open vite in de browser en log in (admin/admin)
 
 ## Omgevingsvariabelen
 
