@@ -66,7 +66,7 @@ public static class MaykinExtensions
     public static IResourceBuilder<T> WithTemplateFixtures<T>(this IResourceBuilder<T> maykin, string sourceFolder) where T : MaykinResource
     {
         return maykin.WithArgs("-c", """
-        mkdir /app/fixtures &&
+        mkdir -p /app/fixtures &&
         for f in /app/templates/*.json; do
             envsubst < "$f" > "/app/fixtures/$(basename "$f")"
         done &&
