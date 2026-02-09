@@ -294,7 +294,7 @@ const submitHandlers = {
       return;
     }
 
-    handleSuccess("De publicatie is succesvol geclaimd.");
+    toast.add({ text: "De publicatie is succesvol geclaimd." });
   }
 } as const;
 
