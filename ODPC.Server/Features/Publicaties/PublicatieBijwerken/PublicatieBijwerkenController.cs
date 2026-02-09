@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ODPC.Apis.Odrc;
-using ODPC.Authentication;
 using ODPC.Data;
 
 namespace ODPC.Features.Publicaties.PublicatieBijwerken
@@ -10,8 +9,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
     public class PublicatieBijwerkenController(
         OdpcDbContext context,
         IOdrcClientFactory clientFactory,
-        IGebruikersgroepService gebruikersgroepService,
-        OdpcUser user) : ControllerBase
+        IGebruikersgroepService gebruikersgroepService) : ControllerBase
     {
         [HttpPut("api/{version}/publicaties/{uuid:guid}")]
         public async Task<IActionResult> Put(string version, Guid uuid, Publicatie publicatie, CancellationToken token)
