@@ -3,8 +3,8 @@
 ## Lokaal opstarten met Aspire
 
 1. Installeer de devcontainers extensie voor vscode
-1. Kies in het command palette voor ...
-1. Vul de url van deze branch in
+1. Zoek in het command palette (ctrl+shift+p) naar `clone repository in container volume`
+1. Vul de url van deze branch in: `https://github.com/GPP-Woo/GPP-app/tree/run-everything`
 1. Wacht totdat de devcontainer klaar is
 1. Start aspire: `aspire run`
 
