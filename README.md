@@ -2,10 +2,11 @@
 
 ## Lokaal opstarten met Aspire
 
-1. [Installeer aspire](https://aspire.dev/get-started/install-cli/#install-the-aspire-cli)
-1. start aspire: `aspire start`
-1. log in op de publicatiebank (admin/admin) en maak minimaal één organisatie actief
-1. open vite in de browser en log in (admin/admin)
+1. Installeer de devcontainers extensie voor vscode
+1. Kies in het command palette voor ...
+1. Vul de url van deze branch in
+1. Wacht totdat de devcontainer klaar is
+1. Start aspire: `aspire run`
 
 ## Omgevingsvariabelen
 
