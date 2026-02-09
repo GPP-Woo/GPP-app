@@ -145,7 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
@@ -224,49 +224,6 @@ const {
 // Permissions
 const { isReadonly, canDraft, canDelete, canRetract, unauthorized, groepWaardelijsten } =
   usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
-
-// Externally created publicaties will not have a eigenaarGroep untill updated from ODPC
-const isPublicatieWithoutEigenaarGroep = ref(false);
-
-watch(isLoading, () => {
-  if (hasError.value) return;
-
-  isPublicatieWithoutEigenaarGroep.value =
-    !!publicatie.value.uuid && !publicatie.value.eigenaarGroep;
-
-  // Preset eigenaarGroep of a new - or externally created publicatie when only one mijnGebruikersgroep
-  if (
-    (!publicatie.value.uuid || isPublicatieWithoutEigenaarGroep.value) &&
-    mijnGebruikersgroepen.value?.length === 1
-  ) {
-    const { uuid, naam } = mijnGebruikersgroepen.value[0];
-
-    publicatie.value.eigenaarGroep = { identifier: uuid, weergaveNaam: naam };
-  }
-});
-
-const clearPublicatieWaardelijsten = () =>
-  (publicatie.value = {
-    ...publicatie.value,
-    ...{
-      publisher: "",
-      informatieCategorieen: [],
-      onderwerpen: []
-    }
-  });
-
-// Clear waardelijsten of publicatie when mismatch waardelijsten gebruikersgroep (unauthorized) on
-// a) switch from one to another gebruikersgroep or
-// b) initial select gebruikersgroep when isPublicatieWithoutEigenaarGroep
-const shouldClearWaardelijsten = (isSwitchGebruikersgroep: boolean) =>
-  unauthorized.value && (isSwitchGebruikersgroep || isPublicatieWithoutEigenaarGroep.value);
-
-watch(
-  () => publicatie.value.eigenaarGroep,
-  (_, oldValue) => {
-    if (shouldClearWaardelijsten(!!oldValue)) clearPublicatieWaardelijsten();
-  }
-);
 
 const navigate = () => {
   if (
