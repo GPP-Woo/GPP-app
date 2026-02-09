@@ -227,26 +227,22 @@ const presetSingleWaardelijstOption = () => {
     model.value.informatieCategorieen.push(informatiecategorieen[0].uuid);
 };
 
-watch(
-  eigenaarGroepIdentifier,
-  (_, oldGroep) => {
-    // Clear waardelijsten of publicatie when mismatch waardelijsten <> gebruikersgroep (=unauthorized) on
-    // a) switch from one to another eigenaarGroep or
-    // b) initial select eigenaarGroep when isPublicatieWithoutEigenaarGroep
-    if (props.unauthorized && (!!oldGroep || isPublicatieWithoutEigenaarGroep.value)) {
-      model.value.publisher = "";
-      model.value.informatieCategorieen = [];
-      model.value.onderwerpen = [];
+watch(eigenaarGroepIdentifier, (_, oldGroep) => {
+  // Clear waardelijsten of publicatie when mismatch waardelijsten <> gebruikersgroep (=unauthorized) on
+  // a) switch from one to another eigenaarGroep or
+  // b) initial select eigenaarGroep when isPublicatieWithoutEigenaarGroep
+  if (props.unauthorized && (!!oldGroep || isPublicatieWithoutEigenaarGroep.value)) {
+    model.value.publisher = "";
+    model.value.informatieCategorieen = [];
+    model.value.onderwerpen = [];
 
-      // Expand/show the cleared option groups to user
-      expandOptionGroup.value = true;
-    }
+    // Expand/show the cleared option groups to user
+    expandOptionGroup.value = true;
+  }
 
-    // Preset publisher and informatiecategorie of a new publicatie when only one option available
-    if (!model.value.uuid) presetSingleWaardelijstOption();
-  },
-  { flush: "post" }
-);
+  // Preset publisher and informatiecategorie of a new publicatie when only one option available
+  if (!model.value.uuid) presetSingleWaardelijstOption();
+});
 
 // Preset eigenaarGroep of a new - or externally created publicatie when only one mijnGebruikersgroep
 onMounted(() => {
