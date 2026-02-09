@@ -2,7 +2,7 @@
 
 ## Lokaal opstarten met Aspire
 
-1. Installeer de devcontainers extensie voor vscode
+1. Installeer de [devcontainers extensie](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) voor vscode
 1. Zoek in het command palette (ctrl+shift+p) naar `clone repository in container volume`
 1. Vul de url van deze branch in: `https://github.com/GPP-Woo/GPP-app/tree/run-everything`
 1. Wacht totdat de devcontainer klaar is
