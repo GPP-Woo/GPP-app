@@ -1,11 +1,18 @@
 # ODPC
 
-## Lokaal opstarten met Aspire
+## Lokaal opstarten
 
+### Optie 1: draai in devcontainer
 1. Installeer de [devcontainers extensie](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) voor vscode
 1. Zoek in het command palette (ctrl+shift+p) naar `clone repository in container volume`
 1. Vul de url van deze branch in: `https://github.com/GPP-Woo/GPP-app/tree/run-everything`
-1. Wacht totdat de devcontainer klaar is
+1. Wacht totdat de devcontainer klaar is  
+1. Start aspire: `aspire run`
+
+### Optie 2: draai zonder devcontainer
+1. installeer [dotnet sdk](https://dotnet.microsoft.com/en-us/download)
+2. installeer [node lts](https://nodejs.org/en/download)
+3. installeer [aspire](https://aspire.dev/get-started/install-cli/#install-the-aspire-cli)
 1. Start aspire: `aspire run`
 
 ## Omgevingsvariabelen
