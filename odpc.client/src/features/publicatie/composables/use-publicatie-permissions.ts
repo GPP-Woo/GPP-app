@@ -24,11 +24,18 @@ export const usePublicatiePermissions = (
   );
 
   const canDelete = computed(
-    () => publicatie.value.uuid && publicatie.value.publicatiestatus === PublicatieStatus.concept
+    () => !!publicatie.value.uuid && publicatie.value.publicatiestatus === PublicatieStatus.concept
   );
 
   const canRetract = computed(
     () => publicatie.value.publicatiestatus === PublicatieStatus.gepubliceerd
+  );
+
+  const canClaim = computed(
+    () =>
+      !isOwner.value &&
+      !unauthorized.value &&
+      publicatie.value.publicatiestatus !== PublicatieStatus.ingetrokken
   );
 
   const userHasAccessToGroep = computed(() =>
@@ -88,11 +95,11 @@ export const usePublicatiePermissions = (
   });
 
   return {
-    isOwner,
     isReadonly,
     canDraft,
     canDelete,
     canRetract,
+    canClaim,
     unauthorized,
     groepWaardelijsten
   };

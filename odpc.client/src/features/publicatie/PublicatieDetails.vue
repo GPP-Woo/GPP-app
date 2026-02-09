@@ -61,50 +61,16 @@
           </button>
         </li>
 
-        <template v-if="publicatie.eigenaarGroep && !isReadonly && !hasError">
-          <!-- main actions -->
-          <li v-if="canDraft">
-            <button
-              type="submit"
-              title="Opslaan als concept"
-              class="button secondary"
-              value="draft"
-              @click="setValidationMode"
-            >
-              Opslaan als concept
-            </button>
-          </li>
-
-          <li>
-            <button type="submit" title="Publiceren" value="publish" @click="setValidationMode">
-              Publiceren
-            </button>
-          </li>
-
-          <!-- delete / retract actions -->
-          <li v-if="canDelete">
-            <button
-              type="button"
-              title="Publicatie verwijderen"
-              class="button danger"
-              @click="remove"
-            >
-              Publicatie verwijderen
-            </button>
-          </li>
-
-          <li v-if="canRetract">
-            <button
-              type="submit"
-              title="Publicatie intrekken"
-              class="button danger"
-              value="retract"
-              @click="setValidationMode"
-            >
-              Publicatie intrekken
-            </button>
-          </li>
-        </template>
+        <publicatie-submit-buttons
+          v-if="publicatie.eigenaarGroep && !hasError"
+          :can-draft="canDraft"
+          :can-delete="canDelete"
+          :can-retract="canRetract"
+          :can-claim="canClaim"
+          :is-readonly="isReadonly"
+          @onSetValidationMode="setValidationMode"
+          @onRemove="remove"
+        />
       </menu>
 
       <p class="required-message">Velden met (*) zijn verplicht</p>
@@ -134,6 +100,10 @@
       <retract-dialog-content />
     </prompt-modal>
 
+    <prompt-modal :dialog="claimDialog" cancel-text="Nee, keer terug" confirm-text="Ja, claimen">
+      <claim-dialog-content />
+    </prompt-modal>
+
     <prompt-modal
       :dialog="noDocumentsDialog"
       cancel-text="Nee, documenten toevoegen"
@@ -151,12 +121,15 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import { usePreviousRoute } from "@/composables/use-previous-route";
+import { useAppData } from "@/composables/use-app-data";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentenForm from "./components/DocumentenForm.vue";
+import PublicatieSubmitButtons from "./components/PublicatieSubmitButtons.vue";
 import DraftDialogContent from "./components/dialogs/DraftDialogContent.vue";
 import DeleteDialogContent from "./components/dialogs/DeleteDialogContent.vue";
 import RetractDialogContent from "./components/dialogs/RetractDialogContent.vue";
+import ClaimDialogContent from "./components/dialogs/ClaimDialogContent.vue";
 import NoDocumentsDialogContent from "./components/dialogs/NoDocumentsDialogContent.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
@@ -171,7 +144,9 @@ const router = useRouter();
 
 const { previousRoute } = usePreviousRoute();
 
-const { deleteDialog, draftDialog, retractDialog, noDocumentsDialog } = useDialogs();
+const { user } = useAppData();
+
+const { deleteDialog, draftDialog, retractDialog, claimDialog, noDocumentsDialog } = useDialogs();
 
 const isLoading = computed(
   () =>
@@ -222,7 +197,7 @@ const {
 } = useMijnGebruikersgroepen();
 
 // Permissions
-const { isReadonly, canDraft, canDelete, canRetract, unauthorized, groepWaardelijsten } =
+const { isReadonly, canDraft, canDelete, canRetract, canClaim, unauthorized, groepWaardelijsten } =
   usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
 
 const navigate = () => {
@@ -299,6 +274,27 @@ const submitHandlers = {
     }
 
     handleSuccess("De publicatie is succesvol opgeslagen en gepubliceerd.");
+  },
+  claim: async () => {
+    if (!user.value || (await claimDialog.reveal()).isCanceled) return;
+
+    const currentEigenaar = publicatie.value.eigenaar;
+
+    // set current user as eigenaar
+    publicatie.value.eigenaar = {
+      identifier: user.value?.id,
+      weergaveNaam: user.value?.fullName
+    };
+
+    try {
+      await submitPublicatie();
+    } catch {
+      // reset view on error
+      publicatie.value.eigenaar = currentEigenaar;
+      return;
+    }
+
+    handleSuccess("De publicatie is succesvol geclaimd.");
   }
 } as const;
 
@@ -332,23 +328,5 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   grid-gap: var(--spacing-default);
-}
-
-menu {
-  li:has([value="delete"]) {
-    order: 2;
-  }
-
-  li:has([value="draft"]) {
-    order: 3;
-  }
-
-  li:has([value="retract"]) {
-    order: 4;
-  }
-
-  li:has([value="publish"]) {
-    order: 5;
-  }
 }
 </style>
