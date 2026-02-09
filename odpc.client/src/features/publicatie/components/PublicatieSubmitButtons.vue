@@ -1,30 +1,5 @@
 <template>
   <template v-if="!isReadonly">
-    <!-- main actions -->
-    <li v-if="canDraft">
-      <button
-        type="submit"
-        title="Opslaan als concept"
-        class="button secondary"
-        value="draft"
-        @click="$emit(`onSetValidationMode`, $event)"
-      >
-        Opslaan als concept
-      </button>
-    </li>
-
-    <li>
-      <button
-        type="submit"
-        title="Publiceren"
-        value="publish"
-        @click="$emit(`onSetValidationMode`, $event)"
-      >
-        Publiceren
-      </button>
-    </li>
-
-    <!-- delete / retract actions -->
     <li v-if="canDelete">
       <button
         type="button"
@@ -37,6 +12,18 @@
       </button>
     </li>
 
+    <li v-if="canDraft">
+      <button
+        type="submit"
+        title="Opslaan als concept"
+        class="button secondary"
+        value="draft"
+        @click="$emit(`onSetValidationMode`, $event)"
+      >
+        Opslaan als concept
+      </button>
+    </li>
+
     <li v-if="canRetract">
       <button
         type="submit"
@@ -46,6 +33,17 @@
         @click="$emit(`onSetValidationMode`, $event)"
       >
         Publicatie intrekken
+      </button>
+    </li>
+
+    <li>
+      <button
+        type="submit"
+        title="Publiceren"
+        value="publish"
+        @click="$emit(`onSetValidationMode`, $event)"
+      >
+        Publiceren
       </button>
     </li>
   </template>
@@ -70,25 +68,3 @@ defineEmits<{
   onRemove: [];
 }>();
 </script>
-
-<style lang="scss" scoped>
-li:has([value="delete"]) {
-  order: 2;
-}
-
-li:has([value="draft"]) {
-  order: 3;
-}
-
-li:has([value="retract"]) {
-  order: 4;
-}
-
-li:has([value="publish"]) {
-  order: 5;
-}
-
-li:has([value="claim"]) {
-  order: 6;
-}
-</style>
