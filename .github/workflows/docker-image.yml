@@ -50,6 +50,9 @@ jobs:
           sbom: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ startsWith(github.ref, 'refs/tags/') && fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] || '0.0.0' }}
+            REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
           context: .
           file: ./ODPC.Server/Dockerfile
           cache-from: type=gha
