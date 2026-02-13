@@ -13,7 +13,20 @@
 1. installeer [dotnet sdk](https://dotnet.microsoft.com/en-us/download)
 2. installeer [node lts](https://nodejs.org/en/download)
 3. installeer [aspire](https://aspire.dev/get-started/install-cli/#install-the-aspire-cli)
-1. Start aspire: `aspire run`
+4. Clone de [woo-hoo](https://github.com/GPP-Woo/woo-hoo) repo naast deze repo (nodig voor AI metadata generatie):
+
+   ```bash
+   git clone https://github.com/GPP-Woo/woo-hoo.git ../woo-hoo
+   ```
+
+5. Stel je LLM API key in (nodig voor metadata generatie met woo-hoo):
+
+   ```bash
+   dotnet user-secrets set "Parameters:llmApiKey" "<your-openrouter-api-key>" --project ODPC.AppHost
+   ```
+
+   Of als environment variable: `Parameters__llmApiKey=<key> aspire run`
+6. Start aspire: `aspire run`
 
 ## Omgevingsvariabelen
 
