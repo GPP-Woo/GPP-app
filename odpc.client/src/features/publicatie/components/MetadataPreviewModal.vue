@@ -167,8 +167,10 @@ import { whenever } from "@vueuse/core";
 export type FieldSuggestion = {
 	field: string;
 	label: string;
-	currentValue: unknown;
-	suggestedValue: unknown;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	currentValue: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	suggestedValue: any;
 	selected: boolean;
 	type: "text" | "date" | "list";
 };
