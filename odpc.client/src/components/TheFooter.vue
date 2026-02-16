@@ -27,13 +27,12 @@ const { data: versionInfo } = useFetchApi(() => "/api/environment/version").json
 
 <style lang="scss" scoped>
 p {
-  margin-block: 0 1rem;
+  margin-block: 0;
 }
 
 dl {
   display: flex;
   justify-content: center;
-  margin-block: 0;
   column-gap: 1rem;
   font-size: 0.75rem;
 
@@ -42,8 +41,7 @@ dl {
   }
 
   dd {
-    margin-inline-start: 0;
-    margin-inline-end: 1ch;
+    margin-inline: 0 1ch;
   }
 }
 </style>
