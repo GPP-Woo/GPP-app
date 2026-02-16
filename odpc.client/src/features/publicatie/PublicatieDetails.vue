@@ -181,6 +181,7 @@ const { deleteDialog, draftDialog, retractDialog, claimDialog, noDocumentsDialog
 const {
 	isGenerating,
 	isAvailable,
+	lastError: metadataLastError,
 	checkAvailability,
 	generateMetadataPreview,
 	applyMetadataSuggestions
@@ -302,7 +303,7 @@ const handleGenerateMetadata = async () => {
 	if (result) {
 		metadataPreviewData.value = result;
 	} else {
-		metadataError.value = "Kon geen metadata suggesties genereren";
+		metadataError.value = metadataLastError.value || "Kon geen metadata suggesties genereren";
 	}
 };
 

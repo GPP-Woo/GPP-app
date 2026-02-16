@@ -4,8 +4,8 @@
 			<header>
 				<h2>Metadata suggesties van AI</h2>
 				<p class="description">
-					Selecteer welke suggesties je wilt toepassen. Velden met bestaande waarden worden
-					gemarkeerd.
+					Selecteer welke suggesties je wilt toepassen. Gesuggereerde waarden kun je
+					aanpassen voordat je ze toepast.
 				</p>
 			</header>
 
@@ -29,7 +29,10 @@
 							v-for="suggestion in publicationSuggestions"
 							:key="suggestion.field"
 							class="suggestion-item"
-							:class="{ 'has-value': suggestion.currentValue }"
+							:class="{
+								'has-value': suggestion.currentValue,
+								'is-deselected': !suggestion.selected
+							}"
 						>
 							<label class="checkbox-label">
 								<input
@@ -47,7 +50,23 @@
 								</div>
 								<div class="suggested-value">
 									<span class="value-label">Suggestie:</span>
-									<span class="value-text">{{ formatValue(suggestion.suggestedValue) }}</span>
+									<textarea
+										v-if="suggestion.type === 'text'"
+										v-model="suggestion.suggestedValue"
+										class="suggestion-input"
+										:disabled="!suggestion.selected"
+										rows="2"
+									/>
+									<input
+										v-else-if="suggestion.type === 'date'"
+										v-model="suggestion.suggestedValue"
+										type="date"
+										class="suggestion-input"
+										:disabled="!suggestion.selected"
+									/>
+									<span v-else class="value-text">{{
+										formatValue(suggestion.suggestedValue)
+									}}</span>
 								</div>
 							</div>
 						</li>
@@ -69,7 +88,10 @@
 							v-for="suggestion in docSuggestion.fields"
 							:key="suggestion.field"
 							class="suggestion-item"
-							:class="{ 'has-value': suggestion.currentValue }"
+							:class="{
+								'has-value': suggestion.currentValue,
+								'is-deselected': !suggestion.selected
+							}"
 						>
 							<label class="checkbox-label">
 								<input
@@ -86,8 +108,23 @@
 									<span class="value-text">{{ formatValue(suggestion.currentValue) }}</span>
 								</div>
 								<div class="suggested-value">
-									<span class="value-label">Suggestie:</span>
-									<span class="value-text">{{ formatValue(suggestion.suggestedValue) }}</span>
+									<textarea
+										v-if="suggestion.type === 'text'"
+										v-model="suggestion.suggestedValue"
+										class="suggestion-input"
+										:disabled="!suggestion.selected"
+										rows="2"
+									/>
+									<input
+										v-else-if="suggestion.type === 'date'"
+										v-model="suggestion.suggestedValue"
+										type="date"
+										class="suggestion-input"
+										:disabled="!suggestion.selected"
+									/>
+									<span v-else class="value-text">{{
+										formatValue(suggestion.suggestedValue)
+									}}</span>
 								</div>
 							</div>
 						</li>
@@ -133,6 +170,7 @@ export type FieldSuggestion = {
 	currentValue: unknown;
 	suggestedValue: unknown;
 	selected: boolean;
+	type: "text" | "date" | "list";
 };
 
 export type DocumentSuggestion = {
@@ -258,7 +296,7 @@ header {
 
 	.description {
 		margin: 0;
-		color: var(--text-secondary);
+		color: var(--text-light);
 		font-size: 0.9em;
 	}
 }
@@ -299,7 +337,7 @@ header {
 		gap: var(--spacing-small);
 		margin: 0 0 var(--spacing-small);
 		padding: var(--spacing-small);
-		background: var(--background-secondary);
+		background: var(--accent-bg);
 		border-radius: var(--radius-small);
 		font-size: 1em;
 
@@ -307,7 +345,7 @@ header {
 			margin-left: auto;
 			font-size: 0.8em;
 			font-weight: normal;
-			color: var(--text-secondary);
+			color: var(--text-light);
 		}
 	}
 }
@@ -325,8 +363,8 @@ header {
 	margin-bottom: var(--spacing-small);
 
 	&.has-value {
-		border-left: 3px solid var(--color-warning, #f59e0b);
-		background: var(--background-warning-subtle, #fffbeb);
+		border-left: 3px solid var(--accent);
+		background: var(--accent-bg);
 	}
 
 	.field-name {
@@ -348,7 +386,7 @@ header {
 }
 
 .value-label {
-	color: var(--text-secondary);
+	color: var(--text-light);
 	min-width: 5em;
 }
 
@@ -366,6 +404,31 @@ header {
 	font-weight: 500;
 }
 
+.suggestion-input {
+	flex: 1;
+	font: inherit;
+	font-size: 0.95em;
+	padding: 0.3em 0.5em;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-small);
+	background: var(--bg);
+	resize: vertical;
+
+	&:disabled {
+		opacity: 0.5;
+		background: var(--disabled);
+	}
+
+	&:focus {
+		outline: 2px solid var(--accent);
+		outline-offset: -1px;
+	}
+}
+
+.suggestion-item.is-deselected {
+	opacity: 0.6;
+}
+
 .loading-state,
 .error-state {
 	display: flex;
@@ -373,18 +436,18 @@ header {
 	justify-content: center;
 	gap: var(--spacing-default);
 	padding: var(--spacing-large);
-	color: var(--text-secondary);
+	color: var(--text-light);
 }
 
 .error-state {
-	color: var(--color-error, #dc2626);
+	color: var(--danger);
 }
 
 .spinner {
 	width: 1.5em;
 	height: 1.5em;
 	border: 2px solid var(--border);
-	border-top-color: var(--color-primary);
+	border-top-color: var(--accent);
 	border-radius: 50%;
 	animation: spin 1s linear infinite;
 }

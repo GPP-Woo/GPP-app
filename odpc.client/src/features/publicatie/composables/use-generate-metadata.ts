@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import { useAppData } from "@/composables/use-app-data";
-import toast from "@/stores/toast";
+
 import type { Publicatie, PublicatieDocument } from "../types";
 import type {
 	FieldSuggestion,
@@ -100,7 +100,7 @@ export const useGenerateMetadata = () => {
 		try {
 			const response = await fetch(
 				`/api/v1/metadata/generate/${encodeURIComponent(documentUuid)}`,
-				{ method: "POST" }
+				{ method: "POST", headers: { "is-api": "true" } }
 			);
 
 			if (!response.ok) {
@@ -108,9 +108,14 @@ export const useGenerateMetadata = () => {
 				throw new Error(errorText || `HTTP ${response.status}`);
 			}
 
+			const contentType = response.headers.get("content-type") ?? "";
+			if (!contentType.includes("application/json")) {
+				throw new Error(`Unexpected response type: ${contentType || "(empty)"}`);
+			}
+
 			return await response.json();
 		} catch (err) {
-			console.error(`Failed to generate metadata for ${documentUuid}:`, err);
+			console.error(`Metadata generation failed for ${documentUuid}:`, err);
 			return null;
 		}
 	};
@@ -118,6 +123,22 @@ export const useGenerateMetadata = () => {
 	/**
 	 * Create a field suggestion with current and suggested values
 	 */
+	const DATE_FIELDS = new Set([
+		"datumBeginGeldigheid",
+		"datumEindeGeldigheid",
+		"creatiedatum",
+		"datumOndertekend",
+		"ontvangstdatum"
+	]);
+
+	const LIST_FIELDS = new Set(["informatieCategorieen", "onderwerpen", "kenmerken"]);
+
+	const getFieldType = (field: string): FieldSuggestion["type"] => {
+		if (DATE_FIELDS.has(field)) return "date";
+		if (LIST_FIELDS.has(field)) return "list";
+		return "text";
+	};
+
 	const createFieldSuggestion = (
 		field: string,
 		label: string,
@@ -139,7 +160,8 @@ export const useGenerateMetadata = () => {
 			currentValue,
 			suggestedValue,
 			// Pre-select if current value is empty
-			selected: !currentValue || (Array.isArray(currentValue) && currentValue.length === 0)
+			selected: !currentValue || (Array.isArray(currentValue) && currentValue.length === 0),
+			type: getFieldType(field)
 		};
 	};
 
@@ -325,18 +347,22 @@ export const useGenerateMetadata = () => {
 	 * Generate metadata preview for all documents
 	 * Returns preview data for the modal - doesn't apply anything yet
 	 */
+	const lastError = ref<string | null>(null);
+
 	const generateMetadataPreview = async (
 		publicatie: Publicatie,
 		documenten: PublicatieDocument[],
 		mainDocumentUuid?: string
 	): Promise<MetadataPreviewData | null> => {
+		lastError.value = null;
 		isGenerating.value = true;
 
 		try {
-			// If no main document specified, use the first one
+			// If no main document specified, use the first one with a UUID
+			const docsWithUuid = documenten.filter((d) => d.uuid);
 			const mainDoc = mainDocumentUuid
-				? documenten.find((d) => d.uuid === mainDocumentUuid)
-				: documenten[0];
+				? docsWithUuid.find((d) => d.uuid === mainDocumentUuid)
+				: docsWithUuid[0];
 
 			if (!mainDoc?.uuid) {
 				throw new Error("Geen document geselecteerd voor metadata generatie");
@@ -346,15 +372,10 @@ export const useGenerateMetadata = () => {
 			const allDocumentSuggestions: DocumentSuggestion[] = [];
 			const allKeywords = new Set<string>();
 
-			// Process each document
-			for (const doc of documenten) {
-				if (!doc.uuid) continue;
-
-				const response = await generateForDocument(doc.uuid);
-				if (!response?.success || !response.suggestion) {
-					console.warn(`No metadata generated for ${doc.bestandsnaam}`);
-					continue;
-				}
+			// Process each document (only those with UUID)
+			for (const doc of docsWithUuid) {
+				const response = await generateForDocument(doc.uuid!);
+				if (!response?.success || !response.suggestion) continue;
 
 				const meta = response.suggestion.metadata;
 
@@ -362,7 +383,7 @@ export const useGenerateMetadata = () => {
 				const docSuggestions = extractDocumentSuggestions(meta, doc);
 				if (docSuggestions.length > 0) {
 					allDocumentSuggestions.push({
-						documentUuid: doc.uuid,
+						documentUuid: doc.uuid!,
 						documentName: doc.bestandsnaam,
 						fields: docSuggestions
 					});
@@ -415,13 +436,10 @@ export const useGenerateMetadata = () => {
 				mainDocumentName: mainDoc.bestandsnaam
 			};
 		} catch (err) {
-			toast.add({
-				text:
-					err instanceof Error
-						? `Metadata generatie mislukt: ${err.message}`
-						: "Er is iets misgegaan bij het genereren van metadata.",
-				type: "error"
-			});
+			const message = err instanceof Error
+				? err.message
+				: "Er is iets misgegaan bij het genereren van metadata.";
+			lastError.value = message;
 			return null;
 		} finally {
 			isGenerating.value = false;
@@ -467,6 +485,7 @@ export const useGenerateMetadata = () => {
 	return {
 		isGenerating,
 		isAvailable,
+		lastError,
 		checkAvailability,
 		generateMetadataPreview,
 		applyMetadataSuggestions

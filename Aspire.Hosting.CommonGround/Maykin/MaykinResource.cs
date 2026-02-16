@@ -18,6 +18,7 @@ public static class MaykinExtensions
         var endpoint = maykin.GetEndpoint("http");
 
         return maykin
+            .WithContainerRuntimeArgs("--platform", "linux/amd64")
             .WithHttpHealthCheck("/admin")
             .WithOtlpExporter()
             .WithCertificateTrustConfiguration(ctx =>
@@ -107,7 +108,8 @@ public static class MaykinExtensions
             }
         }
 
-        return result.WithEntrypoint("/celery_worker.sh")
+        return result.WithContainerRuntimeArgs("--platform", "linux/amd64")
+            .WithEntrypoint("/celery_worker.sh")
             .WithArgs();
     }
 

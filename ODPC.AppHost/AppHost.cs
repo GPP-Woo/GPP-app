@@ -27,6 +27,7 @@ var keycloak = builder.AddKeycloak("keycloak", adminPassword: unsafeTestPassword
 var postgres = builder.AddPostgres("postgres")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithImage("postgis/postgis")
+    .WithContainerRuntimeArgs("--platform", "linux/amd64")
     .WithPgAdmin(a => a.WithLifetime(ContainerLifetime.Persistent))
     .WithDataVolume();
 
@@ -91,6 +92,7 @@ var app = builder.AddProject<ODPC>("app")
     .WaitFor(appDb)
     .WithReference(keycloak)
     .WaitFor(keycloak)
+    .WaitFor(publicatiebankProxy)
     .WithEnvironment("OIDC_AUTHORITY", $"{keycloak.GetEndpoint("https")}/realms/app/")
     .WithEnvironment("OIDC_CLIENT_ID", appAppClientId)
     .WithEnvironment("OIDC_CLIENT_SECRET", unsafeTestPassword)
@@ -106,6 +108,7 @@ var app = builder.AddProject<ODPC>("app")
     .WithEnvironment("WOO_HOO_HEALTH_TIMEOUT_SECONDS", "30")
     .WithEnvironment("WOO_HOO_GENERATE_TIMEOUT_SECONDS", "120")
     .WithEnvironment("ASPNETCORE_FORWARDEDHEADERS_ENABLED", "true")
+    .WithEnvironment("SEED_ADMIN_GEBRUIKERSGROEP", "true")
     ;
 
 var vite = builder.AddViteApp("vite", "../odpc.client")
