@@ -72,6 +72,7 @@ var llmApiKey = builder.AddParameter("llmApiKey", secret: true);
 
 var wooHoo = builder.AddContainer("woo-hoo", "ghcr.io/infonl/woo-hoo", "latest")
     .WithLifetime(ContainerLifetime.Persistent)
+    .WithContainerRuntimeArgs("--platform", "linux/amd64")
     .WithHttpEndpoint(targetPort: 8000)
     .WithHttpHealthCheck("/health")
     .WithEnvironment("LLM_API_KEY", llmApiKey)
