@@ -10,8 +10,8 @@
         </template>
 
         <p class="popover-content">
-          Voer hier de gebruikersnaam van de gebruiker in. De naam van de gebruiker wordt
-          automatisch opgehaald zodra deze inlogt in het GPP-Woo publicatieportaal.
+          Voer hier de gebruikersnaam in. Na opslaan wordt ook de volledige naam getoond, als de
+          gebruiker tenminste al een keer heeft ingelogd op het GPP-Woo publicatieportaal.
         </p>
       </info-popover></label
     >

@@ -57,7 +57,7 @@ namespace ODPC.Test
 
             foreach (var item in upsertModel.GekoppeldeGebruikers)
             {
-                Assert.IsTrue(detailsModel.GekoppeldeGebruikers.Contains(item));
+                Assert.IsTrue(detailsModel.GekoppeldeGebruikers.Any(g => g.GebruikerId == item));
             }
         }
 
@@ -88,7 +88,7 @@ namespace ODPC.Test
 
             foreach (var item in upsertModel.GekoppeldeGebruikers)
             {
-                Assert.IsTrue(detailsModel.GekoppeldeGebruikers.Contains(item));
+                Assert.IsTrue(detailsModel.GekoppeldeGebruikers.Any(g => g.GebruikerId == item));
             }
         }
 
