@@ -19,6 +19,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails
             var groep = await _context.Gebruikersgroepen
                 .Include(x => x.Waardelijsten)
                 .Include(x => x.GebruikersgroepGebruikers)
+                    .ThenInclude(x => x.Gebruiker)
                 .SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
 
             return groep == null ? NotFound() : Ok(GebruikersgroepDetailsModel.MapEntityToViewModel(groep));

@@ -62,7 +62,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
 
             //voeg de nieuwe selectie waardelijsten en gebruikers toe aan deze groep
             UpsertHelpers.AddWaardelijstenToGroep(model.GekoppeldeWaardelijsten, groep, _context);
-            UpsertHelpers.AddGebruikersToGroep(model.GekoppeldeGebruikers, groep, _context);
+            await UpsertHelpers.AddGebruikersToGroep(model.GekoppeldeGebruikers, groep, _context, token);
 
             await _context.SaveChangesAsync(token);
 

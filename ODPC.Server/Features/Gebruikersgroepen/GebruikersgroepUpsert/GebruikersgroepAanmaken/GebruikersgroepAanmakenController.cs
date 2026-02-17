@@ -30,7 +30,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepA
                 _context.Gebruikersgroepen.Add(groep);
 
                 UpsertHelpers.AddWaardelijstenToGroep(model.GekoppeldeWaardelijsten, groep, _context);
-                UpsertHelpers.AddGebruikersToGroep(model.GekoppeldeGebruikers, groep, _context);
+                await UpsertHelpers.AddGebruikersToGroep(model.GekoppeldeGebruikers, groep, _context, token);
 
                 await _context.SaveChangesAsync(token);
 
