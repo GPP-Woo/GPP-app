@@ -31,7 +31,7 @@
     </div>
 
     <add-remove-items
-      v-model="model.gekoppeldeGebruikers"
+      v-model="gekoppeldeGebruikers"
       item-name-singular="gebruiker"
       item-name-plural="gebruikers"
     />
@@ -39,13 +39,19 @@
 </template>
 
 <script setup lang="ts">
-import { useModel } from "vue";
+import { computed, useModel } from "vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
 import type { Gebruikersgroep } from "../types";
 
 const props = defineProps<{ modelValue: Gebruikersgroep }>();
 
 const model = useModel(props, "modelValue");
+
+const gekoppeldeGebruikers = computed({
+  get: () => model.value.gekoppeldeGebruikers.map((g) => g.gebruikerId),
+  set: (gebruikerIds: string[]) =>
+    (model.value.gekoppeldeGebruikers = gebruikerIds.map((id) => ({ gebruikerId: id })))
+});
 </script>
 
 <style lang="scss" scoped>

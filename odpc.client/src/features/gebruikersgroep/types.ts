@@ -1,11 +1,17 @@
 import type { OptionProps } from "@/components/option-group/types";
 
+export type GekoppeldeGebruiker = {
+  gebruikerId: string;
+  naam?: string | null;
+  lastLogin?: string | null;
+};
+
 export type Gebruikersgroep = {
   uuid?: string;
   naam: string;
   omschrijving?: string;
   gekoppeldeWaardelijsten: string[];
-  gekoppeldeGebruikers: string[];
+  gekoppeldeGebruikers: GekoppeldeGebruiker[];
 };
 
 export const WAARDELIJSTEN = {
