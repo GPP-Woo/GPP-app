@@ -1,6 +1,9 @@
 ﻿using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ODPC.Data;
+using ODPC.Data.Entities;
 
 namespace ODPC.Authentication
 {
@@ -107,6 +110,36 @@ namespace ODPC.Authentication
                             ctx.HandleResponse();
                         }
                         return Task.CompletedTask;
+                    };
+
+                    //naam gebruiker bijwerken, draait 1x per login
+                    options.Events.OnTicketReceived = async (ctx) =>
+                    {
+                        var id = ctx.Principal?.FindFirst(x => idClaimTypes.Contains(x.Type))?.Value;
+                        var name = ctx.Principal?.FindFirst(nameClaimType)?.Value;
+
+                        if (!string.IsNullOrWhiteSpace(id))
+                        {
+                            var dbContext = ctx.HttpContext.RequestServices.GetRequiredService<OdpcDbContext>();
+                            var gebruiker = await dbContext.Gebruikers.SingleOrDefaultAsync(g => g.GebruikerId == id);
+
+                            if (gebruiker == null)
+                            {
+                                dbContext.Gebruikers.Add(new Gebruiker
+                                {
+                                    GebruikerId = id,
+                                    Naam = name,
+                                    LastLogin = DateTimeOffset.UtcNow
+                                });
+                            }
+                            else
+                            {
+                                gebruiker.Naam = name;
+                                gebruiker.LastLogin = DateTimeOffset.UtcNow;
+                            }
+
+                            await dbContext.SaveChangesAsync();
+                        }
                     };
                 });
             }
