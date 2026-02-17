@@ -9,7 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
-'obj\Debug'/
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -397,4 +397,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-*\Debug

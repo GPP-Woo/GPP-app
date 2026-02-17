@@ -1,6 +1,7 @@
 server {
     listen       80;
     server_name  localhost;
+    resolver 127.0.0.11 valid=10s ipv6=off;
 
     location /private-media {
         internal;
@@ -9,6 +10,7 @@ server {
 
     location / {
         client_max_body_size 100M;
-        proxy_pass   ${TARGET_ADDRESS};
+        set $upstream ${TARGET_ADDRESS};
+        proxy_pass   $upstream$request_uri;
     }
 }
