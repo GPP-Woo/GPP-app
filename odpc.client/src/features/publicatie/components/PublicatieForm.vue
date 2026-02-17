@@ -142,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useModel, watch, type DeepReadonly } from "vue";
+import { computed, onMounted, ref, useModel, watch, type DeepReadonly } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
 import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
@@ -171,6 +171,8 @@ const model = useModel(props, "modelValue");
 const kenmerken = useKenmerken(model);
 
 const { lijsten } = useAppData();
+
+const expandOptionGroup = ref(false);
 
 const eigenaarGroepIdentifier = computed({
   get: () => model.value.eigenaarGroep?.identifier ?? null,
@@ -203,18 +205,51 @@ const waardelijsten = computed(() =>
     : props.groepWaardelijsten
 );
 
-// Expand option groups after eigenaarGroep changes and waardelijst values are empty
-const expandOptionGroup = ref(false);
-
-watch(
-  () => eigenaarGroepIdentifier,
-  (_, oldGroep) =>
-    (expandOptionGroup.value =
-      !!oldGroep &&
-      !model.value.publisher &&
-      model.value.informatieCategorieen.length === 0 &&
-      model.value.onderwerpen.length === 0)
+// Externally created publicaties will not have a eigenaarGroep untill updated from ODPC
+const isPublicatieWithoutEigenaarGroep = computed(
+  () => !!model.value.uuid && !model.value.eigenaarGroep
 );
+
+const presetSingleGebruikersgroep = () => {
+  if (props.mijnGebruikersgroepen?.length !== 1) return;
+
+  const { uuid, naam } = props.mijnGebruikersgroepen[0];
+
+  model.value.eigenaarGroep = { identifier: uuid, weergaveNaam: naam };
+};
+
+const presetSingleWaardelijstOption = () => {
+  const { organisaties, informatiecategorieen } = props.groepWaardelijsten;
+
+  if (organisaties?.length === 1) model.value.publisher = organisaties[0].uuid;
+
+  if (informatiecategorieen?.length === 1)
+    model.value.informatieCategorieen.push(informatiecategorieen[0].uuid);
+};
+
+watch(eigenaarGroepIdentifier, (_, oldGroep) => {
+  // Clear waardelijsten of publicatie when mismatch waardelijsten <> gebruikersgroep (=unauthorized) on
+  // a) switch from one to another eigenaarGroep or
+  // b) initial select eigenaarGroep when isPublicatieWithoutEigenaarGroep
+  if (props.unauthorized && (!!oldGroep || isPublicatieWithoutEigenaarGroep.value)) {
+    model.value.publisher = "";
+    model.value.informatieCategorieen = [];
+    model.value.onderwerpen = [];
+
+    // Expand/show the cleared option groups to user
+    expandOptionGroup.value = true;
+  }
+
+  // Preset publisher and informatiecategorie of a new publicatie when only one option available
+  if (!model.value.uuid) presetSingleWaardelijstOption();
+});
+
+// Preset eigenaarGroep of a new - or externally created publicatie when only one mijnGebruikersgroep
+onMounted(() => {
+  if (!model.value.uuid || isPublicatieWithoutEigenaarGroep.value) {
+    presetSingleGebruikersgroep();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

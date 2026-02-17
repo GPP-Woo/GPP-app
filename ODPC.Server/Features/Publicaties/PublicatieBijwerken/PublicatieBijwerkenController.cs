@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ODPC.Apis.Odrc;
-using ODPC.Authentication;
 using ODPC.Data;
 
 namespace ODPC.Features.Publicaties.PublicatieBijwerken
@@ -10,8 +9,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
     public class PublicatieBijwerkenController(
         OdpcDbContext context,
         IOdrcClientFactory clientFactory,
-        IGebruikersgroepService gebruikersgroepService,
-        OdpcUser user) : ControllerBase
+        IGebruikersgroepService gebruikersgroepService) : ControllerBase
     {
         [HttpPut("api/{version}/publicaties/{uuid:guid}")]
         public async Task<IActionResult> Put(string version, Guid uuid, Publicatie publicatie, CancellationToken token)
@@ -62,7 +60,18 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
 
             var json = await getResponse.Content.ReadFromJsonAsync<Publicatie>(token);
 
-            if (json?.Eigenaar?.identifier != user.Id)
+            if (json == null)
+            {
+                return NotFound();
+            }
+
+            json.EigenaarGroep ??= await gebruikersgroepService.TryAndGetEigenaarGroepFromOdpcAsync(uuid, token);
+
+            // gebruiker mag publicatie bijwerken/claimen als in groep van publicatie zit
+            var isGebruikersgroepGebruiker = Guid.TryParse(json.EigenaarGroep?.identifier, out var jsonIdentifier)
+                && await gebruikersgroepService.IsGebruikersgroepGebruikerAsync(jsonIdentifier, token);
+
+            if (!isGebruikersgroepGebruiker)
             {
                 return NotFound();
             }
