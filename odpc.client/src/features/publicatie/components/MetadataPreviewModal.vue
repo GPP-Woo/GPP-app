@@ -163,29 +163,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { whenever } from "@vueuse/core";
-
-export type FieldSuggestion = {
-	field: string;
-	label: string;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	currentValue: any;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	suggestedValue: any;
-	selected: boolean;
-	type: "text" | "date" | "list";
-};
-
-export type DocumentSuggestion = {
-	documentUuid: string;
-	documentName: string;
-	fields: FieldSuggestion[];
-};
-
-export type MetadataPreviewData = {
-	publicationSuggestions: FieldSuggestion[];
-	documentSuggestions: DocumentSuggestion[];
-	mainDocumentName: string;
-};
+import type { MetadataPreviewData } from "../types";
 
 const props = defineProps<{
 	isRevealed: boolean;

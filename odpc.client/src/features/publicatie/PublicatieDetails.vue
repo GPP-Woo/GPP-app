@@ -19,13 +19,6 @@
 
   <simple-spinner v-show="isLoading"></simple-spinner>
 
-  <div v-if="isGenerating" class="generating-overlay" aria-live="assertive">
-    <div class="generating-overlay-content">
-      <simple-spinner></simple-spinner>
-      <p>Metadata wordt gegenereerd...</p>
-    </div>
-  </div>
-
   <form v-if="!isLoading" @submit.prevent="submit" v-form-invalid-handler>
     <alert-inline v-if="mijnGebruikersgroepenError || !mijnGebruikersgroepen?.length"
       >Er is iets misgegaan bij het ophalen van de gegevens. Neem contact op met de
@@ -189,7 +182,7 @@ const {
 
 // Metadata preview state
 const showMetadataPreview = ref(false);
-const metadataPreviewData = ref<import("./components/MetadataPreviewModal.vue").MetadataPreviewData | null>(null);
+const metadataPreviewData = ref<import("./types").MetadataPreviewData | null>(null);
 const metadataError = ref<string | null>(null);
 
 onMounted(checkAvailability);
@@ -314,7 +307,7 @@ const handleMetadataPreviewClose = () => {
 };
 
 const handleMetadataPreviewConfirm = (
-	data: import("./components/MetadataPreviewModal.vue").MetadataPreviewData
+	data: import("./types").MetadataPreviewData
 ) => {
 	const result = applyMetadataSuggestions(data);
 
@@ -471,25 +464,4 @@ section {
   grid-gap: var(--spacing-default);
 }
 
-.generating-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.8);
-}
-
-.generating-overlay-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-default);
-
-  p {
-    font-size: var(--font-large);
-    font-weight: var(--font-bold);
-  }
-}
 </style>

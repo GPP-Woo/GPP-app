@@ -1,12 +1,13 @@
 import { ref } from "vue";
 import { useAppData } from "@/composables/use-app-data";
 
-import type { Publicatie, PublicatieDocument } from "../types";
 import type {
+	Publicatie,
+	PublicatieDocument,
 	FieldSuggestion,
 	DocumentSuggestion,
 	MetadataPreviewData
-} from "../components/MetadataPreviewModal.vue";
+} from "../types";
 
 type WooHooResponse = {
 	success: boolean;
@@ -372,11 +373,19 @@ export const useGenerateMetadata = () => {
 			const allDocumentSuggestions: DocumentSuggestion[] = [];
 			const allKeywords = new Set<string>();
 
-			// Process each document (only those with UUID)
-			for (const doc of docsWithUuid) {
-				const response = await generateForDocument(doc.uuid!);
+			// Process all documents in parallel
+			const results = await Promise.allSettled(
+				docsWithUuid.map((doc) => generateForDocument(doc.uuid!))
+			);
+
+			for (let i = 0; i < docsWithUuid.length; i++) {
+				const result = results[i];
+				if (result.status !== "fulfilled") continue;
+
+				const response = result.value;
 				if (!response?.success || !response.suggestion) continue;
 
+				const doc = docsWithUuid[i];
 				const meta = response.suggestion.metadata;
 
 				// Document-level suggestions
