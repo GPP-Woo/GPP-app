@@ -24,6 +24,10 @@ typecheck:
 npm-install:
     cd odpc.client && npm install
 
+# Build the woo-hoo image locally (until ghcr.io package is public)
+build-woo-hoo:
+    docker build --platform linux/amd64 --target production -t ghcr.io/infonl/woo-hoo:latest ../woo-hoo
+
 # Reset the database (removes postgres volume so fixtures reload)
 reset-db:
     docker ps -aq --filter "name=postgres" --filter "label=com.microsoft.developer.usvc-dev.persistent" | xargs docker rm -f 2>/dev/null || true
