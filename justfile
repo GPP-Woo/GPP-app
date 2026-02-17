@@ -12,10 +12,6 @@ set-llm-key key:
 secrets:
     dotnet user-secrets list --project ODPC.AppHost
 
-# Clone the woo-hoo repo (needed for metadata generation)
-clone-woo-hoo:
-    git clone https://github.com/GPP-Woo/woo-hoo.git ../woo-hoo
-
 # Build the .NET solution
 build:
     dotnet build

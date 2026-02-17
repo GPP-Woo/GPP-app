@@ -70,7 +70,7 @@ var publicatiebankProxy = publicatiebank.AddNginxProxy("publicatiebank-nginx");
 
 var llmApiKey = builder.AddParameter("llmApiKey", secret: true);
 
-var wooHoo = builder.AddDockerfile("woo-hoo", "../../woo-hoo")
+var wooHoo = builder.AddContainer("woo-hoo", "ghcr.io/infonl/woo-hoo", "latest")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithHttpEndpoint(targetPort: 8000)
     .WithHttpHealthCheck("/health")
