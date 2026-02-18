@@ -181,6 +181,18 @@ button[class*="icon"] {
   word-wrap: normal;
 }
 
+.popover-trigger {
+  block-size: 1.5rem;
+  inline-size: 1.5rem;
+  padding: 0;
+  margin: 0;
+}
+
+.popover-content {
+  margin-block: 0;
+  cursor: text;
+}
+
 .pre-wrap {
   white-space: pre-wrap;
 }

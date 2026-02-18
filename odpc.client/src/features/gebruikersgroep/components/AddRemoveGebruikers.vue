@@ -10,7 +10,7 @@
         </template>
 
         <p class="popover-content">
-          Voer hier de gebruikersnaam in. Na opslaan wordt ook de volledige naam getoond, als de
+          Voer hier de inlognaam in. Na opslaan wordt ook de volledige naam getoond, als de
           gebruiker tenminste al een keer heeft ingelogd op het GPP-Woo publicatieportaal.
         </p>
       </info-popover></label
@@ -30,14 +30,14 @@
   </div>
 
   <details ref="detailsRef" aria-live="polite">
-    <summary>Toegevoegde gebruikers</summary>
+    <summary :id="headingId">Toegevoegde gebruikers</summary>
 
     <p v-if="!gebruikers.length">Er zijn (nog) geen gebruikers toegevoegd.</p>
 
-    <table v-else class="table">
+    <table v-else :aria-labelledby="headingId">
       <thead>
         <tr>
-          <th>Gebruikersnaam</th>
+          <th>Inlognaam</th>
           <th>Naam</th>
           <th class="actions">
             <span class="visually-hidden">Acties</span>
@@ -49,7 +49,7 @@
         <tr v-for="({ gebruikerId, naam, lastLogin }, index) in gebruikers" :key="gebruikerId">
           <td :title="gebruikerId">{{ gebruikerId }}</td>
           <td :title="naam ?? undefined">
-            {{ lastLogin && !naam ? "Ophalen naam mislukt" : (naam ?? "-") }}
+            {{ lastLogin && !naam ? "Ophalen naam mislukt..." : (naam ?? "-") }}
           </td>
           <td>
             <button
@@ -66,10 +66,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, useId } from "vue";
 import toast from "@/stores/toast";
 import InfoPopover from "@/components/InfoPopover.vue";
 import type { GekoppeldeGebruiker } from "../types";
+
+const headingId = useId();
 
 const gebruikers = defineModel<GekoppeldeGebruiker[]>("modelValue", { required: true });
 const gebruiker = ref("");
@@ -119,16 +121,7 @@ table {
   }
 }
 
-.popover-trigger {
-  block-size: 1.5rem;
-  inline-size: 1.5rem;
-  padding: 0;
-  margin: 0;
-}
-
 .popover-content {
   font-weight: normal;
-  margin-block: 0;
-  cursor: text;
 }
 </style>

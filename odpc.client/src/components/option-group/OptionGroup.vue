@@ -120,12 +120,5 @@ details {
 .popover-trigger {
   block-size: 1.4rem;
   inline-size: 1.4rem;
-  padding: 0;
-  margin: 0;
-}
-
-.popover-content {
-  margin-block: 0;
-  cursor: text;
 }
 </style>
