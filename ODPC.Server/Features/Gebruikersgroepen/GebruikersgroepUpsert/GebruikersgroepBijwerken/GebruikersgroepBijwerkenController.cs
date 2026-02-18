@@ -87,7 +87,11 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
                 logger.LogWarning(exception, "Onverwachte statuscode bij updaten organisatie-eenheid in publicatiebank.");
             }
 
-            return Ok(GebruikersgroepDetailsModel.MapEntityToViewModel(groep));
+            var result = await GebruikersgroepDetailsModel
+                .MapToViewModel(_context.Gebruikersgroepen.Where(x => x.Uuid == groep.Uuid))
+                .SingleAsync(cancellationToken: token);
+
+            return Ok(result);
         }
     }
 }

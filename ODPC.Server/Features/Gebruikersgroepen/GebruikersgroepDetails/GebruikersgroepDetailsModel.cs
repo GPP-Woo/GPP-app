@@ -13,23 +13,20 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails
 
         public required IEnumerable<GekoppeldeGebruikerModel> GekoppeldeGebruikers { get; set; }
 
-        //viewmodel voor een nieuwe of gewijzigde gebruikersgroep
-        public static GebruikersgroepDetailsModel MapEntityToViewModel(Gebruikersgroep groep)
-        {
-            return new GebruikersgroepDetailsModel
+        public static IQueryable<GebruikersgroepDetailsModel> MapToViewModel(IQueryable<Gebruikersgroep> groepen) =>
+            groepen.Select(groep => new GebruikersgroepDetailsModel
             {
                 Uuid = groep.Uuid,
                 Naam = groep.Naam,
                 Omschrijving = groep.Omschrijving,
-                GekoppeldeWaardelijsten = groep.Waardelijsten.Select(x => x.WaardelijstId).AsEnumerable(),
+                GekoppeldeWaardelijsten = groep.Waardelijsten.Select(x => x.WaardelijstId),
                 GekoppeldeGebruikers = groep.GebruikersgroepGebruikers.Select(x => new GekoppeldeGebruikerModel
                 {
                     GebruikerId = x.GebruikerId,
-                    Naam = x.Gebruiker?.Naam,
-                    LastLogin = x.Gebruiker?.LastLogin
-                }).AsEnumerable()
-            };
-        }
+                    Naam = x.Gebruiker!.Naam,
+                    LastLogin = x.Gebruiker!.LastLogin
+                })
+            });
 
         public class GekoppeldeGebruikerModel
         {
