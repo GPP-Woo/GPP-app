@@ -1,20 +1,79 @@
 # ODPC
 
-## Lokaal opstarten met Docker Compose
+> **Branch `woo-hoo`** — Deze branch integreert de [woo-hoo](https://github.com/infonl/woo-hoo) service voor LLM-gestuurde metadata generatie in de lokale ontwikkelomgeving. Zie [woo-hoo sectie](#woo-hoo-ai-metadata-generatie) voor details.
 
-Je kan ODPC lokaal opstarten door het volgende commando uit te voeren in de rootmap van de repository: `docker compose up`
+## Lokaal opstarten
 
-### ODRC als afhankelijkheid in Docker Compose
+Dit project draait de volledige GPP-publicatie stack lokaal via [.NET Aspire](https://aspire.dev), inclusief:
 
-We hebben ervoor gekozen om ODRC als afhankelijkheid op te nemen in Docker Compose. Dit houdt in dat er een instantie van ODRC wordt opgestart.
+- GPP-app (ODPC frontend + backend)
+- GPP-publicatiebank (ODRC registratiecomponent)
+- Open Zaak
+- Keycloak (identity provider)
+- **woo-hoo** — LLM-gestuurde metadata generatie voor DIWOO-publicaties
 
-De configuratie en benodigde bestanden zijn overgenomen uit [De github repository van ODRC](https://github.com/GeneriekPublicatiePlatformWoo/registratie-component). Als daar iets in wijzigt, zullen we dat hier moeten doorvoeren.
+### Vereisten
 
-Als je met een separate installatie (bijvoorbeeld een testomgeving) van ODRC wil koppelen, moet je de variabelen `ODRC_BASE_URL` en `ODRC_API_KEY` aanpassen. Dit kun je ofwel in het docker-compose.yml bestand aanpassen (zorg dat je dit niet incheckt!), ofwel in je [user secrets bestand](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). In het laatste geval moet je de variabelen verwijderen uit het docker-compose.yml bestand.
+- [dotnet sdk](https://dotnet.microsoft.com/en-us/download)
+- [node lts](https://nodejs.org/en/download)
+- [aspire cli](https://aspire.dev/get-started/install-cli/#install-the-aspire-cli)
+- [just](https://github.com/casey/just#installation) (command runner)
+- Docker
 
-Standaard wordt bij het draaien van `docker compose up` de laatste versie van het image van ODRC opgehaald. Als je dit wil forceren kan je het commando `docker compose pull odrc-django` uitvoeren.
+### Snel starten
 
-Als je een specifieke versie van het image van ODRC wil vastpinnen, zet je dit in de enviroment variable `ODRC_VERSION`
+```bash
+# 1. Clone de woo-hoo repo naast deze repo (nodig voor AI metadata generatie)
+git clone https://github.com/infonl/woo-hoo.git ../woo-hoo
+
+# 2. Installeer frontend dependencies
+just npm-install
+
+# 3. Bouw de woo-hoo container image lokaal
+just build-woo-hoo
+
+# 4. Stel je LLM API key in (OpenRouter, nodig voor metadata generatie)
+just set-llm-key <your-openrouter-api-key>
+
+# 5. Start de stack
+just run
+```
+
+Na het opstarten opent de Aspire dashboard automatisch. Vanuit daar kun je de app en alle services bereiken.
+
+### Justfile commando's
+
+| Commando | Beschrijving |
+| --- | --- |
+| `just run` | Start de volledige stack via Aspire |
+| `just build` | Bouw de .NET solution |
+| `just build-woo-hoo` | Bouw de woo-hoo container image lokaal |
+| `just set-llm-key <key>` | Stel de LLM API key in voor metadata generatie |
+| `just secrets` | Toon de huidige user secrets |
+| `just npm-install` | Installeer frontend dependencies |
+| `just typecheck` | Type-check de Vue frontend |
+| `just reset-db` | Reset de database (verwijdert postgres volume) |
+| `just clean` | Verwijder alle Aspire persistent containers en volumes |
+
+### Devcontainer (alternatief)
+
+1. Installeer de [devcontainers extensie](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) voor vscode
+1. Zoek in het command palette (ctrl+shift+p) naar `clone repository in container volume`
+1. Vul de url van deze branch in: `https://github.com/GPP-Woo/GPP-app/tree/run-everything`
+1. Wacht totdat de devcontainer klaar is
+1. Start aspire: `just run`
+
+### woo-hoo (AI metadata generatie)
+
+[woo-hoo](https://github.com/infonl/woo-hoo) is een LLM-gestuurde service die automatisch metadata genereert voor DIWOO-publicaties op basis van geupload documentinhoud. De service draait als container in de Aspire stack.
+
+Om metadata generatie te gebruiken:
+
+1. Zorg dat de woo-hoo image lokaal gebouwd is: `just build-woo-hoo`
+2. Stel een [OpenRouter](https://openrouter.ai) API key in: `just set-llm-key <key>`
+3. Start de stack: `just run`
+
+In de publicatie-editor verschijnt de knop "Genereer metadata" wanneer er documenten bij een publicatie zijn. De gegenereerde suggesties worden in een preview getoond en kunnen selectief worden toegepast.
 
 ## Omgevingsvariabelen
 
