@@ -30,10 +30,15 @@ export const useGebruikersgroep = (uuid?: string) => {
   watch(gebruikersgroepData, (value) => (gebruikersgroep.value = value || gebruikersgroep.value));
 
   const submitGebruikersgroep = async () => {
+    const payload = {
+      ...gebruikersgroep.value,
+      gekoppeldeGebruikers: gebruikersgroep.value.gekoppeldeGebruikers.map((g) => g.gebruikerId)
+    };
+
     if (uuid) {
-      await putGebruikersgroep(gebruikersgroep).execute();
+      await putGebruikersgroep(payload).execute();
     } else {
-      await postGebruikersgroep(gebruikersgroep).execute();
+      await postGebruikersgroep(payload).execute();
     }
 
     if (gebruikersgroepError.value) {

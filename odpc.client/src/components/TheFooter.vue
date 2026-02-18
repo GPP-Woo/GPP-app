@@ -4,13 +4,13 @@
 
     <dl v-if="versionInfo">
       <div v-if="versionInfo.semanticVersion">
-        <dd>Versie:</dd>
-        <dt>{{ versionInfo.semanticVersion }}</dt>
+        <dt>Versie:</dt>
+        <dd>{{ versionInfo.semanticVersion }}</dd>
       </div>
 
       <div v-if="versionInfo.gitSha">
-        <dd>Commit:</dd>
-        <dt>{{ versionInfo.gitSha.substring(0, 7) }}</dt>
+        <dt>Commit:</dt>
+        <dd>{{ versionInfo.gitSha.substring(0, 7) }}</dd>
       </div>
     </dl>
   </footer>
@@ -40,8 +40,12 @@ dl {
     display: flex;
   }
 
-  dd {
+  dt {
     margin-inline: 0 1ch;
+  }
+
+  dd {
+    margin-inline: 0;
   }
 }
 </style>

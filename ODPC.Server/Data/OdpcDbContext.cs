@@ -9,6 +9,7 @@ namespace ODPC.Data
         public DbSet<GebruikersgroepWaardelijst> GebruikersgroepWaardelijsten { get; set; }
         public DbSet<GebruikersgroepGebruiker> GebruikersgroepGebruikers { get; set; }
         public DbSet<GebruikersgroepPublicatie> GebruikersgroepPublicatie { get; set; }
+        public DbSet<Gebruiker> Gebruikers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +29,7 @@ namespace ODPC.Data
             modelBuilder.Entity<GebruikersgroepWaardelijst>().HasKey(t => new { t.GebruikersgroepUuid, t.WaardelijstId });
             modelBuilder.Entity<GebruikersgroepGebruiker>().HasKey(t => new { t.GebruikerId, t.GebruikersgroepUuid });
             modelBuilder.Entity<GebruikersgroepPublicatie>().HasKey(t => new { t.GebruikersgroepUuid, t.PublicatieUuid });
+            modelBuilder.Entity<Gebruiker>().HasKey(t => t.GebruikerId);
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

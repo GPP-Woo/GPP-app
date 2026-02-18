@@ -30,28 +30,13 @@
       <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
     </div>
 
-    <add-remove-items
-      v-model="model.gekoppeldeGebruikers"
-      item-name-singular="gebruiker"
-      item-name-plural="gebruikers"
-    />
+    <add-remove-gebruikers v-model="model.gekoppeldeGebruikers" />
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { useModel } from "vue";
-import AddRemoveItems from "@/components/AddRemoveItems.vue";
+import AddRemoveGebruikers from "./AddRemoveGebruikers.vue";
 import type { Gebruikersgroep } from "../types";
 
-const props = defineProps<{ modelValue: Gebruikersgroep }>();
-
-const model = useModel(props, "modelValue");
+const model = defineModel<Gebruikersgroep>("modelValue", { required: true });
 </script>
-
-<style lang="scss" scoped>
-ul {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: var(--spacing-small);
-}
-</style>
