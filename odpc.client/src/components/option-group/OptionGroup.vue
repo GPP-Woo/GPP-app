@@ -116,9 +116,4 @@ details {
     display: none;
   }
 }
-
-.popover-trigger {
-  block-size: 1.4rem;
-  inline-size: 1.4rem;
-}
 </style>
