@@ -27,7 +27,7 @@ namespace ODPC.Migrations
             // Voeg alle distinct gebruikers uit GebruikersgroepGebruikers toe aan Gebruikers
             migrationBuilder.Sql("""
                 INSERT INTO "Gebruikers" ("GebruikerId", "Naam", "LastLogin")
-                SELECT DISTINCT "GebruikerId", NULL, NULL
+                SELECT DISTINCT "GebruikerId", NULL, NULL::timestamptz
                 FROM "GebruikersgroepGebruikers"
                 WHERE "GebruikerId" NOT IN (SELECT "GebruikerId" FROM "Gebruikers")
                 """);
