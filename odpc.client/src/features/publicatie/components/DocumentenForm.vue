@@ -76,12 +76,11 @@ const getInitialDocument = (): PublicatieDocument => ({
   kenmerken: []
 });
 
-// for file types zip and 7z mimetypes are sometimes not properly mapped
-// and may fallback to 'application/octet-stream', if so then check against extension
+// some file types have an extension configured in the mimeTypes 'table'
+// for these types (zip and 7z) checking on mime-type is not reliable
+// so they will be matched on extension to map to their 'identifier'
 const matchKnownTypes = (file: File, type: MimeType) =>
-  file.type === "application/octet-stream" && type.extension
-    ? file.name.toLowerCase().endsWith(type.extension)
-    : file.type === type.mimeType;
+  type.extension ? file.name.toLowerCase().endsWith(type.extension) : file.type === type.mimeType;
 
 const clearInputData = (event: Event | DragEvent) => {
   if (event instanceof DragEvent) {
