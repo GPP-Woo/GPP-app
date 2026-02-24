@@ -13,6 +13,30 @@ namespace ODPC.Migrations
             migrationBuilder.AlterDatabase()
                 .Annotation("Npgsql:CollationDefinition:nl_case_insensitive", "nl-NL-u-ks-primary,nl-NL-u-ks-primary,icu,False");
 
+            // remove rows that will be duplicate based on the new collation
+            migrationBuilder.Sql("""
+                DELETE FROM public."Gebruikersgroepen" a
+                USING public."Gebruikersgroepen" b
+                WHERE a.ctid < b.ctid
+                AND a."Naam" COLLATE "nl_case_insensitive" = b."Naam" COLLATE "nl_case_insensitive";
+                """);
+
+            migrationBuilder.Sql("""
+                DELETE FROM public."GebruikersgroepGebruikers" a
+                USING public."GebruikersgroepGebruikers" b
+                WHERE a.ctid < b.ctid
+                  AND a."GebruikersgroepUuid" = b."GebruikersgroepUuid"
+                  AND a."GebruikerId" COLLATE "nl_case_insensitive" = b."GebruikerId" COLLATE "nl_case_insensitive";
+                """);
+
+            migrationBuilder.Sql("""
+                DELETE FROM public."GebruikersgroepWaardelijsten" a
+                USING public."GebruikersgroepWaardelijsten" b
+                WHERE a.ctid < b.ctid
+                  AND a."GebruikersgroepUuid" = b."GebruikersgroepUuid"
+                  AND a."WaardelijstId" COLLATE "nl_case_insensitive" = b."WaardelijstId" COLLATE "nl_case_insensitive";
+                """);
+
             migrationBuilder.AlterColumn<string>(
                 name: "WaardelijstId",
                 table: "GebruikersgroepWaardelijsten",
