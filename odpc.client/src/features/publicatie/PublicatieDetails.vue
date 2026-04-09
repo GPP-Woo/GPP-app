@@ -47,7 +47,6 @@
 
       <documenten-form
         v-else-if="publicatie.eigenaarGroep || isReadonly"
-        v-model:files="files"
         v-model:documenten="documenten"
         :is-readonly="isReadonly"
       />
@@ -176,7 +175,6 @@ const {
 
 // Documenten
 const {
-  files,
   documenten,
   loadingDocumenten,
   documentenError,

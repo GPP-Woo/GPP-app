@@ -3,13 +3,12 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import { useAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
 import { uploadFile } from "../service";
-import { PublicatieStatus, type PublicatieDocument } from "../types";
+import { PublicatieStatus, type Bestandsdeel, type PublicatieDocument } from "../types";
 
 export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
   const pubUuid = toRef(uuid);
 
   // Documenten
-  const files = ref<File[]>([]);
   const documenten = ref<PublicatieDocument[]>([]);
 
   const {
@@ -40,14 +39,18 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
   const submitDocumenten = async () => {
     if (!pubUuid.value || !documenten.value) return;
 
-    for (const [index, doc] of documenten.value.entries()) {
+    for (const doc of documenten.value) {
+      const { _file, ...meta } = doc;
+
       if (!doc.uuid) {
         // Create
         docUuid.value = undefined;
 
-        await postDocument({ ...doc, publicatie: pubUuid.value }).execute();
+        await postDocument({ ...meta, publicatie: pubUuid.value }).execute();
 
-        if (!documentError.value) await uploadDocument(index);
+        if (!documentError.value) {
+          await uploadDocument(_file, documentData.value?.bestandsdelen);
+        }
       } else if (doc.pendingAction === "delete") {
         // Delete
         docUuid.value = doc.uuid;
@@ -58,7 +61,7 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
         docUuid.value = doc.uuid;
 
         await putDocument({
-          ...doc,
+          ...meta,
           publicatiestatus:
             doc.pendingAction === "retract" ? PublicatieStatus.ingetrokken : doc.publicatiestatus
         }).execute();
@@ -82,12 +85,12 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
     }
   };
 
-  const uploadDocument = async (index: number) => {
-    if (files.value?.[index] && documentData.value?.bestandsdelen?.length) {
+  const uploadDocument = async (file?: File, bestandsdelen?: Bestandsdeel[] | null) => {
+    if (file && bestandsdelen?.length) {
       uploadingFile.value = true;
 
       try {
-        await uploadFile(files.value[index], documentData.value.bestandsdelen);
+        await uploadFile(file, bestandsdelen);
       } catch (err) {
         toast.add({
           text: "Het document kon niet worden geupload, probeer het nogmaals...",
@@ -104,7 +107,6 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
   };
 
   return {
-    files,
     documenten,
     loadingDocumenten,
     documentenError,

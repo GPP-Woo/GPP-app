@@ -28,7 +28,7 @@ namespace ODPC.Features.Publicaties.PublicatieVerwijderen
 
             var json = await getResponse.Content.ReadFromJsonAsync<Publicatie>(token);
 
-            if (json?.Eigenaar?.identifier != user.Id)
+            if (!string.Equals(json?.Eigenaar?.identifier, user.Id, StringComparison.OrdinalIgnoreCase))
             {
                 return NotFound();
             }

@@ -7,10 +7,10 @@
     <template v-else>
       <summary>
         <template v-if="doc.publicatiestatus === PublicatieStatus.ingetrokken"
-          ><s :aria-describedby="`status-${detailsId}`">{{ doc.bestandsnaam }}</s>
+          ><s :aria-describedby="`status-${detailsId}`">{{ doc.officieleTitel }}</s>
           <span :id="`status-${detailsId}`" role="status">(ingetrokken)</span></template
         >
-        <template v-else>{{ doc.bestandsnaam }}</template>
+        <template v-else>{{ doc.officieleTitel }}</template>
 
         <span>
           (<a
