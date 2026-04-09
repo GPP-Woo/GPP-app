@@ -16,9 +16,9 @@
 
         <a
           :href="`/api/v2/documenten/${doc.uuid}/download`"
-          :title="`download ${doc.bestandsnaam}`"
+          :title="`Download ${doc.bestandsnaam}`"
           class="icon-after download"
-          ><span class="visually-hidden">download</span></a
+          ><span class="visually-hidden">Download {{ doc.bestandsnaam }}</span></a
         >
       </summary>
 
@@ -157,6 +157,7 @@ const disabledAttrs = computed(() =>
 
 <style lang="scss" scoped>
 details {
+  // prevents grid child from overflowing, allowing text-overflow: ellipsis to work
   width: 0;
   min-width: 100%;
 
@@ -173,6 +174,11 @@ details {
     display: flex;
     align-items: center;
     column-gap: 1ch;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
 
     .summary-text {
       flex: 1;
