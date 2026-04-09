@@ -156,3 +156,8 @@
 .icon-after.external::after {
   mask-image: url("@/assets/icons/up-right-from-square.svg");
 }
+
+.icon-before.download::before,
+.icon-after.download::after {
+  mask-image: url("@/assets/icons/download.svg");
+}

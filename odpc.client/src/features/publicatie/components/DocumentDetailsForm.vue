@@ -7,18 +7,19 @@
     <template v-else>
       <summary>
         <template v-if="doc.publicatiestatus === PublicatieStatus.ingetrokken"
-          ><s :aria-describedby="`status-${detailsId}`">{{ doc.officieleTitel }}</s>
+          ><s class="summary-text" :aria-describedby="`status-${detailsId}`">{{
+            doc.officieleTitel
+          }}</s>
           <span :id="`status-${detailsId}`" role="status">(ingetrokken)</span></template
         >
-        <template v-else>{{ doc.officieleTitel }}</template>
+        <span class="summary-text" v-else>{{ doc.officieleTitel }}</span>
 
-        <span>
-          (<a
-            :href="`/api/v2/documenten/${doc.uuid}/download`"
-            :title="`Download ${doc.bestandsnaam}`"
-            >download</a
-          >)
-        </span>
+        <a
+          :href="`/api/v2/documenten/${doc.uuid}/download`"
+          :title="`download ${doc.bestandsnaam}`"
+          class="icon-after download"
+          ><span class="visually-hidden">download</span></a
+        >
       </summary>
 
       <div v-if="!isReadonly" class="form-group">
@@ -156,24 +157,51 @@ const disabledAttrs = computed(() =>
 
 <style lang="scss" scoped>
 details {
-  span {
-    font-weight: normal;
-    margin-inline-start: var(--spacing-extrasmall);
+  width: 0;
+  min-width: 100%;
+
+  summary::before {
+    content: "▶";
+    transition: transform 0.2s;
   }
 
-  &.nieuw {
-    summary {
-      list-style: none;
-      pointer-events: none;
+  &[open] summary::before {
+    transform: rotate(90deg);
+  }
 
-      &::-webkit-details-marker {
-        display: none;
+  summary {
+    display: flex;
+    align-items: center;
+    column-gap: 1ch;
+
+    .summary-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    :not(.summary-text) {
+      flex-shrink: 0;
+      font-size: 0.8em;
+      font-weight: normal;
+      font-style: italic;
+
+      &::after {
+        min-block-size: 1.3rem;
+        min-inline-size: 1.3rem;
       }
     }
   }
 
-  &.ingetrokken {
-    background-color: var(--disabled);
+  &.nieuw {
+    summary {
+      pointer-events: none;
+
+      &::before {
+        display: none;
+      }
+    }
   }
 }
 </style>
