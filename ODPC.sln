@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.2.11408.102 d18.0
+VisualStudioVersion = 18.2.11408.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ODPC", "ODPC.Server\ODPC.csproj", "{81005658-C499-4BE8-BC5E-BA2D428FA0C1}"
 EndProject
@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
-EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODPC.Test", "ODPC.Test\ODPC.Test.csproj", "{D495B697-07DE-4C1A-B08A-4C95C5706A94}"
 EndProject
@@ -54,14 +52,6 @@ Global
 		{8D0C4175-8DDF-47A4-9FCD-A5BA6B14FED9}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{8D0C4175-8DDF-47A4-9FCD-A5BA6B14FED9}.Release|x64.ActiveCfg = Release|x64
 		{8D0C4175-8DDF-47A4-9FCD-A5BA6B14FED9}.Release|x86.ActiveCfg = Release|x86
-		{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}.Debug|x64.ActiveCfg = Debug|x64
-		{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}.Debug|x86.ActiveCfg = Debug|x86
-		{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}.Release|x64.ActiveCfg = Release|x64
-		{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}.Release|x86.ActiveCfg = Release|x86
 		{D495B697-07DE-4C1A-B08A-4C95C5706A94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D495B697-07DE-4C1A-B08A-4C95C5706A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D495B697-07DE-4C1A-B08A-4C95C5706A94}.Debug|x64.ActiveCfg = Debug|Any CPU
