@@ -440,7 +440,7 @@ details[open] > :last-child {
 }
 
 details > summary::before {
-  content: "▶";
+  content: "▶" / ""; /* symbol / empty string > hidden from AT */
   transition: transform 0.2s;
 }
 
