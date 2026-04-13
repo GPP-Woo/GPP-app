@@ -157,29 +157,7 @@ const disabledAttrs = computed(() =>
 
 <style lang="scss" scoped>
 details {
-  // prevents grid child from overflowing, allowing text-overflow: ellipsis to work
-  width: 0;
-  min-width: 100%;
-
-  summary::before {
-    content: "▶";
-    transition: transform 0.2s;
-  }
-
-  &[open] summary::before {
-    transform: rotate(90deg);
-  }
-
   summary {
-    display: flex;
-    align-items: center;
-    column-gap: 1ch;
-    list-style: none;
-
-    &::-webkit-details-marker {
-      display: none;
-    }
-
     .summary-text {
       flex: 1;
       white-space: nowrap;
@@ -192,6 +170,7 @@ details {
       font-size: 0.8em;
       font-weight: normal;
       font-style: italic;
+      margin-block: auto;
 
       &::after {
         min-block-size: 1.3rem;

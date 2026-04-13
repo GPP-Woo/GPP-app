@@ -408,12 +408,23 @@ details {
   padding: 0.7rem 1rem;
 }
 
+/* Hide the native marker so summary can use flexbox layout,
+  enabling text-overflow: ellipsis on child elements.
+  A custom arrow is added via ::before as a replacement. */
 summary {
+  display: flex;
+  align-items: flex-start;
+  column-gap: 1ch;
+  list-style: none;
   cursor: pointer;
   font-weight: bold;
   padding: 0.7rem 1rem;
   margin: -0.7rem -1rem;
   word-break: break-all;
+}
+
+summary::-webkit-details-marker {
+  display: none;
 }
 
 details[open] > summary + * {
@@ -426,6 +437,15 @@ details[open] > summary {
 
 details[open] > :last-child {
   margin-bottom: 0;
+}
+
+details > summary::before {
+  content: "▶";
+  transition: transform 0.2s;
+}
+
+details[open] > summary::before {
+  transform: rotate(90deg);
 }
 
 /* Format tables */
