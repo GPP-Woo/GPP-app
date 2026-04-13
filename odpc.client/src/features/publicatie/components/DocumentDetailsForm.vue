@@ -1,5 +1,5 @@
 <template>
-  <details :class="{ nieuw: !doc.uuid }" :open="!doc.uuid">
+  <details :class="{ nieuw: !doc.uuid, dubbeling: warnings?.length }" :open="!doc.uuid">
     <summary v-if="!doc.uuid" @click.prevent tabindex="-1">
       {{ doc.bestandsnaam }}
     </summary>
@@ -42,6 +42,10 @@
         >
       </div>
     </template>
+
+    <span v-for="(warning, index) in warnings" :key="index" class="alert warning" role="alert">
+      {{ warning }}
+    </span>
 
     <date-input
       v-model="doc.creatiedatum"
@@ -135,7 +139,7 @@ import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, PendingDocumentActions, type PublicatieDocument } from "../types";
 import { ISOToday } from "@/helpers";
 
-const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean }>();
+const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean; warnings?: string[] }>();
 
 const doc = useModel(props, "doc");
 
@@ -187,6 +191,17 @@ details {
         display: none;
       }
     }
+  }
+
+  &.dubbeling {
+    border-inline-start: 3px solid var(--color-warning);
+    padding-inline-start: var(--spacing-default);
+  }
+
+  .warning {
+    display: block;
+    color: var(--color-warning);
+    margin-block-end: var(--spacing-default);
   }
 }
 </style>

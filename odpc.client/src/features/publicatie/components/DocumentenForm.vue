@@ -11,6 +11,7 @@
         v-for="doc in pendingDocuments"
         :key="doc.bestandsnaam"
         :doc="doc"
+        :warnings="getDocumentWarnings(doc)"
         @removeDocument="removeDocument(doc)"
       />
     </template>
@@ -22,6 +23,7 @@
         v-for="doc in existingDocuments"
         :key="doc.uuid"
         :doc="doc"
+        :warnings="getDocumentWarnings(doc)"
         :is-readonly="isReadonly || doc.publicatiestatus === PublicatieStatus.ingetrokken"
       />
     </template>
@@ -67,6 +69,36 @@ const pendingDocuments = computed(() =>
 );
 
 const existingDocuments = computed(() => documenten.value.filter((doc) => doc.uuid));
+
+const caseInsensitiveEquals = (a: string, b: string) =>
+  a.localeCompare(b, undefined, { sensitivity: "base" }) === 0;
+
+const documentWarnings = computed(() => {
+  const docWarnings = new Map<PublicatieDocument, string[]>();
+
+  for (const doc of documenten.value) {
+    if (doc.publicatiestatus === PublicatieStatus.ingetrokken) continue;
+
+    const otherDocs = documenten.value.filter(
+      (d) => d !== doc && d.publicatiestatus !== PublicatieStatus.ingetrokken
+    );
+
+    const warnings = [
+      doc.bestandsnaam &&
+        otherDocs.some((d) => caseInsensitiveEquals(d.bestandsnaam, doc.bestandsnaam)) &&
+        "Er bestaat al een document met deze bestandsnaam. Controleer of dit document al in de publicatie zit.",
+      doc.officieleTitel &&
+        otherDocs.some((d) => caseInsensitiveEquals(d.officieleTitel, doc.officieleTitel)) &&
+        "Er bestaat al een document met deze titel. Controleer of dit document al in de publicatie zit."
+    ].filter((warning): warning is string => !!warning);
+
+    if (warnings.length) docWarnings.set(doc, warnings);
+  }
+
+  return docWarnings;
+});
+
+const getDocumentWarnings = (doc: PublicatieDocument) => documentWarnings.value.get(doc) ?? [];
 
 const getInitialDocument = (): PublicatieDocument => ({
   publicatie: "",
@@ -145,6 +177,15 @@ watch(selectedFiles, (newFiles) => {
   }
 
   documenten.value = [...pendingDocuments.value, ...newDocuments, ...existingDocuments.value];
+
+  const hasDuplicates = newDocuments.some((doc) => getDocumentWarnings(doc).length > 0);
+
+  if (hasDuplicates) {
+    toast.add({
+      text: "Er zijn dubbele documenten gedetecteerd. Controleer de documenten.",
+      type: "error"
+    });
+  }
 });
 
 const removeDocument = async (doc: PublicatieDocument) => {
