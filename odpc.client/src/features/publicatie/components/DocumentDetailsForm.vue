@@ -7,18 +7,19 @@
     <template v-else>
       <summary>
         <template v-if="doc.publicatiestatus === PublicatieStatus.ingetrokken"
-          ><s :aria-describedby="`status-${detailsId}`">{{ doc.bestandsnaam }}</s>
+          ><s class="summary-text" :aria-describedby="`status-${detailsId}`">{{
+            doc.officieleTitel
+          }}</s>
           <span :id="`status-${detailsId}`" role="status">(ingetrokken)</span></template
         >
-        <template v-else>{{ doc.bestandsnaam }}</template>
+        <span class="summary-text" v-else>{{ doc.officieleTitel }}</span>
 
-        <span>
-          (<a
-            :href="`/api/v2/documenten/${doc.uuid}/download`"
-            :title="`Download ${doc.bestandsnaam}`"
-            >download</a
-          >)
-        </span>
+        <a
+          :href="`/api/v2/documenten/${doc.uuid}/download`"
+          :title="`Download ${doc.bestandsnaam}`"
+          class="icon-after download"
+          ><span class="visually-hidden">Download {{ doc.bestandsnaam }}</span></a
+        >
       </summary>
 
       <div v-if="!isReadonly" class="form-group">
@@ -156,24 +157,36 @@ const disabledAttrs = computed(() =>
 
 <style lang="scss" scoped>
 details {
-  span {
-    font-weight: normal;
-    margin-inline-start: var(--spacing-extrasmall);
-  }
+  summary {
+    .summary-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-  &.nieuw {
-    summary {
-      list-style: none;
-      pointer-events: none;
+    :not(.summary-text) {
+      flex-shrink: 0;
+      font-size: 0.8em;
+      font-weight: normal;
+      font-style: italic;
+      margin-block: auto;
 
-      &::-webkit-details-marker {
-        display: none;
+      &::after {
+        min-block-size: 1.3rem;
+        min-inline-size: 1.3rem;
       }
     }
   }
 
-  &.ingetrokken {
-    background-color: var(--disabled);
+  &.nieuw {
+    summary {
+      pointer-events: none;
+
+      &::before {
+        display: none;
+      }
+    }
   }
 }
 </style>

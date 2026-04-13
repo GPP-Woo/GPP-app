@@ -60,7 +60,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
 
             using var client = clientFactory.Create("Documenten ophalen");
 
-            var url = $"/api/{version}/documenten?publicatie={publicatie}&page={page}";
+            var url = $"/api/{version}/documenten?publicatie={publicatie}&sorteer=officiele_titel&page={page}";
 
             using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 

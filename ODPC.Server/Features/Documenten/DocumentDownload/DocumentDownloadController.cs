@@ -61,7 +61,7 @@ namespace ODPC.Features.Documenten.DocumentDownload
             var isGebruikersgroepGebruiker = Guid.TryParse(publicatieJson.EigenaarGroep?.identifier, out var identifier)
                 && await gebruikersgroepService.IsGebruikersgroepGebruikerAsync(identifier, token);
 
-            return isGebruikersgroepGebruiker || documentJson.Eigenaar?.identifier?.ToLowerInvariant() == user.Id?.ToLowerInvariant()
+            return isGebruikersgroepGebruiker || string.Equals(documentJson?.Eigenaar?.identifier, user.Id, StringComparison.OrdinalIgnoreCase)
                 ? new DocumentDownloadResult(Request.Path, "Document downloaden")
                 : NotFound();
         }

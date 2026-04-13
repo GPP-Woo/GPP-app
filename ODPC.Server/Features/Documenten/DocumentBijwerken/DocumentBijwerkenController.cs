@@ -24,7 +24,7 @@ namespace ODPC.Features.Documenten.DocumentBijwerken
 
             var json = await getResponse.Content.ReadFromJsonAsync<PublicatieDocument>(token);
 
-            if (json?.Eigenaar?.identifier != user.Id)
+            if (!string.Equals(json?.Eigenaar?.identifier, user.Id, StringComparison.OrdinalIgnoreCase))
             {
                 return NotFound();
             }

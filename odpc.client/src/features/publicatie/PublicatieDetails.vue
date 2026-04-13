@@ -47,7 +47,6 @@
 
       <documenten-form
         v-else-if="publicatie.eigenaarGroep || isReadonly"
-        v-model:files="files"
         v-model:documenten="documenten"
         :is-readonly="isReadonly"
       />
@@ -176,7 +175,6 @@ const {
 
 // Documenten
 const {
-  files,
   documenten,
   loadingDocumenten,
   documentenError,
@@ -328,5 +326,9 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   grid-gap: var(--spacing-default);
+
+  > * {
+    min-width: 0; // allow grid items to shrink
+  }
 }
 </style>

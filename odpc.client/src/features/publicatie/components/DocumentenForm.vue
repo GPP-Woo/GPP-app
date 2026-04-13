@@ -8,10 +8,10 @@
       <h2>Nieuwe documenten</h2>
 
       <document-details-form
-        v-for="(doc, index) in pendingDocuments"
-        :key="index"
+        v-for="doc in pendingDocuments"
+        :key="doc.bestandsnaam"
         :doc="doc"
-        @removeDocument="removeDocument(index)"
+        @removeDocument="removeDocument(doc)"
       />
     </template>
 
@@ -19,8 +19,8 @@
       <h2>Toegevoegde documenten</h2>
 
       <document-details-form
-        v-for="(doc, index) in existingDocuments"
-        :key="index"
+        v-for="doc in existingDocuments"
+        :key="doc.uuid"
         :doc="doc"
         :is-readonly="isReadonly || doc.publicatiestatus === PublicatieStatus.ingetrokken"
       />
@@ -48,19 +48,24 @@ import FileUpload from "./FileUpload.vue";
 import DocumentDetailsForm from "./DocumentDetailsForm.vue";
 
 const props = defineProps<{
-  files: File[];
   documenten: PublicatieDocument[];
   isReadonly: boolean;
 }>();
 
 const dialog = useConfirmDialog();
 
-const files = useModel(props, "files");
 const documenten = useModel(props, "documenten");
 
 const selectedFiles = ref<File[]>([]);
 
-const pendingDocuments = computed(() => documenten.value.filter((doc) => !doc.uuid));
+const pendingDocuments = computed(() =>
+  documenten.value
+    .filter((doc) => !doc.uuid)
+    // sort pending documents on bestandsnaam (= initial officieleTitel)
+    // to prevent reordering of documents while officieleTitel is edited
+    .sort((a, b) => a.bestandsnaam.localeCompare(b.bestandsnaam))
+);
+
 const existingDocuments = computed(() => documenten.value.filter((doc) => doc.uuid));
 
 const getInitialDocument = (): PublicatieDocument => ({
@@ -131,6 +136,7 @@ watch(selectedFiles, (newFiles) => {
       doc.bestandsnaam = file.name;
       doc.bestandsformaat = bestandsformaat;
       doc.bestandsomvang = file.size;
+      doc._file = file;
 
       newDocuments.push(doc);
     });
@@ -138,18 +144,13 @@ watch(selectedFiles, (newFiles) => {
     return;
   }
 
-  // update both files and documenten together to maintain consistency/stay in sync
-  files.value = [...files.value, ...newFiles];
   documenten.value = [...pendingDocuments.value, ...newDocuments, ...existingDocuments.value];
 });
 
-const removeDocument = async (index: number) => {
+const removeDocument = async (doc: PublicatieDocument) => {
   const { isCanceled } = await dialog.reveal();
 
-  if (!isCanceled) {
-    files.value = files.value.filter((_, i) => i !== index);
-    documenten.value = documenten.value.filter((_, i) => i !== index);
-  }
+  if (!isCanceled) documenten.value = documenten.value.filter((d) => d !== doc);
 };
 </script>
 

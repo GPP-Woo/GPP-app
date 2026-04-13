@@ -60,6 +60,7 @@ export type PublicatieDocument = {
   bestandsomvang: number;
   bestandsdelen?: Bestandsdeel[] | null;
   kenmerken: Kenmerk[];
+  _file?: File;
 };
 
 export type Onderwerp = {
