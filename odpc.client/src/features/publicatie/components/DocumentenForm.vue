@@ -73,24 +73,31 @@ const existingDocuments = computed(() => documenten.value.filter((doc) => doc.uu
 const caseInsensitiveEquals = (a: string, b: string) =>
   a.localeCompare(b, undefined, { sensitivity: "base" }) === 0;
 
+const findDocumentWarnings = (doc: PublicatieDocument, otherDocs: PublicatieDocument[]) => {
+  if (doc.publicatiestatus === PublicatieStatus.ingetrokken) return [];
+
+  const activeDocs = otherDocs.filter((d) => d.publicatiestatus !== PublicatieStatus.ingetrokken);
+
+  return [
+    doc.bestandsnaam &&
+      activeDocs.some((d) => caseInsensitiveEquals(d.bestandsnaam, doc.bestandsnaam)) &&
+      `Er bestaat al een document met de bestandsnaam '${doc.bestandsnaam}'.
+        Controleer of dit document al in de publicatie zit.`,
+
+    doc.officieleTitel &&
+      activeDocs.some((d) => caseInsensitiveEquals(d.officieleTitel, doc.officieleTitel)) &&
+      `Er bestaat al een document met de titel '${doc.officieleTitel}'.
+        Controleer of dit document al in de publicatie zit.`
+  ].filter((warning): warning is string => !!warning);
+};
+
 const documentWarnings = computed(() => {
   const docWarnings = new Map<PublicatieDocument, string[]>();
 
   for (const doc of documenten.value) {
-    if (doc.publicatiestatus === PublicatieStatus.ingetrokken) continue;
+    const otherDocs = documenten.value.filter((d) => d !== doc);
 
-    const otherDocs = documenten.value.filter(
-      (d) => d !== doc && d.publicatiestatus !== PublicatieStatus.ingetrokken
-    );
-
-    const warnings = [
-      doc.bestandsnaam &&
-        otherDocs.some((d) => caseInsensitiveEquals(d.bestandsnaam, doc.bestandsnaam)) &&
-        "Er bestaat al een document met deze bestandsnaam. Controleer of dit document al in de publicatie zit.",
-      doc.officieleTitel &&
-        otherDocs.some((d) => caseInsensitiveEquals(d.officieleTitel, doc.officieleTitel)) &&
-        "Er bestaat al een document met deze titel. Controleer of dit document al in de publicatie zit."
-    ].filter((warning): warning is string => !!warning);
+    const warnings = findDocumentWarnings(doc, otherDocs);
 
     if (warnings.length) docWarnings.set(doc, warnings);
   }
@@ -176,9 +183,9 @@ watch(selectedFiles, (newFiles) => {
     return;
   }
 
-  documenten.value = [...pendingDocuments.value, ...newDocuments, ...existingDocuments.value];
-
-  const hasDuplicates = newDocuments.some((doc) => getDocumentWarnings(doc).length > 0);
+  const hasDuplicates = newDocuments.some(
+    (doc) => findDocumentWarnings(doc, documenten.value).length > 0
+  );
 
   if (hasDuplicates) {
     toast.add({
@@ -186,6 +193,8 @@ watch(selectedFiles, (newFiles) => {
       type: "error"
     });
   }
+
+  documenten.value = [...pendingDocuments.value, ...newDocuments, ...existingDocuments.value];
 });
 
 const removeDocument = async (doc: PublicatieDocument) => {

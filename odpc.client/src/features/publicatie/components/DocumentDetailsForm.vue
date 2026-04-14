@@ -1,5 +1,5 @@
 <template>
-  <details :class="{ nieuw: !doc.uuid, dubbeling: warnings?.length }" :open="!doc.uuid">
+  <details :class="{ nieuw: !doc.uuid }" :open="!doc.uuid">
     <summary v-if="!doc.uuid" @click.prevent tabindex="-1">
       {{ doc.bestandsnaam }}
     </summary>
@@ -10,9 +10,11 @@
           ><s class="summary-text" :aria-describedby="`status-${detailsId}`">{{
             doc.officieleTitel
           }}</s>
-          <span :id="`status-${detailsId}`" role="status">(ingetrokken)</span></template
+          <span :id="`status-${detailsId}`" role="status">ingetrokken</span></template
         >
         <span class="summary-text" v-else>{{ doc.officieleTitel }}</span>
+
+        <span v-if="warnings?.length" class="icon-before alert" role="status">mogelijk dubbel</span>
 
         <a
           :href="`/api/v2/documenten/${doc.uuid}/download`"
@@ -43,9 +45,11 @@
       </div>
     </template>
 
-    <span v-for="(warning, index) in warnings" :key="index" class="alert warning" role="alert">
+    <alert-inline v-for="(warning, index) in warnings" :key="index">
+      <span class="icon-before icon-large alert" role="presentation" aria-hidden="true"></span>
+
       {{ warning }}
-    </span>
+    </alert-inline>
 
     <date-input
       v-model="doc.creatiedatum"
@@ -134,6 +138,7 @@
 <script setup lang="ts">
 import { computed, useId, useModel } from "vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
+import AlertInline from "@/components/AlertInline.vue";
 import DateInput from "@/components/DateInput.vue";
 import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, PendingDocumentActions, type PublicatieDocument } from "../types";
@@ -170,11 +175,14 @@ details {
     }
 
     :not(.summary-text) {
+      display: flex;
       flex-shrink: 0;
-      font-size: 0.8em;
       font-weight: normal;
       font-style: italic;
-      margin-block: auto;
+
+      &::before {
+        margin-inline-end: 0.5ch;
+      }
 
       &::after {
         min-block-size: 1.3rem;
@@ -193,15 +201,12 @@ details {
     }
   }
 
-  &.dubbeling {
-    border-inline-start: 3px solid var(--color-warning);
-    padding-inline-start: var(--spacing-default);
-  }
-
-  .warning {
-    display: block;
-    color: var(--color-warning);
-    margin-block-end: var(--spacing-default);
+  .notice {
+    display: flex;
+    column-gap: 1ch;
+    padding: 1rem;
+    border-color: var(--accent);
+    background-color: var(--bg);
   }
 }
 </style>
