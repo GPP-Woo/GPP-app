@@ -14,7 +14,7 @@
         >
         <span class="summary-text" v-else>{{ doc.officieleTitel }}</span>
 
-        <span v-if="warnings?.length" class="icon-before alert" role="status">mogelijk dubbel</span>
+        <span v-if="warnings?.length" class="icon-before alert">mogelijk dubbel</span>
 
         <a
           :href="`/api/v2/documenten/${doc.uuid}/download`"

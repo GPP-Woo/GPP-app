@@ -81,13 +81,11 @@ const findDocumentWarnings = (doc: PublicatieDocument, otherDocs: PublicatieDocu
   return [
     doc.bestandsnaam &&
       activeDocs.some((d) => caseInsensitiveEquals(d.bestandsnaam, doc.bestandsnaam)) &&
-      `Er bestaat al een document met de bestandsnaam '${doc.bestandsnaam}'.
-        Controleer of dit document al in de publicatie zit.`,
+      `Er bestaat al een document met de bestandsnaam '${doc.bestandsnaam}'. Controleer of dit document al in de publicatie zit.`,
 
     doc.officieleTitel &&
       activeDocs.some((d) => caseInsensitiveEquals(d.officieleTitel, doc.officieleTitel)) &&
-      `Er bestaat al een document met de titel '${doc.officieleTitel}'.
-        Controleer of dit document al in de publicatie zit.`
+      `Er bestaat al een document met de titel '${doc.officieleTitel}'. Controleer of dit document al in de publicatie zit.`
   ].filter((warning): warning is string => !!warning);
 };
 
