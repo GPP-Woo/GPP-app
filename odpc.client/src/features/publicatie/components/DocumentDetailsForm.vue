@@ -122,6 +122,7 @@
       item-name-singular="kenmerk"
       item-name-plural="kenmerken"
       :is-readonly="isReadonly"
+      help-text="Bijvoorbeeld het intern of extern documentnummer."
     />
 
     <button

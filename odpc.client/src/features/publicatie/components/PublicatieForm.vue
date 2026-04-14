@@ -84,6 +84,7 @@
           id="datumBeginGeldigheid"
           label="Datum in werking"
           :disabled="isReadonly"
+          :help-text="helpDatumBeginGeldigheid"
         />
 
         <date-input
@@ -91,6 +92,7 @@
           id="datumEindeGeldigheid"
           label="Datum buiten werking"
           :disabled="isReadonly"
+          :help-text="helpDatumEindeGeldigheid"
         />
 
         <add-remove-items
@@ -98,6 +100,7 @@
           item-name-singular="kenmerk"
           item-name-plural="kenmerken"
           :is-readonly="isReadonly"
+          :help-text="helpKenmerken"
         />
       </details>
 
@@ -152,6 +155,10 @@ import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, type MijnGebruikersgroep, type Publicatie } from "../types";
 import type { OptionProps } from "@/components/option-group/types";
 import PublicatieArchivering from "./PublicatieArchivering.vue";
+
+const helpDatumBeginGeldigheid = `Indien van toepassing, geef hier de datum waarop de rechten en plichten zoals vastgesteld in de documenten in werking treden. Bijvoorbeeld: de datum waarop een besluit in wekring treedt, de datum waarop het convenant ingaat of de datum waarop een beleidsplan start.`;
+const helpDatumEindeGeldigheid = `Indien van toepassing en bekend, geef hier de datum waarop de rechten en plichten zoals vastgesteld in de documenten komen te vervallen. Bijvoorbeeld: de vervaldatum van een vergunning, de einddatum van een convenant of het einde van een looptijd van een beleidsplan`;
+const helpKenmerken = `Bijvoorbeeld het zaak- of dossiernummer.`;
 
 const props = defineProps<{
   modelValue: Publicatie;
