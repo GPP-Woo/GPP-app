@@ -1,6 +1,17 @@
 <template>
   <div v-if="!isReadonly" class="form-group form-group-button">
-    <label :for="`item-${itemsId}`">{{ itemNameSingular }} toevoegen</label>
+    <label :for="`item-${itemsId}`"
+      >{{ itemNameSingular }} toevoegen
+      <info-popover v-if="helpText">
+        <template #trigger="{ triggerProps }">
+          <button type="button" class="button secondary popover-trigger" v-bind="triggerProps">
+            ?
+          </button>
+        </template>
+
+        <p class="popover-content pre-wrap">{{ helpText }}</p>
+      </info-popover>
+    </label>
 
     <input
       :id="`item-${itemsId}`"
@@ -41,12 +52,14 @@
 <script setup lang="ts">
 import { ref, useId, useModel } from "vue";
 import toast from "@/stores/toast";
+import InfoPopover from "@/components/InfoPopover.vue";
 
 const props = defineProps<{
   modelValue: string[];
   itemNameSingular: string;
   itemNamePlural: string;
   isReadonly?: boolean;
+  helpText?: string;
 }>();
 
 const items = useModel(props, "modelValue");
