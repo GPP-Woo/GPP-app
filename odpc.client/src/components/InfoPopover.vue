@@ -26,7 +26,6 @@ onKeyStroke("Tab", () => tooltipRef.value?.hidePopover());
 
 <style lang="scss" scoped>
 .info-popover {
-  font-weight: 400;
   inset-block: 50%;
   inset-inline: 50%;
   transform: translate(-50%, -50%);

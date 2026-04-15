@@ -120,8 +120,4 @@ table {
     margin-block: 0;
   }
 }
-
-.popover-content {
-  font-weight: normal;
-}
 </style>
