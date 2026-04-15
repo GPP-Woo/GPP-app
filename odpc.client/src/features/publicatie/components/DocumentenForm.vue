@@ -78,15 +78,21 @@ const findDocumentWarnings = (doc: PublicatieDocument, otherDocs: PublicatieDocu
 
   const activeDocs = otherDocs.filter((d) => d.publicatiestatus !== PublicatieStatus.ingetrokken);
 
-  return [
+  const matches = [
     doc.bestandsnaam &&
       activeDocs.some((d) => caseInsensitiveEquals(d.bestandsnaam, doc.bestandsnaam)) &&
-      `Er bestaat al een document met de bestandsnaam '${doc.bestandsnaam}'. Controleer of dit document al in de publicatie zit.`,
+      `de bestandsnaam '${doc.bestandsnaam}'`,
 
     doc.officieleTitel &&
       activeDocs.some((d) => caseInsensitiveEquals(d.officieleTitel, doc.officieleTitel)) &&
-      `Er bestaat al een document met de titel '${doc.officieleTitel}'. Controleer of dit document al in de publicatie zit.`
-  ].filter((warning): warning is string => !!warning);
+      `de titel '${doc.officieleTitel}'`
+  ].filter((match): match is string => !!match);
+
+  if (!matches.length) return [];
+
+  return [
+    `Er bestaat al een document met ${matches.join(" en ")}. Controleer of dit document al in de publicatie zit.`
+  ];
 };
 
 const documentWarnings = computed(() => {
