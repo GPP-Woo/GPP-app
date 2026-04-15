@@ -9,7 +9,9 @@ export const usePublicatiePermissions = (
   const { user, lijsten } = useAppData();
 
   const isOwner = computed(
-    () => !publicatie.value.eigenaar || publicatie.value.eigenaar.identifier === user.value?.id
+    () =>
+      !publicatie.value.eigenaar ||
+      publicatie.value.eigenaar.identifier.toLowerCase() === user.value?.id.toLowerCase()
   );
 
   const isReadonly = computed(

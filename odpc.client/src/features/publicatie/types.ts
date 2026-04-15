@@ -73,7 +73,7 @@ export type Onderwerp = {
   registratiedatum: string;
 };
 
-type Eigenaar = {
+export type Eigenaar = {
   identifier: string;
   weergaveNaam: string;
 };

@@ -29,7 +29,7 @@
         class="card-link"
         :class="{
           draft: publicatiestatus === PublicatieStatus.concept,
-          'icon-after pen': eigenaar?.identifier === user?.id
+          'icon-after pen': isOwner(eigenaar)
         }"
       >
         <h2 :aria-describedby="`status-${uuid}`">
@@ -81,7 +81,7 @@
 import { type DeepReadonly } from "vue";
 import type { PagedResult } from "@/api";
 import { useAppData } from "@/composables/use-app-data";
-import { PublicatieStatus, type Publicatie } from "../types";
+import { PublicatieStatus, type Eigenaar, type Publicatie } from "../types";
 import PublicatiesOverviewSort from "./PublicatiesOverviewSort.vue";
 import PublicatiesOverviewPagination from "./PublicatiesOverviewPagination.vue";
 
@@ -94,6 +94,9 @@ const queryParams = defineModel<{ page: string; sorteer: string }>("queryParams"
 });
 
 const { user } = useAppData();
+
+const isOwner = (eigenaar?: Eigenaar) =>
+  !!user.value && user.value.id.toLowerCase() === eigenaar?.identifier.toLowerCase();
 </script>
 
 <style lang="scss" scoped>
