@@ -10,9 +10,11 @@
           ><s class="summary-text" :aria-describedby="`status-${detailsId}`">{{
             doc.officieleTitel
           }}</s>
-          <span :id="`status-${detailsId}`" role="status">(ingetrokken)</span></template
+          <span :id="`status-${detailsId}`" role="status">ingetrokken</span></template
         >
         <span class="summary-text" v-else>{{ doc.officieleTitel }}</span>
+
+        <span v-if="warnings?.length" class="icon-before alert">mogelijk dubbel</span>
 
         <a
           :href="`/api/v2/documenten/${doc.uuid}/download`"
@@ -42,6 +44,12 @@
         >
       </div>
     </template>
+
+    <alert-inline v-for="(warning, index) in warnings" :key="index">
+      <span class="icon-before icon-large alert" role="presentation" aria-hidden="true"></span>
+
+      {{ warning }}
+    </alert-inline>
 
     <date-input
       v-model="doc.creatiedatum"
@@ -130,12 +138,13 @@
 <script setup lang="ts">
 import { computed, useId, useModel } from "vue";
 import AddRemoveItems from "@/components/AddRemoveItems.vue";
+import AlertInline from "@/components/AlertInline.vue";
 import DateInput from "@/components/DateInput.vue";
 import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, PendingDocumentActions, type PublicatieDocument } from "../types";
 import { ISOToday } from "@/helpers";
 
-const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean }>();
+const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean; warnings?: string[] }>();
 
 const doc = useModel(props, "doc");
 
@@ -166,11 +175,14 @@ details {
     }
 
     :not(.summary-text) {
+      display: flex;
       flex-shrink: 0;
-      font-size: 0.8em;
       font-weight: normal;
       font-style: italic;
-      margin-block: auto;
+
+      &::before {
+        margin-inline-end: 0.5ch;
+      }
 
       &::after {
         min-block-size: 1.3rem;
@@ -187,6 +199,14 @@ details {
         display: none;
       }
     }
+  }
+
+  .notice {
+    display: flex;
+    column-gap: 1ch;
+    padding: 1rem;
+    border-color: var(--accent);
+    background-color: var(--bg);
   }
 }
 </style>
