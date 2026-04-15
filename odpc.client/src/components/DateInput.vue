@@ -1,6 +1,17 @@
 <template>
   <div class="form-group">
-    <label :for="id">{{ label }} <template v-if="required">*</template></label>
+    <label :for="id"
+      >{{ label }} <template v-if="required">*</template>
+      <info-popover v-if="helpText">
+        <template #trigger="{ triggerProps }">
+          <button type="button" class="button secondary popover-trigger" v-bind="triggerProps">
+            ?
+          </button>
+        </template>
+
+        <p class="popover-content pre-wrap">{{ helpText }}</p>
+      </info-popover>
+    </label>
 
     <input
       :id="id"
@@ -22,6 +33,7 @@
 <script setup lang="ts">
 import { computed, useModel } from "vue";
 import { getTimezoneOffsetString } from "@/helpers";
+import InfoPopover from "@/components/InfoPopover.vue";
 
 const DEFAULT_TIME = "12:00:00";
 
@@ -33,6 +45,7 @@ const props = defineProps<{
   toDateTime?: boolean; // if true, converts date to datetime string with DEFAULT_TIME and timezone offset
   required?: boolean;
   disabled?: boolean;
+  helpText?: string;
 }>();
 
 const model = useModel(props, "modelValue");
