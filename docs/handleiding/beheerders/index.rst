@@ -39,6 +39,8 @@ Bij Waardelijsten zie je voor welke Organisaties, Informatiecategorieën en Onde
 * Door een item aan te vinken, wordt de gebruikersgroep geautoriseerd voor dat item
 * Door een item uit te vinken, wordt de autorisatie voor dat item voor de gebruikersgroep ingetrokken. 
 
+.. warning:: Een gebruiker moet lid zijn van minstens één gebruikersgroep! En iedere gebruikersgroep moet geautoriseerd zijn voor minstens één organisatie en minstens één informatiecategorie!
+
 .. Warning:: Houd er bij het intrekken van autorisaties rekening mee, dat gebruikers binnen deze gebruikersgroep mogelijk al wel publicaties hebben aangemaakt binnen die autorisatie. Na het intrekken van die autorisatie, krijgen deze gebruikers een foutmelding bij die publicaties. Hierin staat de instructie om contact op te nemen met de beheerder. 
 
 .. Warning:: Het beheren van de items in de waardlijsten gebeurt in het registratiecomponent waaraan de GPP-app is gekoppeld. Bijvoorbeeld de `GPP-Publicatiebank <https://gpp-publicatiebank.readthedocs.io/en/latest/admin/index.html>`_. 
