@@ -30,7 +30,7 @@ Een paar centimeter onder die knop zie je de lijst met jouw publicaties staan. Z
 
 Bovenaan die lijst staan een zoekbalk en enkele velden waarop je kunt filteren. Die helpen je om de lijst te doorzoeken en te filteren, zodat je makkelijk en snel de publicatie vindt die je wil gaan bewerken.
 
-.. warning:: Een gebruiker moet wel lid zijn van minstens één gebruikersgroep! En iedere gebruikersgroep moet geautoriseerd zijn voor minstens één organisatie en minstens één informatiecategorie!
+.. warning:: Een gebruiker moet lid zijn van minstens één gebruikersgroep! En iedere gebruikersgroep moet geautoriseerd zijn voor minstens één organisatie en minstens één informatiecategorie!
 
 Een nieuwe publicatie aanmaken
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -44,17 +44,17 @@ Zodra je "profiel" is ingevuld, verschijnen links alle velden die je in kunt vul
 De velden die je links kunt invullen, zijn:
 
 - ``Titel``: Geef hier de officiële, formele titel van de publicatie.
-- *Meer details* 
+- Meer details
    - ``Verkorte titel``: Geef hier eventueel een verkorte titel c.q. citeertitel aan de publicatie.
    - ``Omschrijving``:  Geef hier een korte omschrijving of samenvatting van de publicatie.
    - ``Datum in werking``: Geef hier indien van toepassing de start van de looptijd van de publicatie, bijvoorbeeld bij de publicatie van een verordening, een meerjarenplan of een vergunning met een beperkte looptijd.
    - ``Datum buiten werking``: Geef hier indien van toepassing het einde van de looptijd van de publicatie, bijvoorbeeld bij de publicatie van een verordening, een meerjarenplan of een vergunning met een beperkte looptijd.
    - ``Kenmerk toevoegen``: Geef hier een of meerdere kenmerken op waarmee de relevante zaak of het relevenate dossier intern gevonden kan worden, bijv. het zaak- of dossiernummer.
-- *Organisatie*
+- Organisatie
    - Vink hier aan namens welke organisatie je publiceert.
-- *Informatiecategorieën*
+- Informatiecategorieën
    - Vink hier één of meer informatiecategorieën aan waar deze publicatie onder valt.
-- *Onderwerpen*
+- Onderwerpen
    - Indien van toepassing, vink hier één of meer onderwerpen aan waar deze publicatie over gaat.
 
 Sommige velden zijn verplicht. Er staat dan een sterretje bij. 
@@ -109,7 +109,7 @@ Onderaan staan de knoppen waarmee je kunt opslaan (of annuleren). Welke opties j
    - *Publicatie verwijderen*: De hele publicatie wordt verwijderd!
    - *Annuleren*:  De wijzigingen worden niet opgeslagen.
 
-- Als de publicatie is ingetrokken, dan kun je alleen nog maar klikken op *Annuleren*.
+- **Als de publicatie is ingetrokken, dan kun je alleen nog maar klikken op "Annuleren".**
 
 .. warning:: Het verwijderen van een concept-publicatie kan niet teruggedraaid worden! In de gekoppelde publicatiebank wordt dit wel gelogd.
 
@@ -125,7 +125,7 @@ Onder het menu-item "Publicaties van collega's" zie je een lijst met de publicat
 Als je lid bent van meerdere gebruikergroepen, dan wordt je eerst gevraagd vanuit welke gebruikersgroep je de publicatie van collega's wil bekijken. 
 Wil je bijvoorbeeld de publicaties van je colega's bij "Team Juridisch" of bij "Team Vergunningen"? Als je lid bent van slechts één gebruikersgroep, dan wordt deze automatisch voor je gekozen.
 
-Bovenaan zie je van welke gebruikersgroep je de publicaties ziet. Je kunt hier eventueel wisselen naar een andere gebruiekrsgroep war je lid van bent.
+Bovenaan zie je van welke gebruikersgroep je de publicaties ziet. Je kunt hier eventueel wisselen naar een andere gebruikersgroep war je lid van bent.
 
 Een paar centimeter daaronder zie je de lijst met publicaties van de gebruikersgroep staan. Zo'n publicatie kun je aanklikken om te bewerekn. Dat lichten we zo dadelijk toe.
 
