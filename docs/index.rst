@@ -5,9 +5,9 @@
 GPP App
 ================
 
-De overheid wil voor burgers transparant en open zijn. Daarom heeft zij de `Wet open overheid (Woo)`_ vastgesteld. Die vraagt dat gemeenten hun documenten openbaar en digitaal beschikbaar maken. Zo laten gemeenten zien wát zij doen en waaróm zij dat doen.
+De overheid wil voor burgers transparant en open zijn. Daarom heeft zij de `Wet open overheid (Woo)`_ vastgesteld. Die vraagt dat overheidsorganen hun documenten openbaar en digitaal beschikbaar maken. Zo laten deze organisaties zien wát zij doen en waaróm zij dat doen.
 
-Om gemeenten te ondersteunen in de uitvoering van deze wet, is het "Generiek Publicatieplatform Woo (GPP-Woo)" ontwikkeld. 
+Om deze organisaties te ondersteunen in de uitvoering van deze wet, is het "Generiek Publicatieplatform Woo (GPP-Woo)" ontwikkeld. 
 Dit platform is samengesteld uit vier componenten. Eén van die componenten is de '**GPP-App**', een component dat ambtenaren een web-based gebruikersinterface biedt, waar zij openbare documenten kunnen uploaden en publiceren.
 
 De GPP-App is ontwikkeld in lijn met het `Common Ground`_ model.
