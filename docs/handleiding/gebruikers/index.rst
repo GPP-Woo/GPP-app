@@ -36,7 +36,7 @@ Een nieuwe publicatie aanmaken
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Om een nieuwe publicatie aan te maken, klik je op de knop "Nieuwe publicatie". 
-Als je lid bent van meerdere gebruikergroepen, dan wordt je eerst gevraagd met welk "profiel" je de publicatie aan wil maken. 
+Als je lid bent van meerdere gebruikersgroepen, dan word je eerst gevraagd met welk "profiel" je de publicatie aan wil maken. 
 Maak je bijvoorbeeld een publicatie aan als "Team Juridisch" of als "Team Vergunningen"? Als je lid bent van slechts één gebruikersgroep, dan wordt het profiel automatisch voor je gekozen.
 
 Zodra je "profiel" is ingevuld, verschijnen links alle velden die je in kunt vullen. Rechts zie je een vak om documenten te uploaden. Daar komen we zo op.
@@ -70,7 +70,7 @@ Na het uploaden verschijnen de documenten onder elkaar en kun je per document de
 - ``Datum ondertekening (intern)``: Indien van toepassing, geef aan wanneer het document intern is ondertekend.
 - ``Kenmerk toevoegen``: Geef hier een of meerdere kenmerken op waarmee het document intern gevonden kan worden, bijv. het documentnummer.
 
-Rechts-onder staat een knop "Publiceren". Als je daarop klikt wordt de publicatie opgeslagen en direct online gepubliceerd.
+Rechtsonder staat een knop "Publiceren". Als je daarop klikt wordt de publicatie opgeslagen en direct online gepubliceerd.
 
 Je ziet ook een knop "Opslaan als concept". Als je daarop klikt, dan wordt de publicatie wel opgeslagen, maar nog niet online gepubliceerd. Je kunt de publicatie later bewerken en alsnog publiceren. Voor een concept-publicatie is alleen de ``titel`` verplicht. De andere velden mogen ook later ingevuld worden.
 
@@ -142,5 +142,5 @@ Kijk eens naar het veld ``Publicatie-eigenaar``:
 
 Om een publicatie te claimen, klik je rechtsonder op de knop "Publicatie claimen". Jouw naam wordt dan ingevuld bij de ``Publicatie-eigenaar``. Je kunt vervolgens de publicatie direct gaan bewerken of zelfs intrekken (zie hierboven)!
 
-.. warning:: Je collega krijgt géén signaal dat zijn/haar publicatie door jou geclaimed is! Zorg er dus zelf voor dat hij/zij/hen indien nodig op de hoogte wordt gebracht!
+.. warning:: Je collega krijgt géén signaal dat zijn/haar publicatie door jou geclaimd is! Zorg er dus zelf voor dat hij/zij/hen indien nodig op de hoogte wordt gebracht!
 
