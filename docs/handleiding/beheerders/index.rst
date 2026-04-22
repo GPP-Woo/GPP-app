@@ -43,5 +43,5 @@ Bij Waardelijsten zie je voor welke Organisaties, Informatiecategorieën en Onde
 
 .. Warning:: Houd er bij het intrekken van autorisaties rekening mee, dat gebruikers binnen deze gebruikersgroep mogelijk al wel publicaties hebben aangemaakt binnen die autorisatie. Na het intrekken van die autorisatie, krijgen deze gebruikers een foutmelding bij die publicaties. Hierin staat de instructie om contact op te nemen met de beheerder. 
 
-.. Warning:: Het beheren van de items in de waardlijsten gebeurt in het registratiecomponent waaraan de GPP-app is gekoppeld. Bijvoorbeeld de `GPP-Publicatiebank <https://gpp-publicatiebank.readthedocs.io/en/latest/admin/index.html>`_. 
+.. Warning:: Het beheren van de items in de waardelijsten gebeurt in het registratiecomponent waaraan de GPP-app is gekoppeld. Bijvoorbeeld de `GPP-Publicatiebank <https://gpp-publicatiebank.readthedocs.io/en/latest/admin/index.html>`_. 
 

@@ -5,7 +5,7 @@ Handleiding
 
 De Wet open overheid (Woo) verplicht overheden om documenten uit 17 informatiecategorieën actief openbaar te maken. Ook buiten deze 17 informatiecategorieën mogen documenten actief openbaar gemaakt worden (inspanningsverplichting). Voor een correct werkende aansluiting op de landelijke Generieke Woo-Voorziening (`https://open.overheid.nl/  <https://open.overheid.nl/>`_) moet een eindgebruiker bij iedere publicatie aangeven binnen welke informatiecategorie deze valt. 
 
-In de GPP-App kunnen gebruikers documenten openbaar maken. Dit doen zij door publicaties aan te maken, en deze koppelen aan de juiste organisaties en informatiecategorieën. Hiermee worden ze vindbaar op `open.overheid.nl <https://open.overheid.nl/>`_, en in een eigen website die deze publicaties ontsluit, zoals het GPP-Burgerportaal. **Let op:** de xml-sitemap met behulp waarvan de publicaties uit GPP-Woo worden toegevoegd aan de Generieke Woo-Voorzieing, is onderdeel van een ander GPP-Woo-component, het `GPP-Burgerportaal <https://github.com/GPP-woo/GPP-burgerportaal>`_.
+In de GPP-App kunnen gebruikers documenten openbaar maken. Dit doen zij door publicaties aan te maken, en deze koppelen aan de juiste organisaties en informatiecategorieën. Hiermee worden ze vindbaar op `open.overheid.nl <https://open.overheid.nl/>`_, en in een eigen website die deze publicaties ontsluit, zoals het GPP-Burgerportaal. **Let op:** de xml-sitemap met behulp waarvan de publicaties uit GPP-Woo worden toegevoegd aan de Generieke Woo-Voorziening, is onderdeel van een ander GPP-Woo-component, het `GPP-Burgerportaal <https://github.com/GPP-woo/GPP-burgerportaal>`_.
 
 In de GPP-App gaan twee groepen gebruikers aan de slag: 
 
