@@ -7,6 +7,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails
         public Guid Uuid { get; set; }
         public required string Naam { get; set; }
         public string? Omschrijving { get; set; }
+        public bool IsGeautoriseerdVoorInzageProcedure { get; set; }
 
         //Id's van de waardelijsten die gebruikt mogen worden binnen deze gebruikersgroep
         public required IEnumerable<string> GekoppeldeWaardelijsten { get; set; }
@@ -20,6 +21,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails
                 Naam = groep.Naam,
                 Omschrijving = groep.Omschrijving,
                 GekoppeldeWaardelijsten = groep.Waardelijsten.Select(x => x.WaardelijstId),
+                IsGeautoriseerdVoorInzageProcedure = groep.IsGeautoriseerdVoorInzageProcedure,
                 GekoppeldeGebruikers = groep.GebruikersgroepGebruikers.Select(x => new GekoppeldeGebruikerModel
                 {
                     GebruikerId = x.GebruikerId,

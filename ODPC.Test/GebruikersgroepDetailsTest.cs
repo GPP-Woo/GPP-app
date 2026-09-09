@@ -25,6 +25,7 @@ namespace ODPC.Test
             Assert.AreEqual(groep.Uuid, model.Uuid);
             Assert.AreEqual(groep.Naam, model.Naam);
             Assert.AreEqual(groep.Omschrijving, model.Omschrijving);
+            Assert.AreEqual(groep.IsGeautoriseerdVoorInzageProcedure, model.IsGeautoriseerdVoorInzageProcedure);
         }
 
         [TestMethod]
@@ -82,7 +83,8 @@ namespace ODPC.Test
         {
             Uuid = Guid.NewGuid(),
             Naam = Guid.NewGuid().ToString(),
-            Omschrijving = Guid.NewGuid().ToString()
+            Omschrijving = Guid.NewGuid().ToString(),
+            IsGeautoriseerdVoorInzageProcedure = true
         };
     }
 }
