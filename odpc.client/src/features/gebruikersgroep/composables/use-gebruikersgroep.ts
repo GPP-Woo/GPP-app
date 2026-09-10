@@ -11,7 +11,8 @@ export const useGebruikersgroep = (uuid?: string) => {
     naam: "",
     omschrijving: "",
     gekoppeldeWaardelijsten: [],
-    gekoppeldeGebruikers: []
+    gekoppeldeGebruikers: [],
+    isGeautoriseerdVoorInzageProcedure: false
   });
 
   const {

@@ -80,6 +80,7 @@ namespace ODPC.Test
             Assert.AreEqual(upsertModel.Naam, detailsModel.Naam);
             Assert.AreEqual(upsertModel.GekoppeldeWaardelijsten.Count, detailsModel.GekoppeldeWaardelijsten.Count());
             Assert.AreEqual(upsertModel.GekoppeldeGebruikers.Count, detailsModel.GekoppeldeGebruikers.Count());
+            Assert.AreEqual(upsertModel.IsGeautoriseerdVoorInzageProcedure, detailsModel.IsGeautoriseerdVoorInzageProcedure);
 
             foreach (var item in upsertModel.GekoppeldeWaardelijsten)
             {
@@ -191,7 +192,8 @@ namespace ODPC.Test
             Omschrijving = Guid.NewGuid().ToString(),
             Naam = Guid.NewGuid().ToString(),
             GekoppeldeWaardelijsten = [Guid.NewGuid().ToString(), Guid.NewGuid().ToString()],
-            GekoppeldeGebruikers = [Guid.NewGuid().ToString(), Guid.NewGuid().ToString()]
+            GekoppeldeGebruikers = [Guid.NewGuid().ToString(), Guid.NewGuid().ToString()],
+            IsGeautoriseerdVoorInzageProcedure = false
         };
 
         private static GebruikersgroepWaardelijst RandomWaardelijst(Gebruikersgroep groep) => new()
