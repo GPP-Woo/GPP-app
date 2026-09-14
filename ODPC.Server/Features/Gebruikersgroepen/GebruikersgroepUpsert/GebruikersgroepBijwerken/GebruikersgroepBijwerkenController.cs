@@ -40,6 +40,7 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
                 //update groep waardes en save voor duplicate check
                 groep.Naam = model.Naam;
                 groep.Omschrijving = model.Omschrijving;
+                groep.IsGeautoriseerdVoorInzageProcedure = model.IsGeautoriseerdVoorInzageProcedure;
 
                 await _context.SaveChangesAsync(token);
             }

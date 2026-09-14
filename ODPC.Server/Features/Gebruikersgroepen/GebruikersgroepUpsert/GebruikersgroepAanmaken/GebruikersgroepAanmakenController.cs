@@ -26,7 +26,12 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepA
         {
             try
             {
-                var groep = new Data.Entities.Gebruikersgroep { Naam = model.Naam, Omschrijving = model.Omschrijving };
+                var groep = new Data.Entities.Gebruikersgroep
+                {
+                    Naam = model.Naam,
+                    Omschrijving = model.Omschrijving,
+                    IsGeautoriseerdVoorInzageProcedure = model.IsGeautoriseerdVoorInzageProcedure
+                };
                 _context.Gebruikersgroepen.Add(groep);
 
                 UpsertHelpers.AddWaardelijstenToGroep(model.GekoppeldeWaardelijsten, groep, _context);

@@ -8,6 +8,7 @@ namespace ODPC.Data.Entities
         public Guid Uuid { get; set; }
         public required string Naam { get; set; }
         public string? Omschrijving { get; set; }
+        public bool IsGeautoriseerdVoorInzageProcedure { get; set; }
 
         public ICollection<GebruikersgroepWaardelijst> Waardelijsten { get; set; } = [];
         public ICollection<GebruikersgroepGebruiker> GebruikersgroepGebruikers { get; set; } = [];

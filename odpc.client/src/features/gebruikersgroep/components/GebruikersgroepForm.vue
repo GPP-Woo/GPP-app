@@ -30,6 +30,13 @@
       <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
     </div>
 
+    <div class="form-group">
+      <label
+        ><input type="checkbox" v-model="model.isGeautoriseerdVoorInzageProcedure" /> Geautoriseerd
+        voor Inzage-procedure</label
+      >
+    </div>
+
     <add-remove-gebruikers v-model="model.gekoppeldeGebruikers" />
   </fieldset>
 </template>

@@ -12,6 +12,7 @@ export type Gebruikersgroep = {
   omschrijving?: string;
   gekoppeldeWaardelijsten: string[];
   gekoppeldeGebruikers: GekoppeldeGebruiker[];
+  isGeautoriseerdVoorInzageProcedure: boolean;
 };
 
 export const WAARDELIJSTEN = {
