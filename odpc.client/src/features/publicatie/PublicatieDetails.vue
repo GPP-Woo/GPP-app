@@ -50,6 +50,19 @@
         v-model:documenten="documenten"
         :is-readonly="isReadonly"
       />
+
+      <alert-inline v-if="inzageProcedureError"
+        >Er is iets misgegaan bij het ophalen van de Inzage-procedure bij deze
+        publicatie...</alert-inline
+      >
+
+      <inzage-procedure-form
+        v-else-if="canLinkInzageProcedure || inzageProcedure"
+        v-model="inzageProcedure"
+        :can-link="canLinkInzageProcedure"
+        :is-readonly="isReadonly"
+        :is-draft-mode="isDraftMode"
+      />
     </section>
 
     <div class="form-submit">
@@ -124,6 +137,7 @@ import { useAppData } from "@/composables/use-app-data";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentenForm from "./components/DocumentenForm.vue";
+import InzageProcedureForm from "./components/InzageProcedureForm.vue";
 import PublicatieSubmitButtons from "./components/PublicatieSubmitButtons.vue";
 import DraftDialogContent from "./components/dialogs/DraftDialogContent.vue";
 import DeleteDialogContent from "./components/dialogs/DeleteDialogContent.vue";
@@ -132,6 +146,7 @@ import ClaimDialogContent from "./components/dialogs/ClaimDialogContent.vue";
 import NoDocumentsDialogContent from "./components/dialogs/NoDocumentsDialogContent.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
+import { useInzageProcedure } from "./composables/use-inzage-procedure";
 import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroepen";
 import { usePublicatiePermissions } from "./composables/use-publicatie-permissions";
 import { useDialogs } from "./composables/use-dialogs";
@@ -153,7 +168,8 @@ const isLoading = computed(
     loadingDocumenten.value ||
     loadingMijnGebruikersgroepen.value ||
     loadingDocument.value ||
-    uploadingFile.value
+    uploadingFile.value ||
+    loadingInzageProcedure.value
 );
 
 const hasError = computed(
@@ -161,7 +177,8 @@ const hasError = computed(
     !!publicatieError.value ||
     !!documentenError.value ||
     !!documentError.value ||
-    !!mijnGebruikersgroepenError.value
+    !!mijnGebruikersgroepenError.value ||
+    !!inzageProcedureError.value
 );
 
 // Publicatie
@@ -187,6 +204,11 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(() => props.uuid || publicatie.value?.uuid);
 
+// Inzage-procedure
+const { inzageProcedure, loadingInzageProcedure, inzageProcedureError, submitInzageProcedure } =
+  // Get associated inzage-procedure by uuid prop or publicatie.uuid inline with docs pattern
+  useInzageProcedure(() => props.uuid || publicatie.value?.uuid);
+
 // Mijn gebruikersgroepen
 const {
   data: mijnGebruikersgroepen,
@@ -195,8 +217,16 @@ const {
 } = useMijnGebruikersgroepen();
 
 // Permissions
-const { isReadonly, canDraft, canDelete, canRetract, canClaim, unauthorized, groepWaardelijsten } =
-  usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
+const {
+  isReadonly,
+  canDraft,
+  canDelete,
+  canRetract,
+  canClaim,
+  unauthorized,
+  groepWaardelijsten,
+  canLinkInzageProcedure
+} = usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
 
 const navigate = () => {
   if (
@@ -222,6 +252,7 @@ const submitHandlers = {
     try {
       await submitPublicatie();
       await submitDocumenten();
+      await submitInzageProcedure();
     } catch {
       return;
     }
@@ -267,6 +298,7 @@ const submitHandlers = {
     try {
       await submitPublicatie();
       await submitDocumenten();
+      await submitInzageProcedure();
     } catch {
       return;
     }

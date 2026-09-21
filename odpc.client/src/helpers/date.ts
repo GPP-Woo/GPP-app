@@ -42,3 +42,7 @@ export const formatIsoDate = (date: DateLike) => {
 };
 
 export const ISOToday = formatIsoDate(new Date());
+
+export const ISOTomorrow = formatIsoDate(
+  new Date(new Date().setDate(new Date().getDate() + 1))
+);

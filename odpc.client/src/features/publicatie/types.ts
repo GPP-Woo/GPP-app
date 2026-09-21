@@ -20,6 +20,11 @@ export const Archiefnominatie = Object.freeze({
   vernietigen: "vernietigen"
 });
 
+export const BeschikbaarRechtsmiddel = Object.freeze({
+  zienswijze: "zienswijze",
+  bezwaar: "bezwaar"
+});
+
 export type Publicatie = {
   uuid?: string;
   publisher: string | null;
@@ -42,6 +47,18 @@ export type Publicatie = {
   archiefnominatie?: keyof typeof Archiefnominatie | "";
   archiefactiedatum?: string | null;
   toelichtingBewaartermijn?: string;
+};
+
+export type InzageProcedure = {
+  uuid?: string;
+  publicatie: string;
+  urlBekendmaking?: string;
+  toelichting: string;
+  beschikbaarRechtsmiddel: keyof typeof BeschikbaarRechtsmiddel | "";
+  urlReactieformulier?: string;
+  datumBeginInzagetermijn: string;
+  datumEindeInzagetermijn: string;
+  automatischIntrekken: boolean;
 };
 
 export type PublicatieDocument = {
@@ -99,6 +116,7 @@ export type MimeType = {
 export type MijnGebruikersgroep = {
   uuid: string;
   naam: string;
+  isGeautoriseerdVoorInzageProcedure: boolean;
   gekoppeldeWaardelijsten: string[];
 };
 

@@ -96,6 +96,13 @@ export const usePublicatiePermissions = (
     );
   });
 
+  const canLinkInzageProcedure = computed(
+    () =>
+      !!mijnGebruikersgroepen.value?.find(
+        (groep) => groep.uuid === publicatie.value.eigenaarGroep?.identifier
+      )?.isGeautoriseerdVoorInzageProcedure
+  );
+
   return {
     isReadonly,
     canDraft,
@@ -103,6 +110,7 @@ export const usePublicatiePermissions = (
     canRetract,
     canClaim,
     unauthorized,
-    groepWaardelijsten
+    groepWaardelijsten,
+    canLinkInzageProcedure
   };
 };
