@@ -26,6 +26,7 @@ namespace ODPC.Features.Gebruikersgroepen.MijnGebruikersgroepen
                     {
                         Naam = groep.Naam,
                         Uuid = groep.Uuid,
+                        IsGeautoriseerdVoorInzageProcedure = groep.IsGeautoriseerdVoorInzageProcedure,
                         GekoppeldeWaardelijsten = groep.Waardelijsten.Select(x => x.WaardelijstId).AsEnumerable()
                     }
                 )
