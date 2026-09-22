@@ -61,7 +61,6 @@
         v-model="inzageProcedure"
         :can-link="canLinkInzageProcedure"
         :is-readonly="isReadonly"
-        :is-draft-mode="isDraftMode"
       />
     </section>
 

@@ -9,9 +9,7 @@
         </li>
 
         <li>
-          <router-link :to="{ name: 'collega-publicaties' }"
-            >Publicaties van collega's</router-link
-          >
+          <router-link :to="{ name: 'collega-publicaties' }">Publicaties van collega's</router-link>
         </li>
 
         <li v-if="user?.isAdmin">

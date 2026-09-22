@@ -59,6 +59,7 @@ export type InzageProcedure = {
   datumBeginInzagetermijn: string;
   datumEindeInzagetermijn: string;
   automatischIntrekken: boolean;
+  pendingAction?: "delete" | null;
 };
 
 export type PublicatieDocument = {

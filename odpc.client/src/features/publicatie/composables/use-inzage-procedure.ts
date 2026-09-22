@@ -22,6 +22,7 @@ export const useInzageProcedure = (uuid: MaybeRefOrGetter<string | undefined>) =
   const {
     post: postInzageProcedure,
     put: putInzageProcedure,
+    delete: deleteInzageProcedure,
     data: submitData,
     isFetching: submittingInzageProcedure,
     error: submitError
@@ -34,9 +35,14 @@ export const useInzageProcedure = (uuid: MaybeRefOrGetter<string | undefined>) =
   const submitInzageProcedure = async () => {
     if (!inzageProcedure.value || !pubUuid.value) return;
 
-    if (inzageProcedure.value.uuid) {
+    if (inzageProcedure.value.pendingAction === "delete") {
+      // Delete
+      if (inzageProcedure.value.uuid) await deleteInzageProcedure().text().execute();
+    } else if (inzageProcedure.value.uuid) {
+      // Update
       await putInzageProcedure(inzageProcedure).execute();
     } else {
+      // Create
       inzageProcedure.value = { ...inzageProcedure.value, publicatie: pubUuid.value };
 
       await postInzageProcedure(inzageProcedure).execute();
@@ -44,7 +50,10 @@ export const useInzageProcedure = (uuid: MaybeRefOrGetter<string | undefined>) =
 
     if (submitError.value) {
       toast.add({
-        text: "De Inzage-procedure kon niet worden opgeslagen, probeer het nogmaals...",
+        text:
+          inzageProcedure.value.pendingAction === "delete"
+            ? "De Inzage-procedure kon niet worden verwijderd, probeer het nogmaals..."
+            : "De Inzage-procedure kon niet worden opgeslagen, probeer het nogmaals...",
         type: "error"
       });
 
@@ -53,7 +62,8 @@ export const useInzageProcedure = (uuid: MaybeRefOrGetter<string | undefined>) =
       throw new Error(`submitInzageProcedure`);
     }
 
-    inzageProcedure.value = submitData.value;
+    inzageProcedure.value =
+      inzageProcedure.value.pendingAction === "delete" ? null : submitData.value;
   };
 
   return {
