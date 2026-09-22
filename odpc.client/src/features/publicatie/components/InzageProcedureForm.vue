@@ -1,13 +1,13 @@
 <template>
-  <fieldset :disabled="isReadonly">
-    <legend>Inzage-procedure</legend>
-
-    <div v-if="canLink && !model" class="form-group">
-      <label
-        ><input type="checkbox" :checked="false" @change="linkInzageProcedure" /> Inzage-procedure
-        koppelen</label
-      >
-    </div>
+  <section>
+    <button
+      v-if="canLink && !model"
+      type="button"
+      class="button secondary icon-after pen"
+      @click="linkInzageProcedure"
+    >
+      Inzage-procedure koppelen
+    </button>
 
     <template v-if="model">
       <div v-if="model.uuid && !isReadonly" class="form-group">
@@ -115,14 +115,14 @@
         class="button secondary icon-after trash"
         @click="removeInzageProcedure"
       >
-        Verwijderen
+        Inzage-procedure verwijderen
       </button>
     </template>
 
     <prompt-modal :dialog="dialog" confirm-message="Ja, verwijderen" cancel-message="Nee, behouden">
       <p>Weet u zeker dat u deze inzage-procedure wilt verwijderen?</p>
     </prompt-modal>
-  </fieldset>
+  </section>
 </template>
 
 <script setup lang="ts">

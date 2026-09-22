@@ -26,19 +26,21 @@
     >
 
     <section v-else>
-      <alert-inline v-if="publicatieError"
+      <alert-inline v-if="publicatieError || inzageProcedureError"
         >Er is iets misgegaan bij het ophalen van de publicatie of de publicatie is niet (meer)
         beschikbaar...</alert-inline
       >
 
       <publicatie-form
         v-else
-        v-model="publicatie"
+        v-model:publicatie="publicatie"
         :unauthorized="unauthorized"
         :is-readonly="isReadonly"
         :is-draft-mode="isDraftMode"
         :mijn-gebruikersgroepen="mijnGebruikersgroepen"
         :groep-waardelijsten="groepWaardelijsten"
+        v-model:inzage-procedure="inzageProcedure"
+        :can-link-inzage-procedure="canLinkInzageProcedure"
       />
 
       <alert-inline v-if="documentenError"
@@ -48,18 +50,6 @@
       <documenten-form
         v-else-if="publicatie.eigenaarGroep || isReadonly"
         v-model:documenten="documenten"
-        :is-readonly="isReadonly"
-      />
-
-      <alert-inline v-if="inzageProcedureError"
-        >Er is iets misgegaan bij het ophalen van de Inzage-procedure bij deze
-        publicatie...</alert-inline
-      >
-
-      <inzage-procedure-form
-        v-else-if="canLinkInzageProcedure || inzageProcedure"
-        v-model="inzageProcedure"
-        :can-link="canLinkInzageProcedure"
         :is-readonly="isReadonly"
       />
     </section>
@@ -136,7 +126,6 @@ import { useAppData } from "@/composables/use-app-data";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentenForm from "./components/DocumentenForm.vue";
-import InzageProcedureForm from "./components/InzageProcedureForm.vue";
 import PublicatieSubmitButtons from "./components/PublicatieSubmitButtons.vue";
 import DraftDialogContent from "./components/dialogs/DraftDialogContent.vue";
 import DeleteDialogContent from "./components/dialogs/DeleteDialogContent.vue";

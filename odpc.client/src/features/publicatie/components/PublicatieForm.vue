@@ -136,9 +136,19 @@
         :open="expandOptionGroup"
       />
 
+      <details v-if="canLinkInzageProcedure || inzageProcedureModel">
+        <summary>Inzage-procedure</summary>
+
+        <inzage-procedure-form
+          v-model="inzageProcedureModel"
+          :can-link="canLinkInzageProcedure"
+          :is-readonly="isReadonly"
+        />
+      </details>
+
       <publicatie-archivering
         v-if="model.publicatiestatus !== PublicatieStatus.concept"
-        v-bind="modelValue"
+        v-bind="publicatie"
       />
     </template>
   </fieldset>
@@ -152,16 +162,22 @@ import AddRemoveItems from "@/components/AddRemoveItems.vue";
 import DateInput from "@/components/DateInput.vue";
 import { useAppData } from "@/composables/use-app-data";
 import { useKenmerken } from "../composables/use-kenmerken";
-import { PublicatieStatus, type MijnGebruikersgroep, type Publicatie } from "../types";
+import {
+  PublicatieStatus,
+  type MijnGebruikersgroep,
+  type Publicatie,
+  type InzageProcedure
+} from "../types";
 import type { OptionProps } from "@/components/option-group/types";
 import PublicatieArchivering from "./PublicatieArchivering.vue";
+import InzageProcedureForm from "./InzageProcedureForm.vue";
 
 const helpDatumBeginGeldigheid = `Indien van toepassing, geef hier de datum waarop de rechten en plichten zoals vastgesteld in de documenten in werking treden. Bijvoorbeeld: de datum waarop een besluit in wekring treedt, de datum waarop het convenant ingaat of de datum waarop een beleidsplan start.`;
 const helpDatumEindeGeldigheid = `Indien van toepassing en bekend, geef hier de datum waarop de rechten en plichten zoals vastgesteld in de documenten komen te vervallen. Bijvoorbeeld: de vervaldatum van een vergunning, de einddatum van een convenant of het einde van een looptijd van een beleidsplan`;
 const helpKenmerken = `Bijvoorbeeld het zaak- of dossiernummer.`;
 
 const props = defineProps<{
-  modelValue: Publicatie;
+  publicatie: Publicatie;
   unauthorized: boolean;
   isReadonly: boolean;
   isDraftMode: boolean;
@@ -171,9 +187,12 @@ const props = defineProps<{
     informatiecategorieen?: OptionProps[];
     onderwerpen?: OptionProps[];
   };
+  inzageProcedure: InzageProcedure | null;
+  canLinkInzageProcedure: boolean;
 }>();
 
-const model = useModel(props, "modelValue");
+const model = useModel(props, "publicatie");
+const inzageProcedureModel = useModel(props, "inzageProcedure");
 
 const kenmerken = useKenmerken(model);
 
