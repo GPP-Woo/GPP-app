@@ -99,7 +99,14 @@
       <div class="form-group">
         <label for="urlBekendmaking">URL bekendmaking</label>
 
-        <input id="urlBekendmaking" type="text" v-model.trim="model.urlBekendmaking" />
+        <input
+          id="urlBekendmaking"
+          type="url"
+          v-model.trim="model.urlBekendmaking"
+          aria-describedby="urlBekendmakingError"
+        />
+
+        <span id="urlBekendmakingError" class="error">Voer een geldig URL bekendmaking in</span>
       </div>
 
       <div class="form-group">

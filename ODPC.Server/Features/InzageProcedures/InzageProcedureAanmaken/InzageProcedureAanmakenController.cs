@@ -25,6 +25,11 @@ namespace ODPC.Features.InzageProcedures.InzageProcedureAanmaken
 
             var publicatie = await publicatieResponse.Content.ReadFromJsonAsync<Publicatie>(token);
 
+            if (publicatie != null)
+            {
+                publicatie.EigenaarGroep ??= await gebruikersgroepService.TryAndGetEigenaarGroepFromOdpcAsync(inzageProcedure.Publicatie, token);
+            }
+
             Guid? eigenaarGroepIdentifier = Guid.TryParse(publicatie?.EigenaarGroep?.identifier, out var identifier)
                 ? identifier
                 : null;
