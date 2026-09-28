@@ -73,10 +73,16 @@
         >
       </div>
 
-      <div v-if="model.urlReactieformulier" class="form-group">
+      <div v-if="model.uuid" class="form-group">
         <label for="urlReactieformulier">URL reactieformulier</label>
 
-        <input id="urlReactieformulier" type="url" :value="model.urlReactieformulier" disabled />
+        <input
+          id="urlReactieformulier"
+          type="url"
+          :value="model.urlReactieformulier"
+          placeholder="Wordt na opslaan opnieuw afgeleid"
+          disabled
+        />
       </div>
 
       <div class="form-group">
@@ -184,6 +190,16 @@ watch(
 
     if (!endDate || endDate <= startDate)
       model.value.datumEindeInzagetermijn = addDays(startDate, 1);
+  }
+);
+
+// urlReactieformulier is derived server-side from beschikbaarRechtsmiddel, so clear the stale value on change.
+watch(
+  () => model.value?.beschikbaarRechtsmiddel,
+  (_, oldRechtsmiddel) => {
+    if (!model.value || !oldRechtsmiddel) return;
+
+    model.value.urlReactieformulier = undefined;
   }
 );
 </script>

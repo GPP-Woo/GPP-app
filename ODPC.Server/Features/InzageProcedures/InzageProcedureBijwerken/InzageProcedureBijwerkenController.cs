@@ -61,6 +61,10 @@ namespace ODPC.Features.InzageProcedures.InzageProcedureBijwerken
 
             inzageProcedure.Publicatie = bestaandeInzageProcedure.Publicatie;
 
+            // urlReactieformulier is derived server-side from beschikbaarRechtsmiddel;
+            // clear it so the publicatiebank recomputes.
+            inzageProcedure.UrlReactieformulier = null;
+
             // inzage-procedure bijwerken
 
             using var putResponse = await client.PutAsJsonAsync(url, inzageProcedure, token);
