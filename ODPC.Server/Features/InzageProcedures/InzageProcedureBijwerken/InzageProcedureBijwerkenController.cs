@@ -59,6 +59,8 @@ namespace ODPC.Features.InzageProcedures.InzageProcedureBijwerken
                 return UnprocessableEntity(ModelState);
             }
 
+            inzageProcedure.Publicatie = bestaandeInzageProcedure.Publicatie;
+
             // inzage-procedure bijwerken
 
             using var putResponse = await client.PutAsJsonAsync(url, inzageProcedure, token);
