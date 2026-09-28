@@ -1,9 +1,17 @@
 <template>
-  <p>
-    <router-link :to="{ name: 'gebruikersgroep' }" class="button"
-      >Nieuwe gebruikersgroep</router-link
-    >
-  </p>
+  <menu class="reset">
+    <li>
+      <router-link :to="{ name: 'gebruikersgroep' }" class="button"
+        >Nieuwe gebruikersgroep</router-link
+      >
+    </li>
+
+    <li>
+      <a href="/api/gebruikersgroepen/autorisatieoverzicht" download class="button icon-after download"
+        >Autorisatieoverzicht downloaden</a
+      >
+    </li>
+  </menu>
 
   <simple-spinner v-if="isFetching"></simple-spinner>
 
