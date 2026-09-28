@@ -55,7 +55,7 @@
       v-model="doc.creatiedatum"
       :id="`creatiedatum-${detailsId}`"
       label="Datum document"
-      :max-date="ISOToday"
+      :max-date="todayIsoDate()"
       :required="true"
       :disabled="isReadonly"
     />
@@ -103,7 +103,7 @@
       v-model="doc.ontvangstdatum"
       :id="`ontvangstdatum-${detailsId}`"
       label="Datum ontvangst"
-      :max-date="ISOToday"
+      :max-date="todayIsoDate()"
       :to-date-time="true"
       :disabled="isReadonly"
     />
@@ -112,7 +112,7 @@
       v-model="doc.datumOndertekend"
       :id="`datumOndertekend-${detailsId}`"
       label="Datum ondertekening (intern)"
-      :max-date="ISOToday"
+      :max-date="todayIsoDate()"
       :to-date-time="true"
       :disabled="isReadonly"
     />
@@ -143,7 +143,7 @@ import AlertInline from "@/components/AlertInline.vue";
 import DateInput from "@/components/DateInput.vue";
 import { useKenmerken } from "../composables/use-kenmerken";
 import { PublicatieStatus, PendingDocumentActions, type PublicatieDocument } from "../types";
-import { ISOToday } from "@/helpers";
+import { todayIsoDate } from "@/helpers";
 
 const props = defineProps<{ doc: PublicatieDocument; isReadonly?: boolean; warnings?: string[] }>();
 
