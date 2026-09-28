@@ -41,6 +41,11 @@ namespace ODPC.Features.InzageProcedures.InzageProcedureAanmaken
                 return BadRequest(ModelState);
             }
 
+            if (!InzageProcedureDatumValidator.IsValid(inzageProcedure, publicatie, ModelState))
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             // inzage-procedure registreren/koppelen
 
             var url = $"/api/{version}/inzageprocedure";

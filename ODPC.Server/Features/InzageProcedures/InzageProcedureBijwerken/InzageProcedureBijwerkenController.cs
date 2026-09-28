@@ -54,6 +54,11 @@ namespace ODPC.Features.InzageProcedures.InzageProcedureBijwerken
                 return NotFound();
             }
 
+            if (!InzageProcedureDatumValidator.IsValid(inzageProcedure, publicatie, ModelState))
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             // inzage-procedure bijwerken
 
             using var putResponse = await client.PutAsJsonAsync(url, inzageProcedure, token);

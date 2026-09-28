@@ -14,6 +14,7 @@ namespace ODPC.Features.Publicaties
         public EigenaarGroep? EigenaarGroep { get; set; }
         public string? Publicatiestatus { get; set; }
         public DateTimeOffset Registratiedatum { get; set; }
+        public DateTimeOffset? GepubliceerdOp { get; set; }
         public DateOnly? DatumBeginGeldigheid { get; set; }
         public DateOnly? DatumEindeGeldigheid { get; set; }
         public List<string>? InformatieCategorieen { get; set; }
