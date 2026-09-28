@@ -139,6 +139,7 @@ import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroep
 import { usePublicatiePermissions } from "./composables/use-publicatie-permissions";
 import { useDialogs } from "./composables/use-dialogs";
 import { PublicatieStatus } from "./types";
+import { todayIsoDate, formatIsoDate } from "@/helpers/date";
 
 const props = defineProps<{ uuid?: string }>();
 
@@ -216,6 +217,14 @@ const {
   canLinkInzageProcedure
 } = usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
 
+const hasInvalidInzageProcedureStartDate = computed(() => {
+  if (!inzageProcedure.value || inzageProcedure.value.pendingAction === "delete") return false;
+
+  const minStartDate = formatIsoDate(publicatie.value.gepubliceerdOp) ?? todayIsoDate();
+
+  return inzageProcedure.value.datumBeginInzagetermijn < minStartDate;
+});
+
 const navigate = () => {
   if (
     previousRoute.value?.name === "mijn-publicaties" ||
@@ -275,6 +284,15 @@ const submitHandlers = {
   },
   publish: async () => {
     if (documenten.value.length === 0 && (await noDocumentsDialog.reveal()).isCanceled) return;
+
+    if (hasInvalidInzageProcedureStartDate.value) {
+      toast.add({
+        text: "De begindatum van de inzage-procedure ligt vóór de publicatiedatum. Pas de begindatum aan en sla de publicatie opnieuw op.",
+        type: "error"
+      });
+
+      return;
+    }
 
     publicatie.value.publicatiestatus = PublicatieStatus.gepubliceerd;
 

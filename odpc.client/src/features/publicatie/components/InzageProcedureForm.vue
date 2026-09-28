@@ -24,8 +24,6 @@
         v-model="model.datumBeginInzagetermijn"
         id="datumBeginInzagetermijn"
         label="Begindatum inzagetermijn"
-        :min-date="ISOToday"
-        :max-date="model.datumEindeInzagetermijn || undefined"
         required
       />
 
@@ -133,11 +131,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useModel } from "vue";
+import { computed, useModel, watch } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import DateInput from "@/components/DateInput.vue";
 import PromptModal from "@/components/PromptModal.vue";
-import { ISOToday, ISOTomorrow } from "@/helpers/date";
+import { todayIsoDate, tomorrowIsoDate, addDays } from "@/helpers/date";
 import { BeschikbaarRechtsmiddel, type InzageProcedure } from "../types";
 
 const props = defineProps<{
@@ -155,7 +153,7 @@ const linkInzageProcedure = () =>
     publicatie: "",
     toelichting: "",
     beschikbaarRechtsmiddel: "",
-    datumBeginInzagetermijn: ISOToday ?? "",
+    datumBeginInzagetermijn: todayIsoDate(),
     datumEindeInzagetermijn: "",
     automatischIntrekken: false
   });
@@ -172,9 +170,20 @@ const removeInzageProcedure = async () => {
 };
 
 const minDatumEindeInzagetermijn = computed(() => {
-  const isoTomorrow = ISOTomorrow ?? "";
   const startDate = model.value?.datumBeginInzagetermijn;
 
-  return startDate && startDate > isoTomorrow ? startDate : isoTomorrow;
+  return startDate ? addDays(startDate, 1) : (tomorrowIsoDate() ?? "");
 });
+
+watch(
+  () => model.value?.datumBeginInzagetermijn,
+  (startDate) => {
+    if (!model.value || !startDate) return;
+
+    const endDate = model.value.datumEindeInzagetermijn;
+
+    if (!endDate || endDate <= startDate)
+      model.value.datumEindeInzagetermijn = addDays(startDate, 1);
+  }
+);
 </script>

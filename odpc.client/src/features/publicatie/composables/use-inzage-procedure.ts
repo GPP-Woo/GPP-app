@@ -4,6 +4,8 @@ import { useAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
 import type { InzageProcedure } from "../types";
 
+const HTTP_UNPROCESSABLE_ENTITY = 422;
+
 export const useInzageProcedure = (uuid: MaybeRefOrGetter<string | undefined>) => {
   const pubUuid = toRef(uuid);
 
@@ -25,7 +27,8 @@ export const useInzageProcedure = (uuid: MaybeRefOrGetter<string | undefined>) =
     delete: deleteInzageProcedure,
     data: submitData,
     isFetching: submittingInzageProcedure,
-    error: submitError
+    error: submitError,
+    statusCode
   } = useFetchApi(
     () =>
       `/api/v2/inzageprocedure${inzageProcedure.value?.uuid ? "/" + inzageProcedure.value.uuid : ""}`,
@@ -51,9 +54,9 @@ export const useInzageProcedure = (uuid: MaybeRefOrGetter<string | undefined>) =
     if (submitError.value) {
       toast.add({
         text:
-          inzageProcedure.value.pendingAction === "delete"
-            ? "De Inzage-procedure kon niet worden verwijderd, probeer het nogmaals..."
-            : "De Inzage-procedure kon niet worden opgeslagen, probeer het nogmaals...",
+          statusCode.value === HTTP_UNPROCESSABLE_ENTITY
+            ? `De begindatum van de inzage-procedure ligt vóór de publicatiedatum. Pas de begindatum aan en sla de publicatie opnieuw op.`
+            : `De Inzage-procedure kon niet worden ${inzageProcedure.value.pendingAction === "delete" ? "verwijderd" : "opgeslagen"}, probeer het nogmaals...`,
         type: "error"
       });
 

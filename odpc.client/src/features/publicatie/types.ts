@@ -36,6 +36,7 @@ export type Publicatie = {
   eigenaarGroep: EigenaarGroep | null;
   publicatiestatus: PublicatieStatus;
   registratiedatum?: string;
+  gepubliceerdOp?: string;
   datumBeginGeldigheid?: string | null;
   datumEindeGeldigheid?: string | null;
   informatieCategorieen: string[];
