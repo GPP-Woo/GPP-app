@@ -4,6 +4,7 @@
     {
         public Guid Uuid { get; set; }
         public required string Naam { get; set; }
+        public bool IsGeautoriseerdVoorInzageProcedure { get; set; }
         public required IEnumerable<string> GekoppeldeWaardelijsten { get; set; }
     }
 }

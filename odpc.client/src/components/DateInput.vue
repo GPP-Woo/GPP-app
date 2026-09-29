@@ -17,6 +17,7 @@
       :id="id"
       type="date"
       v-model="dateComputed"
+      :min="minDate"
       :max="maxDate"
       :required="required"
       :aria-required="required || undefined"
@@ -41,6 +42,7 @@ const props = defineProps<{
   modelValue?: string | null;
   id: string;
   label: string;
+  minDate?: string;
   maxDate?: string;
   toDateTime?: boolean; // if true, converts date to datetime string with DEFAULT_TIME and timezone offset
   required?: boolean;

@@ -26,19 +26,21 @@
     >
 
     <section v-else>
-      <alert-inline v-if="publicatieError"
+      <alert-inline v-if="publicatieError || inzageProcedureError"
         >Er is iets misgegaan bij het ophalen van de publicatie of de publicatie is niet (meer)
         beschikbaar...</alert-inline
       >
 
       <publicatie-form
         v-else
-        v-model="publicatie"
+        v-model:publicatie="publicatie"
         :unauthorized="unauthorized"
         :is-readonly="isReadonly"
         :is-draft-mode="isDraftMode"
         :mijn-gebruikersgroepen="mijnGebruikersgroepen"
         :groep-waardelijsten="groepWaardelijsten"
+        v-model:inzage-procedure="inzageProcedure"
+        :can-link-inzage-procedure="canLinkInzageProcedure"
       />
 
       <alert-inline v-if="documentenError"
@@ -132,10 +134,12 @@ import ClaimDialogContent from "./components/dialogs/ClaimDialogContent.vue";
 import NoDocumentsDialogContent from "./components/dialogs/NoDocumentsDialogContent.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
+import { useInzageProcedure } from "./composables/use-inzage-procedure";
 import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroepen";
 import { usePublicatiePermissions } from "./composables/use-publicatie-permissions";
 import { useDialogs } from "./composables/use-dialogs";
 import { PublicatieStatus } from "./types";
+import { todayIsoDate, formatIsoDate } from "@/helpers/date";
 
 const props = defineProps<{ uuid?: string }>();
 
@@ -153,7 +157,8 @@ const isLoading = computed(
     loadingDocumenten.value ||
     loadingMijnGebruikersgroepen.value ||
     loadingDocument.value ||
-    uploadingFile.value
+    uploadingFile.value ||
+    loadingInzageProcedure.value
 );
 
 const hasError = computed(
@@ -161,7 +166,8 @@ const hasError = computed(
     !!publicatieError.value ||
     !!documentenError.value ||
     !!documentError.value ||
-    !!mijnGebruikersgroepenError.value
+    !!mijnGebruikersgroepenError.value ||
+    !!inzageProcedureError.value
 );
 
 // Publicatie
@@ -187,6 +193,11 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(() => props.uuid || publicatie.value?.uuid);
 
+// Inzage-procedure
+const { inzageProcedure, loadingInzageProcedure, inzageProcedureError, submitInzageProcedure } =
+  // Get associated inzage-procedure by uuid prop or publicatie.uuid inline with docs pattern
+  useInzageProcedure(() => props.uuid || publicatie.value?.uuid);
+
 // Mijn gebruikersgroepen
 const {
   data: mijnGebruikersgroepen,
@@ -195,8 +206,24 @@ const {
 } = useMijnGebruikersgroepen();
 
 // Permissions
-const { isReadonly, canDraft, canDelete, canRetract, canClaim, unauthorized, groepWaardelijsten } =
-  usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
+const {
+  isReadonly,
+  canDraft,
+  canDelete,
+  canRetract,
+  canClaim,
+  unauthorized,
+  groepWaardelijsten,
+  canLinkInzageProcedure
+} = usePublicatiePermissions(publicatie, mijnGebruikersgroepen);
+
+const hasInvalidInzageProcedureStartDate = computed(() => {
+  if (!inzageProcedure.value || inzageProcedure.value.pendingAction === "delete") return false;
+
+  const minStartDate = formatIsoDate(publicatie.value.gepubliceerdOp) ?? todayIsoDate();
+
+  return inzageProcedure.value.datumBeginInzagetermijn < minStartDate;
+});
 
 const navigate = () => {
   if (
@@ -222,6 +249,7 @@ const submitHandlers = {
     try {
       await submitPublicatie();
       await submitDocumenten();
+      await submitInzageProcedure();
     } catch {
       return;
     }
@@ -257,6 +285,15 @@ const submitHandlers = {
   publish: async () => {
     if (documenten.value.length === 0 && (await noDocumentsDialog.reveal()).isCanceled) return;
 
+    if (hasInvalidInzageProcedureStartDate.value) {
+      toast.add({
+        text: "De begindatum van de inzage-procedure ligt vóór de publicatiedatum. Pas de begindatum aan en sla de publicatie opnieuw op.",
+        type: "error"
+      });
+
+      return;
+    }
+
     publicatie.value.publicatiestatus = PublicatieStatus.gepubliceerd;
 
     documenten.value.forEach((doc) => {
@@ -267,6 +304,7 @@ const submitHandlers = {
     try {
       await submitPublicatie();
       await submitDocumenten();
+      await submitInzageProcedure();
     } catch {
       return;
     }

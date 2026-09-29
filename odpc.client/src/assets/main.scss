@@ -89,13 +89,16 @@ body {
   }
 
   input,
-  select {
+  select,
+  textarea,
+  label {
     & + .error {
       display: none;
       color: var(--code);
     }
 
-    &:user-invalid {
+    &:user-invalid,
+    &:has(:user-invalid) {
       border-color: var(--code);
       outline-color: var(--code);
 
