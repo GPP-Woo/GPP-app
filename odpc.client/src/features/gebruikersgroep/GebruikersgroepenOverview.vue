@@ -7,7 +7,10 @@
     </li>
 
     <li>
-      <a href="/api/gebruikersgroepen/autorisatieoverzicht" download class="button icon-after download"
+      <a
+        href="/api/gebruikersgroepen/autorisatieoverzicht"
+        download
+        class="button icon-after download"
         >Autorisatieoverzicht downloaden</a
       >
     </li>
@@ -40,6 +43,13 @@ const { data, isFetching, error } = useFetchApi("/api/gebruikersgroepen").json<G
 </script>
 
 <style lang="scss" scoped>
+menu {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-default);
+  margin-block-end: var(--spacing-default);
+}
+
 ul {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));

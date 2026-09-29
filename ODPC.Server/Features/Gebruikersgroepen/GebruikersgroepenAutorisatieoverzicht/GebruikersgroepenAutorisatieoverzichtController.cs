@@ -21,6 +21,8 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepenAutorisatieoverzicht
                 .MapToViewModel(context.Gebruikersgroepen.OrderBy(x => x.Naam))
                 .ToListAsync(token);
 
+            // this call to the Publicatiebank records (via the existing Audit-* headers) who generated
+            // the autorisatieoverzicht and when
             var waardelijsten = await waardelijstenLookup.GetAllAsync("Autorisatieoverzicht gebruikersgroepen genereren", token);
 
             var bestandsnaam = $"autorisatieoverzicht-gebruikersgroepen-{DateTimeOffset.UtcNow:yyyyMMdd-HHmm}.csv";
