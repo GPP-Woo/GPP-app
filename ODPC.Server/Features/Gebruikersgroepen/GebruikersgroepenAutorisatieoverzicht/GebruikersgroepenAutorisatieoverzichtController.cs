@@ -25,9 +25,10 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepenAutorisatieoverzicht
             // the autorisatieoverzicht and when
             var waardelijsten = await waardelijstenLookup.GetAllAsync("Autorisatieoverzicht gebruikersgroepen genereren", token);
 
-            var bestandsnaam = $"autorisatieoverzicht-gebruikersgroepen-{DateTimeOffset.UtcNow:yyyyMMdd-HHmm}.csv";
+            var localTime = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Europe/Amsterdam"));
+            var fileName = $"autorisatieoverzicht-gebruikersgroepen-{localTime:yyyyMMdd-HHmm}.csv";
 
-            return File(AutorisatieoverzichtCsvBuilder.BuildBytes(groepen, waardelijsten), "text/csv", bestandsnaam);
+            return File(AutorisatieoverzichtCsvBuilder.BuildBytes(groepen, waardelijsten), "text/csv", fileName);
         }
     }
 }
