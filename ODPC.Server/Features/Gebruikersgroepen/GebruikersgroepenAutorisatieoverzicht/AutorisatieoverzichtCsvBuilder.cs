@@ -61,19 +61,28 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepenAutorisatieoverzicht
                 .Select(item => item!.Naam)
                 .OrderBy(naam => naam, StringComparer.OrdinalIgnoreCase);
 
-        private static void AppendRow(StringBuilder sb, IReadOnlyList<string> velden)
+        private static void AppendRow(StringBuilder sb, IReadOnlyList<string> fields)
         {
-            sb.AppendJoin(Delimiter, velden.Select(EscapeVeld));
+            sb.AppendJoin(Delimiter, fields.Select(EscapeField));
             sb.Append("\r\n");
         }
 
-        private static string EscapeVeld(string? veld)
+        // Prevents CSV formula injection: prefix values starting with a formula-trigger
+        // character with a single quote so Excel treats them as plain text.
+        private static readonly char[] s_formulaTriggers = ['=', '+', '-', '@', '\t'];
+
+        private static string EscapeField(string? field)
         {
-            veld ??= "";
+            field ??= "";
 
-            var moetQuoten = veld.Contains(Delimiter) || veld.Contains('"') || veld.Contains('\n') || veld.Contains('\r');
+            if (field.Length > 0 && s_formulaTriggers.Contains(field[0]))
+            {
+                field = "'" + field;
+            }
 
-            return moetQuoten ? $"\"{veld.Replace("\"", "\"\"")}\"" : veld;
+            var needsQuoting = field.Contains(Delimiter) || field.Contains('"') || field.Contains('\n') || field.Contains('\r');
+
+            return needsQuoting ? $"\"{field.Replace("\"", "\"\"")}\"" : field;
         }
     }
 }

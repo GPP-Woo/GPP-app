@@ -15,7 +15,9 @@ namespace ODPC.Apis.Odrc
         Task<IReadOnlyDictionary<string, WaardelijstItem>> GetAllAsync(string reden, CancellationToken token);
     }
 
-    public class WaardelijstenLookupService(IOdrcClientFactory clientFactory) : IWaardelijstenLookupService
+    public class WaardelijstenLookupService(
+        IOdrcClientFactory clientFactory,
+        ILogger<WaardelijstenLookupService> logger) : IWaardelijstenLookupService
     {
         public async Task<IReadOnlyDictionary<string, WaardelijstItem>> GetAllAsync(string reden, CancellationToken token)
         {
@@ -30,7 +32,7 @@ namespace ODPC.Apis.Odrc
             return resultaat;
         }
 
-        private static async Task FetchCategorieAsync(
+        private async Task FetchCategorieAsync(
             HttpClient client,
             Dictionary<string, WaardelijstItem> resultaat,
             string categorie,
@@ -43,11 +45,25 @@ namespace ODPC.Apis.Odrc
             {
                 using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
-                if (!response.IsSuccessStatusCode) return;
+                if (!response.IsSuccessStatusCode)
+                {
+                    var body = await response.Content.ReadAsStringAsync(CancellationToken.None);
+                    logger.LogError(
+                        "Waardelijst '{Categorie}' ophalen mislukt. Status: {Status}, Body: {Body}",
+                        categorie, response.StatusCode, body);
+                    response.EnsureSuccessStatusCode();
+                }
 
                 var json = await response.Content.ReadFromJsonAsync<PagedResponseModel<JsonObject>>(token);
 
-                if (json?.Results == null) return;
+                if (json?.Results == null)
+                {
+                    logger.LogError(
+                        "Waardelijst '{Categorie}' ophalen gaf een leeg of onverwacht antwoord.",
+                        categorie);
+                    throw new InvalidOperationException(
+                        $"Waardelijst '{categorie}' gaf een leeg of onverwacht antwoord.");
+                }
 
                 foreach (var item in json.Results)
                 {
