@@ -10,12 +10,14 @@
       :title="WAARDELIJSTEN.ORGANISATIE"
       :options="lijsten.organisaties"
       v-model="model"
+      :required="true"
     />
 
     <option-group
       :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
       :options="lijsten.informatiecategorieen"
       v-model="model"
+      :required="true"
     />
 
     <option-group
