@@ -51,6 +51,7 @@ try
     builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
     builder.Services.AddScoped<IOdrcClientFactory, OdrcClientFactory>();
     builder.Services.AddScoped<IGebruikersgroepService, GebruikersgroepService>();
+    builder.Services.AddScoped<IWaardelijstenLookupService, WaardelijstenLookupService>();
 
     var app = builder.Build();
 
