@@ -18,7 +18,23 @@ namespace ODPC.Test
             public HttpClient Create(string? handeling) => new();
         }
 
+        private class StubWaardelijstenLookupService(IReadOnlyDictionary<string, WaardelijstItem> waardelijsten) : IWaardelijstenLookupService
+        {
+            public Task<IReadOnlyDictionary<string, WaardelijstItem>> GetAllAsync(string reden, CancellationToken token) =>
+                Task.FromResult(waardelijsten);
+        }
+
         private static readonly IOdrcClientFactory s_clientFactory = new StubOdrcClientFactory();
+
+        private static readonly string s_organisatieUuid = Guid.NewGuid().ToString();
+        private static readonly string s_informatiecategorieUuid = Guid.NewGuid().ToString();
+
+        private static readonly IWaardelijstenLookupService s_waardelijstenLookup = new StubWaardelijstenLookupService(
+            new Dictionary<string, WaardelijstItem>
+            {
+                [s_organisatieUuid] = new WaardelijstItem(WaardelijstCategorieen.Organisatie, "Organisatie"),
+                [s_informatiecategorieUuid] = new WaardelijstItem(WaardelijstCategorieen.Informatiecategorie, "Informatiecategorie")
+            });
 
         [TestMethod]
         public async Task Put_test()
@@ -34,7 +50,7 @@ namespace ODPC.Test
             await context.AddRangeAsync(waardelijst, groep);
             await context.SaveChangesAsync();
 
-            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
+            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory, s_waardelijstenLookup);
             var upsertModel = RandomUpsertModel();
             var result = await controller.Put(groep.Uuid, upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
@@ -66,7 +82,7 @@ namespace ODPC.Test
         {
             using var context = InMemoryDatabase.GetDbContext();
 
-            var controller = new GebruikersgroepAanmakenController(context);
+            var controller = new GebruikersgroepAanmakenController(context, s_waardelijstenLookup);
             var upsertModel = RandomUpsertModel();
             var result = await controller.Post(upsertModel, default);
 
@@ -98,7 +114,7 @@ namespace ODPC.Test
         {
             using var context = InMemoryDatabase.GetDbContext();
 
-            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
+            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory, s_waardelijstenLookup);
             var upsertModel = RandomUpsertModel();
             var result = await controller.Put(Guid.NewGuid(), upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
 
@@ -120,7 +136,7 @@ namespace ODPC.Test
             await context.AddAsync(bestaandeGroep);
             await context.SaveChangesAsync();
 
-            var controller = new GebruikersgroepAanmakenController(context);
+            var controller = new GebruikersgroepAanmakenController(context, s_waardelijstenLookup);
             var upsertModel = RandomUpsertModel();
 
             upsertModel.Naam = bestaandeGroep.Naam;
@@ -146,7 +162,7 @@ namespace ODPC.Test
             await context.AddRangeAsync(bestaandeGroep, teWijzigenGroep);
             await context.SaveChangesAsync();
 
-            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
+            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory, s_waardelijstenLookup);
             var upsertModel = RandomUpsertModel();
 
             upsertModel.Naam = bestaandeGroep.Naam;
@@ -163,6 +179,73 @@ namespace ODPC.Test
         }
 
         [TestMethod]
+        public async Task Post_retourneert_400_zonder_organisatie()
+        {
+            using var context = InMemoryDatabase.GetDbContext();
+
+            var controller = new GebruikersgroepAanmakenController(context, s_waardelijstenLookup);
+            var upsertModel = RandomUpsertModel();
+
+            upsertModel.GekoppeldeWaardelijsten = [s_informatiecategorieUuid];
+
+            var result = await controller.Post(upsertModel, default);
+
+            if (result is not IStatusCodeActionResult statusCodeResult)
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(400, statusCodeResult.StatusCode);
+        }
+
+        [TestMethod]
+        public async Task Post_retourneert_400_zonder_informatiecategorie()
+        {
+            using var context = InMemoryDatabase.GetDbContext();
+
+            var controller = new GebruikersgroepAanmakenController(context, s_waardelijstenLookup);
+            var upsertModel = RandomUpsertModel();
+
+            upsertModel.GekoppeldeWaardelijsten = [s_organisatieUuid];
+
+            var result = await controller.Post(upsertModel, default);
+
+            if (result is not IStatusCodeActionResult statusCodeResult)
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(400, statusCodeResult.StatusCode);
+        }
+
+        [TestMethod]
+        public async Task Put_retourneert_400_zonder_organisatie_of_informatiecategorie()
+        {
+            using var context = InMemoryDatabase.GetDbContext();
+            var groep = RandomGroep();
+
+            await context.AddAsync(groep);
+            await context.SaveChangesAsync();
+
+            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory, s_waardelijstenLookup);
+            var upsertModel = RandomUpsertModel();
+
+            upsertModel.GekoppeldeWaardelijsten = [];
+
+            var result = await controller.Put(groep.Uuid, upsertModel, NullLogger<GebruikersgroepBijwerkenController>.Instance, default);
+
+            if (result is not IStatusCodeActionResult statusCodeResult)
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(400, statusCodeResult.StatusCode);
+        }
+
+        [TestMethod]
         public async Task Put_staat_eigen_naam_toe()
         {
             using var context = InMemoryDatabase.GetDbContext();
@@ -171,7 +254,7 @@ namespace ODPC.Test
             await context.AddAsync(groep);
             await context.SaveChangesAsync();
 
-            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory);
+            var controller = new GebruikersgroepBijwerkenController(context, s_clientFactory, s_waardelijstenLookup);
             var upsertModel = RandomUpsertModel();
 
             upsertModel.Naam = groep.Naam;
@@ -191,7 +274,7 @@ namespace ODPC.Test
         {
             Omschrijving = Guid.NewGuid().ToString(),
             Naam = Guid.NewGuid().ToString(),
-            GekoppeldeWaardelijsten = [Guid.NewGuid().ToString(), Guid.NewGuid().ToString()],
+            GekoppeldeWaardelijsten = [s_organisatieUuid, s_informatiecategorieUuid],
             GekoppeldeGebruikers = [Guid.NewGuid().ToString(), Guid.NewGuid().ToString()],
             IsGeautoriseerdVoorInzageProcedure = false
         };
