@@ -118,6 +118,11 @@
           ><input type="checkbox" v-model="model.automatischIntrekken" /> Automatisch intrekken na
           afloop inzagetermijn</label
         >
+
+        <span v-show="model.automatischIntrekken" class="alert"
+          >Let op: na afloop van de inzagetermijn wordt de hele publicatie inclusief documenten
+          ingetrokken! Dat kan niet later ongedaan worden gemaakt!</span
+        >
       </div>
 
       <button
