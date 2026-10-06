@@ -1,7 +1,7 @@
 <template>
   <simple-spinner v-show="loadingGebruikersgroep"></simple-spinner>
 
-  <form v-show="!loadingGebruikersgroep" @submit.prevent="submit" v-form-invalid-handler>
+  <form v-if="!loadingGebruikersgroep" @submit.prevent="submit" v-form-invalid-handler>
     <section>
       <alert-inline v-if="gebruikersgroepError"
         >Er is iets misgegaan bij het ophalen van de gebruikersgroep...</alert-inline
