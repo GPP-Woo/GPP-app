@@ -12,7 +12,10 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
 {
     [ApiController]
     [Authorize(AdminPolicy.Name)]
-    public class GebruikersgroepBijwerkenController(OdpcDbContext context, IOdrcClientFactory clientFactory) : ControllerBase
+    public class GebruikersgroepBijwerkenController(
+        OdpcDbContext context,
+        IOdrcClientFactory clientFactory,
+        IWaardelijstenLookupService waardelijstenLookup) : ControllerBase
     {
         private readonly OdpcDbContext _context = context;
 
@@ -34,6 +37,13 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepB
             var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
 
             if (groep == null) return NotFound();
+
+            var waardelijsten = await waardelijstenLookup.GetAllAsync("Gebruikersgroep bijwerken", token);
+
+            if (!UpsertHelpers.ValidateGekoppeldeWaardelijsten(model.GekoppeldeWaardelijsten, waardelijsten, ModelState))
+            {
+                return BadRequest(ModelState);
+            }
 
             try
             {

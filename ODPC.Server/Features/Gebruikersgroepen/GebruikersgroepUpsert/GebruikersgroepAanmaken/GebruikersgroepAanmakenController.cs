@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ODPC.Apis.Odrc;
 using ODPC.Authentication;
 using ODPC.Data;
 using ODPC.Features.Gebruikersgroepen.GebruikersgroepDetails;
@@ -9,7 +10,9 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepA
 {
     [ApiController]
     [Authorize(AdminPolicy.Name)]
-    public class GebruikersgroepAanmakenController(OdpcDbContext context) : ControllerBase
+    public class GebruikersgroepAanmakenController(
+        OdpcDbContext context,
+        IWaardelijstenLookupService waardelijstenLookup) : ControllerBase
     {
         private readonly OdpcDbContext _context = context;
 
@@ -24,6 +27,13 @@ namespace ODPC.Features.Gebruikersgroepen.GebruikersgroepUpsert.GebruikersgroepA
         [HttpPost("api/gebruikersgroepen")]
         public async Task<IActionResult> Post([FromBody] GebruikersgroepUpsertModel model, CancellationToken token)
         {
+            var waardelijsten = await waardelijstenLookup.GetAllAsync("Gebruikersgroep aanmaken", token);
+
+            if (!UpsertHelpers.ValidateGekoppeldeWaardelijsten(model.GekoppeldeWaardelijsten, waardelijsten, ModelState))
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
                 var groep = new Data.Entities.Gebruikersgroep
