@@ -1,0 +1,11 @@
+# Local-only: the odpc app requires OIDC_* config that the demo compose does not
+# ship (it expects a real OpenID Connect IdP via user-secrets / Azure AD).
+# Placeholder values let the server boot and serve the SPA; actual login needs
+# a real IdP (point these at e.g. Keycloak/Entra to enable sign-in).
+services:
+  odpc:
+    environment:
+      - OIDC_AUTHORITY=http://localhost:8888/realms/dev
+      - OIDC_CLIENT_ID=odpc-local
+      - OIDC_CLIENT_SECRET=local-placeholder-secret
+      - OIDC_ADMIN_ROLE=odpc-admin
