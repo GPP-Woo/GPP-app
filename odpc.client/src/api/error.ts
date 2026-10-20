@@ -1,5 +1,11 @@
 import toast from "@/stores/toast";
 
+export class LoggedOutError extends Error {
+  constructor(message = "Logged out") {
+    super(message);
+  }
+}
+
 export const handleFetchError = (status?: number) => {
   switch (status) {
     case 401:
@@ -15,7 +21,7 @@ export const handleFetchError = (status?: number) => {
         type: "error"
       });
 
-      throw new Error(`Logged out: 401`);
+      throw new LoggedOutError();
     default:
       break;
   }

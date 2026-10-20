@@ -14,7 +14,8 @@ export const useInzageProcedure = (uuid: MaybeRefOrGetter<string | undefined>) =
   const {
     data,
     loading: loadingInzageProcedure,
-    error: inzageProcedureError
+    error: inzageProcedureError,
+    refetch: refetchInzageProcedure
   } = useAllPages<InzageProcedure>(() =>
     pubUuid.value ? `/api/v2/inzageprocedure?publicatie=${pubUuid.value}` : null
   );
@@ -74,6 +75,7 @@ export const useInzageProcedure = (uuid: MaybeRefOrGetter<string | undefined>) =
     loadingInzageProcedure,
     inzageProcedureError,
     submittingInzageProcedure,
-    submitInzageProcedure
+    submitInzageProcedure,
+    refetchInzageProcedure
   };
 };

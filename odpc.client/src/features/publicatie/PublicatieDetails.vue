@@ -17,7 +17,15 @@
     </menu>
   </div>
 
-  <simple-spinner v-show="isLoading"></simple-spinner>
+  <upload-progress
+    v-if="showUploadProgress"
+    :documenten="uploadingDocumenten"
+    :total="uploadTotalProgress"
+    :error="documentenSubmitError && !submittingDocumenten"
+    @back="reload"
+  />
+
+  <simple-spinner v-else-if="isLoading"></simple-spinner>
 
   <form v-if="!isLoading" @submit.prevent="submit" v-form-invalid-handler>
     <alert-inline v-if="mijnGebruikersgroepenError || !mijnGebruikersgroepen?.length"
@@ -121,6 +129,7 @@ import { useRouter } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
+import UploadProgress from "./components/UploadProgress.vue";
 import { usePreviousRoute } from "@/composables/use-previous-route";
 import { useAppData } from "@/composables/use-app-data";
 import toast from "@/stores/toast";
@@ -133,8 +142,8 @@ import RetractDialogContent from "./components/dialogs/RetractDialogContent.vue"
 import ClaimDialogContent from "./components/dialogs/ClaimDialogContent.vue";
 import NoDocumentsDialogContent from "./components/dialogs/NoDocumentsDialogContent.vue";
 import { usePublicatie } from "./composables/use-publicatie";
-import { useDocumenten } from "./composables/use-documenten";
 import { useInzageProcedure } from "./composables/use-inzage-procedure";
+import { useDocumenten, DocumentenSubmitError } from "./composables/use-documenten";
 import { useMijnGebruikersgroepen } from "./composables/use-mijn-gebruikersgroepen";
 import { usePublicatiePermissions } from "./composables/use-publicatie-permissions";
 import { useDialogs } from "./composables/use-dialogs";
@@ -154,20 +163,25 @@ const { deleteDialog, draftDialog, retractDialog, claimDialog, noDocumentsDialog
 const isLoading = computed(
   () =>
     loadingPublicatie.value ||
+    loadingInzageProcedure.value ||
     loadingDocumenten.value ||
     loadingMijnGebruikersgroepen.value ||
-    loadingDocument.value ||
-    uploadingFile.value ||
-    loadingInzageProcedure.value
+    isSubmitting.value
+);
+
+// replace the spinner when new documents are uploading or summary when documents failed
+const showUploadProgress = computed(
+  () =>
+    uploadingDocumenten.value.length > 0 &&
+    (submittingDocumenten.value || documentenSubmitError.value)
 );
 
 const hasError = computed(
   () =>
     !!publicatieError.value ||
+    !!inzageProcedureError.value ||
     !!documentenError.value ||
-    !!documentError.value ||
-    !!mijnGebruikersgroepenError.value ||
-    !!inzageProcedureError.value
+    !!mijnGebruikersgroepenError.value
 );
 
 // Publicatie
@@ -176,27 +190,32 @@ const {
   isFetching: loadingPublicatie,
   error: publicatieError,
   submitPublicatie,
-  deletePublicatie
+  deletePublicatie,
+  refetchPublicatie,
+  pubUuid
 } = usePublicatie(props.uuid);
+
+// Inzage-procedure
+const {
+  inzageProcedure,
+  loadingInzageProcedure,
+  inzageProcedureError,
+  submitInzageProcedure,
+  refetchInzageProcedure
+} = useInzageProcedure(pubUuid);
 
 // Documenten
 const {
   documenten,
   loadingDocumenten,
   documentenError,
-  loadingDocument,
-  documentError,
-  uploadingFile,
-  submitDocumenten
-} =
-  // Get associated docs by uuid prop when existing pub, so no need to wait for pub fetch.
-  // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
-  useDocumenten(() => props.uuid || publicatie.value?.uuid);
-
-// Inzage-procedure
-const { inzageProcedure, loadingInzageProcedure, inzageProcedureError, submitInzageProcedure } =
-  // Get associated inzage-procedure by uuid prop or publicatie.uuid inline with docs pattern
-  useInzageProcedure(() => props.uuid || publicatie.value?.uuid);
+  submittingDocumenten,
+  uploadingDocumenten,
+  documentenSubmitError,
+  uploadTotalProgress,
+  submitDocumenten,
+  refetchDocumenten
+} = useDocumenten(pubUuid);
 
 // Mijn gebruikersgroepen
 const {
@@ -242,14 +261,39 @@ const handleSuccess = (successMessage?: string) => {
   navigate();
 };
 
+const isSubmitting = ref(false);
+
+const submitAll = async () => {
+  isSubmitting.value = true;
+
+  try {
+    await submitPublicatie();
+    await submitInzageProcedure();
+    await submitDocumenten();
+  } catch (err) {
+    // keep the upload summary visible when documents failed; any other error resets
+    if (!(err instanceof DocumentenSubmitError)) isSubmitting.value = false;
+
+    throw err;
+  }
+};
+
+const reload = async () => {
+  if (!props.uuid) {
+    await router.replace({ name: "publicatie", params: { uuid: publicatie.value.uuid } });
+  }
+
+  isSubmitting.value = false;
+
+  await Promise.all([refetchPublicatie(), refetchInzageProcedure(), refetchDocumenten()]);
+};
+
 const submitHandlers = {
   draft: async () => {
     if ((await draftDialog.reveal()).isCanceled) return;
 
     try {
-      await submitPublicatie();
-      await submitDocumenten();
-      await submitInzageProcedure();
+      await submitAll();
     } catch {
       return;
     }
@@ -302,9 +346,7 @@ const submitHandlers = {
     });
 
     try {
-      await submitPublicatie();
-      await submitDocumenten();
-      await submitInzageProcedure();
+      await submitAll();
     } catch {
       return;
     }

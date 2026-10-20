@@ -1,9 +1,20 @@
-import { ref, watch, type MaybeRefOrGetter, toRef } from "vue";
-import { useFetchApi } from "@/api/use-fetch-api";
+import { ref, computed, watch, type MaybeRefOrGetter, toRef } from "vue";
 import { useAllPages } from "@/composables/use-all-pages";
-import toast from "@/stores/toast";
-import { uploadFile } from "../service";
-import { PublicatieStatus, type Bestandsdeel, type PublicatieDocument } from "../types";
+import { LoggedOutError } from "@/api/error";
+import { ApiError, sendDocument, uploadFile } from "../service";
+import {
+  PublicatieStatus,
+  UploadStatus,
+  type Bestandsdeel,
+  type ClientState,
+  type PublicatieDocument
+} from "../types";
+
+export class DocumentenSubmitError extends Error {
+  constructor(message = "Not all documenten could be submitted") {
+    super(message);
+  }
+}
 
 export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
   const pubUuid = toRef(uuid);
@@ -14,105 +25,130 @@ export const useDocumenten = (uuid: MaybeRefOrGetter<string | undefined>) => {
   const {
     data,
     loading: loadingDocumenten,
-    error: documentenError
+    error: documentenError,
+    refetch: refetchDocumenten
   } = useAllPages<PublicatieDocument>(() =>
     pubUuid.value ? `/api/v2/documenten/?publicatie=${pubUuid.value}` : null
   );
 
   watch(data, (value) => (documenten.value = value ?? []));
 
-  // Document
-  const docUuid = ref<string>();
-  const uploadingFile = ref(false);
+  const submittingDocumenten = ref(false);
 
-  const {
-    post: postDocument,
-    put: putDocument,
-    delete: deleteDocument,
-    data: documentData,
-    isFetching: loadingDocument,
-    error: documentError
-  } = useFetchApi(() => `/api/v2/documenten${docUuid.value ? "/" + docUuid.value : ""}`, {
-    immediate: false
-  }).json<PublicatieDocument>();
+  const uploadingDocumenten = computed(() =>
+    documenten.value.filter((doc) => doc._client?.upload || doc._client?.error)
+  );
+
+  const documentenSubmitError = computed(() => documenten.value.some((doc) => doc._client?.error));
+
+  const uploadTotalProgress = computed(() => {
+    const uploads = documenten.value.filter((doc) => doc._client?.upload);
+    const totalSize = uploads.reduce((sum, doc) => sum + doc.bestandsomvang, 0);
+    const uploaded = uploads.reduce(
+      (sum, doc) => sum + (doc.bestandsomvang * (doc._client?.upload?.progress ?? 0)) / 100,
+      0
+    );
+
+    return totalSize ? Math.floor((uploaded / totalSize) * 100) : 0;
+  });
 
   const submitDocumenten = async () => {
     if (!pubUuid.value || !documenten.value) return;
 
-    for (const doc of documenten.value) {
-      const { _file, ...meta } = doc;
+    documenten.value.forEach((doc) => {
+      if (!doc.uuid && doc._client)
+        doc._client.upload = { progress: 0, status: UploadStatus.pending };
+    });
 
-      if (!doc.uuid) {
-        // Create
-        docUuid.value = undefined;
+    submittingDocumenten.value = true;
 
-        await postDocument({ ...meta, publicatie: pubUuid.value }).execute();
-
-        if (!documentError.value) {
-          await uploadDocument(_file, documentData.value?.bestandsdelen);
+    try {
+      for (const doc of documenten.value) {
+        try {
+          await submitDocument(doc);
+        } catch (err) {
+          if (err instanceof LoggedOutError) throw err;
         }
+      }
+    } finally {
+      submittingDocumenten.value = false;
+    }
+
+    if (documentenSubmitError.value) throw new DocumentenSubmitError();
+  };
+
+  const submitDocument = async (doc: PublicatieDocument) => {
+    const { _client, ...meta } = doc;
+
+    try {
+      if (!doc.uuid) {
+        const created = await sendDocument<PublicatieDocument>("POST", "/api/v2/documenten", {
+          ...meta,
+          publicatie: pubUuid.value
+        });
+
+        await uploadDocument(_client, created.bestandsdelen);
       } else if (doc.pendingAction === "delete") {
-        // Delete
-        docUuid.value = doc.uuid;
-
-        await deleteDocument().text().execute();
+        await sendDocument("DELETE", `/api/v2/documenten/${doc.uuid}`);
       } else {
-        // Update
-        docUuid.value = doc.uuid;
-
-        await putDocument({
+        await sendDocument("PUT", `/api/v2/documenten/${doc.uuid}`, {
           ...meta,
           publicatiestatus:
             doc.pendingAction === "retract" ? PublicatieStatus.ingetrokken : doc.publicatiestatus
-        }).execute();
-      }
-
-      if (documentError.value) {
-        toast.add({
-          text:
-            doc.pendingAction === "delete"
-              ? "Het document kon niet worden verwijderd, probeer het nogmaals..."
-              : "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
-          type: "error"
         });
-
-        // Reset for retry
-        documentError.value = null;
-        doc.pendingAction = null;
-
-        throw new Error(`submitDocumenten`);
       }
+    } catch (err) {
+      console.error(err);
+
+      if (err instanceof LoggedOutError) throw err;
+
+      if (_client?.upload) _client.upload.status = UploadStatus.failed;
+
+      const client = (doc._client ??= {});
+
+      if (err instanceof ApiError && err.kind === "upload") {
+        client.error = "Het uploaden is mislukt";
+      } else if (err instanceof ApiError) {
+        client.error =
+          doc.pendingAction === "delete"
+            ? "Het verwijderen is mislukt"
+            : "De metadata kon niet worden opgeslagen";
+      } else {
+        client.error = "Onverwachte fout";
+      }
+
+      throw err;
     }
   };
 
-  const uploadDocument = async (file?: File, bestandsdelen?: Bestandsdeel[] | null) => {
-    if (file && bestandsdelen?.length) {
-      uploadingFile.value = true;
+  const uploadDocument = async (client?: ClientState, bestandsdelen?: Bestandsdeel[] | null) => {
+    const { file, upload } = client ?? {};
 
-      try {
-        await uploadFile(file, bestandsdelen);
-      } catch (err) {
-        toast.add({
-          text: "Het document kon niet worden geupload, probeer het nogmaals...",
-          type: "error"
-        });
-
-        throw err;
-      } finally {
-        uploadingFile.value = false;
-      }
-    } else {
-      throw new Error(`uploadDocument`);
+    if (!file || !upload) {
+      throw new Error("uploadDocument: document has no file to upload");
     }
+
+    if (!bestandsdelen?.length) {
+      throw new ApiError("upload", undefined, "no bestandsdelen in response");
+    }
+
+    upload.status = UploadStatus.uploading;
+
+    await uploadFile(file, bestandsdelen, (percentage) => (upload.progress = percentage));
+
+    upload.progress = 100;
+    upload.status = UploadStatus.done;
   };
 
   return {
     documenten,
     loadingDocumenten,
     documentenError,
-    loadingDocument,
-    documentError,
-    uploadingFile,
-    submitDocumenten
+    submittingDocumenten,
+    uploadingDocumenten,
+    documentenSubmitError,
+    uploadTotalProgress,
+    submitDocumenten,
+    refetchDocumenten
   };
 };

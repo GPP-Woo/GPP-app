@@ -1,5 +1,4 @@
 import { ref, toValue, type MaybeRefOrGetter } from "vue";
-import { asyncComputed } from "@vueuse/core";
 import { handleFetchError, type PagedResult } from "@/api";
 
 const fetchPage = <T>(url: string, signal?: AbortSignal | undefined) =>
@@ -24,32 +23,41 @@ export const fetchAllPages = async <T>(
 };
 
 export const useAllPages = <T>(url: MaybeRefOrGetter<string | null>) => {
+  const data = ref<T[]>([]);
   const loading = ref(true);
   const error = ref(false);
 
-  const currentUrl = toValue(url);
+  let abortController: AbortController | undefined;
 
-  const data = asyncComputed(
-    async (onCancel) => {
-      if (!currentUrl) return [] as T[];
+  const refetch = async () => {
+    abortController?.abort();
 
-      const abortController = new AbortController();
+    const controller = (abortController = new AbortController());
+    const currentUrl = toValue(url);
 
-      onCancel(() => abortController.abort());
+    loading.value = true;
+    error.value = false;
 
-      return await fetchAllPages<T>(currentUrl, abortController.signal).catch(() => {
-        error.value = true;
+    try {
+      const result = currentUrl ? await fetchAllPages<T>(currentUrl, controller.signal) : [];
 
-        return [] as T[];
-      });
-    },
-    [] as T[],
-    loading
-  );
+      if (!controller.signal.aborted) data.value = result;
+    } catch {
+      if (controller.signal.aborted) return;
+
+      error.value = true;
+      data.value = [];
+    }
+
+    if (!controller.signal.aborted) loading.value = false;
+  };
+
+  refetch();
 
   return {
     data,
     loading,
-    error
+    error,
+    refetch
   };
 };
