@@ -79,6 +79,7 @@ export type PublicatieDocument = {
   bestandsomvang: number;
   bestandsdelen?: Bestandsdeel[] | null;
   kenmerken: Kenmerk[];
+  uploadVoltooid?: boolean;
   _client?: ClientState;
 };
 

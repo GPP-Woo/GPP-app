@@ -17,6 +17,7 @@
         public required double Bestandsomvang { get; set; }
         public List<Bestandsdeel>? Bestandsdelen { get; set; }
         public List<Identifier>? Kenmerken { get; set; }
+        public bool? UploadVoltooid { get; set; }
     }
 
     public class Eigenaar

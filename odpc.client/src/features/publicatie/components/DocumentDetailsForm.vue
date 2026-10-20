@@ -18,10 +18,19 @@
 
         <a
           :href="`/api/v2/documenten/${doc.uuid}/download`"
-          :title="`Download ${doc.bestandsnaam}`"
-          class="icon-after download"
-          ><span class="visually-hidden">Download {{ doc.bestandsnaam }}</span></a
+          :title="
+            !doc.uploadVoltooid
+              ? `Upload ${doc.bestandsnaam} is mislukt`
+              : `Download ${doc.bestandsnaam}`
+          "
+          :class="['icon-after', !doc.uploadVoltooid ? 'triangle-exclamation' : 'download']"
         >
+          <span v-if="!doc.uploadVoltooid" class="visually-hidden"
+            >Upload {{ doc.bestandsnaam }} is mislukt</span
+          >
+
+          <span v-else class="visually-hidden">Download {{ doc.bestandsnaam }}</span>
+        </a>
       </summary>
 
       <div v-if="!isReadonly" class="form-group">
