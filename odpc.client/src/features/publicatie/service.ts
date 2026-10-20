@@ -50,8 +50,9 @@ const putBestandsdeel = (url: string, blob: Blob, onProgress: (loadedBytes: numb
     xhr.open("PUT", url);
     xhr.setRequestHeader("is-api", "true");
 
+    // loaded/total include the multipart boundaries and headers: scale to the blob size
     xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) onProgress(e.loaded);
+      if (e.lengthComputable && e.total > 0) onProgress((e.loaded / e.total) * blob.size);
     };
 
     xhr.onload = () => {
@@ -94,9 +95,7 @@ const uploadFile = async (
 
     const blob = file.slice(blobStart, blobStart + omvang);
 
-    await putBestandsdeel(pathname + search, blob, (loaded) =>
-      report(blobStart + Math.min(loaded, omvang))
-    );
+    await putBestandsdeel(pathname + search, blob, (loaded) => report(blobStart + loaded));
 
     blobStart += omvang;
 

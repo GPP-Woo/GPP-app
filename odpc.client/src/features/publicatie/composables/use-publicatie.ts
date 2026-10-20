@@ -19,7 +19,7 @@ export const usePublicatie = (uuid?: string) => {
     eigenaarGroep: null
   });
 
-  const pubUuid = computed(() => uuid ?? publicatie.value.uuid);
+  const pubUuid = computed(() => uuid || publicatie.value.uuid);
 
   const {
     data,
