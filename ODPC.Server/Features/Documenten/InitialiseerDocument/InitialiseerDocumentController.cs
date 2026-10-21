@@ -7,7 +7,7 @@ namespace ODPC.Features.Documenten.InitialiseerDocument
     public class InitialiseerDocumentController(IOdrcClientFactory clientFactory) : ControllerBase
     {
         [HttpPost("api/{version}/documenten")]
-        public async Task<IActionResult> Post(string version, PublicatieDocument document, CancellationToken token)
+        public async Task<IActionResult> Post(string version, PublicatieDocumentUpsert document, CancellationToken token)
         {
             using var client = clientFactory.Create("Initialiseer document");
 

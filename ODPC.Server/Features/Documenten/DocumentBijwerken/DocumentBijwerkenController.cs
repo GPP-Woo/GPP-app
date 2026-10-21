@@ -8,7 +8,7 @@ namespace ODPC.Features.Documenten.DocumentBijwerken
     public class DocumentBijwerkenController(IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
     {
         [HttpPut("api/{version}/documenten/{uuid:guid}")]
-        public async Task<IActionResult> Put(string version, Guid uuid, PublicatieDocument document, CancellationToken token)
+        public async Task<IActionResult> Put(string version, Guid uuid, PublicatieDocumentUpsert document, CancellationToken token)
         {
             using var client = clientFactory.Create("Document bijwerken");
 
