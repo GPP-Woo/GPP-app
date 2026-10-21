@@ -285,6 +285,7 @@ const reload = async () => {
 
   isSubmitting.value = false;
 
+  // no retry mechanism (yet): refetch so failed documents show up as saved with an incomplete upload
   await Promise.all([refetchPublicatie(), refetchInzageProcedure(), refetchDocumenten()]);
 };
 
