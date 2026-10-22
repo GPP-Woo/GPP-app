@@ -1,6 +1,6 @@
 ﻿namespace ODPC.Features.Documenten
 {
-    public class PublicatieDocument
+    public class PublicatieDocumentUpsert
     {
         public Guid Uuid { get; set; }
         public Guid Publicatie { get; set; }
@@ -17,6 +17,12 @@
         public required double Bestandsomvang { get; set; }
         public List<Bestandsdeel>? Bestandsdelen { get; set; }
         public List<Identifier>? Kenmerken { get; set; }
+    }
+
+    // response model
+    public class PublicatieDocument : PublicatieDocumentUpsert
+    {
+        public bool? UploadVoltooid { get; set; }
     }
 
     public class Eigenaar

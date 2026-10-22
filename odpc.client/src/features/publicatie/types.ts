@@ -79,7 +79,29 @@ export type PublicatieDocument = {
   bestandsomvang: number;
   bestandsdelen?: Bestandsdeel[] | null;
   kenmerken: Kenmerk[];
-  _file?: File;
+  uploadVoltooid?: boolean;
+  _client?: ClientState;
+};
+
+// client-only state, never sent to the API
+export type ClientState = {
+  file?: File;
+  upload?: UploadState;
+  error?: string;
+};
+
+export const UploadStatus = Object.freeze({
+  pending: "pending",
+  uploading: "uploading",
+  done: "done",
+  failed: "failed"
+});
+
+export type UploadStatus = keyof typeof UploadStatus;
+
+export type UploadState = {
+  progress: number;
+  status: UploadStatus;
 };
 
 export type Onderwerp = {

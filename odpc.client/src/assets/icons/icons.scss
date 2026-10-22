@@ -161,3 +161,8 @@
 .icon-after.download::after {
   mask-image: url("@/assets/icons/download.svg");
 }
+
+.icon-before.triangle-exclamation::before,
+.icon-after.triangle-exclamation::after {
+  mask-image: url("@/assets/icons/triangle-exclamation.svg");
+}

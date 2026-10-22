@@ -1,4 +1,4 @@
-import { ref, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import { PublicatieStatus, type Publicatie } from "../types";
@@ -19,6 +19,8 @@ export const usePublicatie = (uuid?: string) => {
     eigenaarGroep: null
   });
 
+  const pubUuid = computed(() => uuid || publicatie.value.uuid);
+
   const {
     data,
     isFetching,
@@ -27,7 +29,7 @@ export const usePublicatie = (uuid?: string) => {
     post,
     put,
     delete: deleteMethod
-  } = useFetchApi(() => `${API_URL}/publicaties${uuid ? "/" + uuid : ""}`, {
+  } = useFetchApi(() => `${API_URL}/publicaties${pubUuid.value ? "/" + pubUuid.value : ""}`, {
     immediate: false
   }).json<Publicatie>();
 
@@ -42,7 +44,7 @@ export const usePublicatie = (uuid?: string) => {
       }
     };
 
-    if (uuid) {
+    if (pubUuid.value) {
       await put(publicatie).execute();
     } else {
       await post(publicatie).execute();
@@ -77,11 +79,15 @@ export const usePublicatie = (uuid?: string) => {
 
   onMounted(() => uuid && get().execute());
 
+  const refetchPublicatie = () => get().execute();
+
   return {
     publicatie,
     isFetching,
     error,
     submitPublicatie,
-    deletePublicatie
+    deletePublicatie,
+    refetchPublicatie,
+    pubUuid
   };
 };

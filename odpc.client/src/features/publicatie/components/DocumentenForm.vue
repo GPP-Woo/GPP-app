@@ -179,7 +179,7 @@ watch(selectedFiles, (newFiles) => {
       doc.bestandsnaam = file.name;
       doc.bestandsformaat = bestandsformaat;
       doc.bestandsomvang = file.size;
-      doc._file = file;
+      doc._client = { file };
 
       newDocuments.push(doc);
     });
