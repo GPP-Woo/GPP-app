@@ -45,6 +45,7 @@ try
         options.NameClaimType = builder.Configuration["OIDC_NAME_CLAIM_TYPE"];
         options.RoleClaimType = builder.Configuration["OIDC_ROLE_CLAIM_TYPE"];
         options.IdClaimType = builder.Configuration["OIDC_ID_CLAIM_TYPE"];
+        options.RequireHttpsForIdentityProvider = builder.Configuration.GetValue<bool?>("OIDC_REQUIRE_HTTPS");
     });
 
     var connStr = $"Username={builder.Configuration["POSTGRES_USER"]};Password={builder.Configuration["POSTGRES_PASSWORD"]};Host={builder.Configuration["POSTGRES_HOST"]};Database={builder.Configuration["POSTGRES_DB"]};Port={builder.Configuration["POSTGRES_PORT"]}";
