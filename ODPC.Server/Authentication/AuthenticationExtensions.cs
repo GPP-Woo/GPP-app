@@ -80,6 +80,7 @@ namespace ODPC.Authentication
                     options.CorrelationCookie.SameSite = SameSiteMode.None;
                     options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
 
+                    options.RequireHttpsMetadata = authOptions.RequireHttpsForIdentityProvider ?? true;
                     options.Authority = authOptions.Authority;
                     options.ClientId = authOptions.ClientId;
                     options.ClientSecret = authOptions.ClientSecret;
