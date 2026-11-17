@@ -5,7 +5,7 @@ Handleiding
 
 De Wet open overheid (Woo) verplicht overheden om documenten uit 17 informatiecategorieën actief openbaar te maken. Ook buiten deze 17 informatiecategorieën mogen documenten actief openbaar gemaakt worden (inspanningsverplichting). Voor een correct werkende aansluiting op de landelijke Generieke Woo-Voorziening (GWV, `open.overheid.nl <https://open.overheid.nl/>`_) moet een eindgebruiker bij iedere publicatie aangeven binnen welke informatiecategorie deze valt.
 
-In de GPP-App kunnen gebruikers documenten openbaar maken. Dit doen zij door publicaties aan te maken, en deze koppelen aan de juiste organisaties en informatiecategorieën. Hiermee worden ze vindbaar op `open.overheid.nl <https://open.overheid.nl/>`_, en in een eigen website die deze publicaties ontsluit, zoals het GPP-Burgerportaal.
+In de GPP-App kunnen gebruikers documenten openbaar maken. Dit doen zij door publicaties aan te maken, en deze koppelen aan de juiste organisaties en informatiecategorieën. Hiermee worden ze (`op termijn <https://www.koopoverheid.nl/voor-overheden/rijksoverheid/open-overheid/aanlevermethoden/harvester>`_) vindbaar op `open.overheid.nl <https://open.overheid.nl/>`_, en in een eigen website die deze publicaties ontsluit, zoals het GPP-Burgerportaal.
 
 .. note:: De xml-sitemap waarmee de publicaties uit GPP-Woo worden toegevoegd aan de
    Generieke Woo-Voorziening, is onderdeel van een ander GPP-Woo-component, het
@@ -34,17 +34,17 @@ Begrippen
 ---------
 
 Publicatie
-   Een verzameling gegevens (metadata) over iets dat openbaar gemaakt wordt, bijvoorbeeld een
-   besluit of een convenant. Een publicatie heeft doorgaans één of meer documenten.
+   Een verzameling gegevens (metadata) over informatie die openbaar gemaakt wordt, bijvoorbeeld een
+   besluit of een convenant. Een publicatie omvat doorgaans één of meer documenten.
 
 Document
-   Een bestand (bijvoorbeeld een PDF) met eigen gegevens, dat altijd bij één publicatie
+   Een bestand (bijvoorbeeld een PDF) met eigen gegevens (metadata), dat altijd bij één publicatie
    hoort.
 
 Gebruikersgroep en profiel
    Een gebruikersgroep bepaalt namens welke organisaties en binnen welke
    informatiecategorieën en onderwerpen de leden publicaties mogen maken. In de
-   publicatieschermen heet de gebruikersgroep waarmee je werkt je **profiel**. Een
+   publicatieschermen heet de gebruikersgroep waarmee je werkt je **"profiel"**. Een
    publicatie hoort altijd bij één gebruikersgroep.
 
 Waardelijsten
@@ -58,8 +58,10 @@ Publicatie-eigenaar
    :ref:`claimen <handleiding_gebruikers_index_claimen>` en wordt dan de nieuwe eigenaar.
 
 Inzageprocedure
-   Bij sommige publicaties, zoals een ontwerpbesluit, mogen burgers gedurende een
-   inzagetermijn reageren met een zienswijze of bezwaar. De inzageprocedure legt vast hoe en
+   Wanneer besluiten (of voornemens daartoe) bekend gemaakt worden op `officielebekendmakingen.nl <https://www.officielebekendmakingen.nl/>`_ 
+   dan dienen de stukken conform de `Bekendmakingswet <https://wetten.overheid.nl/BWBR0004287>`_ digitaal ter inzage te worden gelegd. 
+   Hiervoor kan een medewerker de inzageprocedure van het GPP_Woo gebruiken. Op zo'n (voorgenomen) besluit mogen burgers gedurende een
+   inzagetermijn reageren met een zienswijze of bezwaar. Op de inzageprocedure legt de medewerker vast hoe en
    tot wanneer dat kan. Zie :ref:`handleiding_gebruikers_index_inzageprocedure`.
 
 .. _handleiding_index_statussen:
