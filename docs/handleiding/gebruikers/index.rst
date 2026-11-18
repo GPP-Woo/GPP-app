@@ -179,10 +179,9 @@ PowerPoint (PPT, PPTX, PPS, PPSX), OpenDocument (ODT, ODS, ODP, ODF), RTF, TXT, 
 ZIP en 7z. Bij een ander formaat of een leeg bestand verschijnt de melding "Onbekend formaat
 of leeg bestand." en wordt het bestand niet toegevoegd.
 
-.. tip:: Bij het publiceren verwijdert de gekoppelde publicatiebank bij veel bestandstypen
-   automatisch de verborgen metadata uit het bestand, zoals de naam van de auteur. Controleer
-   desondanks altijd zelf of een document geen informatie bevat die niet openbaar mag worden,
-   zoals persoonsgegevens in de tekst.
+.. warning:: In de documenten mogen geen privacy-gevoelige of anderszins vertrouwelijke informatie staan! 
+   De documenten worden immers openbaar en online gepubliceerd! Verwijder of lak daarom 
+   vertrouwelijke informatie vóórdat je het document uploadt naar het GPP-Woo.
 
 Na het toevoegen verschijnen de documenten onder het kopje "Nieuwe documenten". Per document
 kun je de volgende velden invullen:
@@ -201,7 +200,7 @@ kun je de volgende velden invullen:
   worden, bijv. het interne of externe documentnummer.
 
 Heb je per ongeluk een verkeerd bestand toegevoegd? Klik dan bij dat document op
-**Verwijderen**. Zolang de publicatie nog niet is opgeslagen, wordt het document dan alleen
+**Verwijderen**. Zolang de publicatie nog niet is opgeslagen, wordt het document
 uit de lijst gehaald.
 
 **Dubbele documenten**
@@ -265,10 +264,16 @@ daarna de volgende velden in:
   rechtsmiddel ingevuld, zoals ingesteld in de publicatiebank.
 - ``Toelichting`` \*: Een toelichting voor burgers, bijvoorbeeld wat er ter inzage ligt en
   hoe ze kunnen reageren.
-- ``URL bekendmaking``: Indien van toepassing, de link naar de officiële bekendmaking,
-  bijvoorbeeld op officielebekendmakingen.nl.
+- ``URL bekendmaking``: Indien al bekend, de link naar de officiële bekendmaking op officielebekendmakingen.nl.
+  Mogelijk kun je deze pas later als wijziging aanvullen.
 - ``Automatisch intrekken na afloop inzagetermijn``: Vink dit aan als de publicatie na
   afloop van de inzagetermijn offline gehaald moet worden.
+
+.. tip:: Mogelijk moet je eerst de publicatie met inzageprocedure aanmaken en publiceren, 
+   zodat je de URL krijgt waarnaar je kunt verwijzen in de bekendmaking. Wanneer je vervolgens 
+   de bekendmaking hebt gepubliceerd (via DROP op officielebekendmakingen.nl), dan kun je 
+   de URL van de bekendmaking opnemen in de ``URL bekendmaking`` van de publicatie met 
+   inzageprocedure. Zo verwijzen de publicatie en de bekendmaking over en wer naar elkaar.
 
 .. warning:: Met **Automatisch intrekken na afloop inzagetermijn** wordt na afloop van de
    inzagetermijn de hele publicatie inclusief documenten ingetrokken. Dat kan niet ongedaan
@@ -323,7 +328,7 @@ Per document staat er een optie om het document te verwijderen of in te trekken:
   volledig verwijderd.
 - **Document intrekken** (bij een gepubliceerd document): alleen dat document wordt bij het
   opslaan offline gehaald. Zo hoef je niet de hele publicatie in te trekken. Een ingetrokken
-  document blijft zichtbaar met een doorgestreepte titel.
+  document blijft in de GPP-app zichtbaar met een doorgestreepte titel.
 
 Beide acties kunnen niet ongedaan gemaakt worden.
 
