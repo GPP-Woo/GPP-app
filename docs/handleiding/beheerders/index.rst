@@ -165,10 +165,14 @@ Bij de ingebruikname van de GPP-App kun je de volgende volgorde aanhouden:
 Wanneer een medewerker vertrekt
 -------------------------------
 
-Verwijder de medewerker uit de gebruikersgroepen. Zijn of haar publicaties blijven bestaan.
+Laat de toegang tot de GPP-app in de Identity Provider intrekken. De medewerker kan dan niet meer inloggen. 
+Verwijder de medewerker ook uit de gebruikersgroepen. Zijn of haar publicaties blijven bestaan.
 Een collega uit dezelfde gebruikersgroep kan deze publicaties via "Publicaties van collega's"
-:ref:`claimen <handleiding_gebruikers_index_claimen>` en daarna beheren. Laat ook de
-toegang in de Identity Provider intrekken.
+:ref:`claimen <handleiding_gebruikers_index_claimen>` en daarna beheren. 
+
+Je kunt ook de alleen de inlog in de Identity Provider in laten trekken. Wanneer de medewerker later opnieuw voor de organisatie gaat werken, dan kan hij/zij opnieuw via de Identitity Provider toegang krijgen en krijgt hij/zij direct zijn/haar oude rechten terug. Dit kan bijvoorbeeld handig zijn bij externe medewerkers die regelmatig ingehuurd of gedetacheerd worden.
+
+.. warning:: Bij het intrekken van de toegang **tot** de GPP-app worden dus niet automatisch de rechten van de medewerker **in** de GP-app ingetrokken! Dit moet de beheerder, indien gewenst,  handmatig doen!
 
 Problemen oplossen
 ------------------
