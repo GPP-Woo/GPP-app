@@ -9,7 +9,7 @@ De ‘GPP-App’ is geïnitieerd door Dimpact, gefinancierd door meerdere Nederl
 ## Financiers
 Onder begeleiding van Dimpact hebben de volgende gemeenten kennis en financiële middelen bijgedragen:
 
--'s-Hertogenbosch
+- 's-Hertogenbosch
 - Assen
 - Borger-Odoorn
 - Culemborg
