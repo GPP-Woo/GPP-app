@@ -15,7 +15,7 @@ Het volledige platform bevat nog 3 andere componenten:
 
 * `GPP Publicatiebank <https://github.com/GPP-Woo/GPP-publicatiebank>`_, een opslagvoorziening inclusief API's voor openbare documenten en metadata.
 * `GPP Burgerportaal <https://github.com/GPP-Woo/GPP-burgerportaal>`_, een gebruikersinterface voor burgers voor het zoeken en raadplegen van openbare documenten.
-* `GPP Search <https://github.com/GPP-Woo/GPP-zoeken>`_, de zoektechnologie voor het doorzoekbaar en vindbaar maken van openbare documenten. Zowel de metadata als de inhoud van de documenten worden geïndexeerd.
+* `GPP-Zoeken <https://github.com/GPP-Woo/GPP-zoeken>`_, de zoektechnologie voor het doorzoekbaar en vindbaar maken van openbare documenten. Zowel de metadata als de inhoud van de documenten worden geïndexeerd.
 
 Alle componenten zijn ontwikkeld in lijn met het `Common Ground`_ model.
 

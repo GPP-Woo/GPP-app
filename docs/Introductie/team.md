@@ -7,19 +7,28 @@ De ‘GPP-App’ is geïnitieerd door Dimpact, gefinancierd door meerdere Nederl
 [Dimpact](https://www.dimpact.nl/) is een coöperatie van, voor en door Nederlandse gemeenten. Zij zijn eigenaar en beheren alle ontwikkelingen. Samen zorgen zij voor goede gemeentelijke dienstverlening, onder andere door softwareoplossingen te ontwikkelen en verbeteren. Dimpact stimuleert en faciliteert innovaties binnen gemeenten. Dimpact en haar leden delen kennis en inspireren elkaar tijdens evenementen.
 
 ## Financiers
-Onder begeleiding van Dimpact hebben de volgende negen gemeenten kennis en financiële middelen bijgedragen:
+Onder begeleiding van Dimpact hebben de volgende gemeenten kennis en financiële middelen bijgedragen:
 
+- 's-Hertogenbosch
+- Assen
+- Borger-Odoorn
+- Culemborg
+- Emmen
 - Enschede
 - Groningen
 - Haarlemmermeer
 - Kampen
 - Losser
+- Maashorst
+- Maastricht
+- Oldenzaal
+- Oost Gelre
 - Rotterdam
 - Sittard-Geleen
+- Tiel
 - Waterland
+- West Betuwe
 - Zaanstad
-
-
 
 ## Ontwikkeling
 Het ‘Generiek Publicatie Platform Woo (GPP-Woo)’ is ontwikkeld door ICATT en Maykin. ICATT was leidend voor het platform als geheel. De onderdelen ‘GPP-Publicatiebank’ en ‘GPP-Zoeken’ zijn primair ontwikkeld door Maykin.
