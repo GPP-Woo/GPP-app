@@ -7,14 +7,14 @@ namespace ODPC.Test.Infrastructure
     public record RecordedRequest(HttpMethod Method, string PathAndQuery, string? Body);
 
     /// <summary>Stand-in for the publicatiebank: answers requests with a canned response and records what was sent.</summary>
-    public class FakePublicatiebank : HttpMessageHandler
+    public class StubPublicatiebankHandler : HttpMessageHandler
     {
         private readonly List<RecordedRequest> _requests = [];
         private readonly Dictionary<(HttpMethod, string), Func<HttpResponseMessage>> _responses = [];
 
         public IReadOnlyList<RecordedRequest> Requests => _requests;
 
-        public FakePublicatiebank Respond(HttpMethod method, string path, HttpStatusCode status, object? body = null)
+        public StubPublicatiebankHandler Respond(HttpMethod method, string path, HttpStatusCode status, object? body = null)
         {
             _responses[(method, path)] = () => body == null
                 ? new HttpResponseMessage(status)
@@ -23,7 +23,7 @@ namespace ODPC.Test.Infrastructure
             return this;
         }
 
-        public IOdrcClientFactory ClientFactory => new FakeOdrcClientFactory(this);
+        public IOdrcClientFactory ClientFactory => new StubOdrcClientFactory(this);
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -35,7 +35,7 @@ namespace ODPC.Test.Infrastructure
                 : new HttpResponseMessage(HttpStatusCode.NotFound);
         }
 
-        private sealed class FakeOdrcClientFactory(FakePublicatiebank handler) : IOdrcClientFactory
+        private sealed class StubOdrcClientFactory(StubPublicatiebankHandler handler) : IOdrcClientFactory
         {
             public HttpClient Create(string? handeling) =>
                 new(handler, disposeHandler: false) { BaseAddress = new Uri("http://publicatiebank.test") };

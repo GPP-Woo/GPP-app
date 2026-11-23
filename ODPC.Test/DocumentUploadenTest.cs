@@ -31,7 +31,7 @@ namespace ODPC.Test
         [TestMethod]
         public async Task Initialiseert_document_in_publicatiebank()
         {
-            var bank = new FakePublicatiebank().Respond(HttpMethod.Post, "/api/v2/documenten", HttpStatusCode.Created,
+            var bank = new StubPublicatiebankHandler().Respond(HttpMethod.Post, "/api/v2/documenten", HttpStatusCode.Created,
                 new PublicatieDocument { Uuid = s_docUuid, OfficieleTitel = "Document", Bestandsnaam = "a.pdf", Bestandsformaat = "application/pdf", Bestandsomvang = 10 });
 
             var result = await new InitialiseerDocumentController(bank.ClientFactory).Post("v2", CreateDocument(), default);
@@ -44,7 +44,7 @@ namespace ODPC.Test
         [TestMethod]
         public async Task Geeft_fout_door_als_initialiseren_door_publicatiebank_faalt()
         {
-            var bank = new FakePublicatiebank().Respond(HttpMethod.Post, "/api/v2/documenten", HttpStatusCode.InternalServerError);
+            var bank = new StubPublicatiebankHandler().Respond(HttpMethod.Post, "/api/v2/documenten", HttpStatusCode.InternalServerError);
 
             await Assert.ThrowsExactlyAsync<HttpRequestException>(() =>
                 new InitialiseerDocumentController(bank.ClientFactory).Post("v2", CreateDocument(), default));
@@ -53,7 +53,7 @@ namespace ODPC.Test
         [TestMethod]
         public async Task Stuurt_bestandsdeel_door_naar_publicatiebank()
         {
-            var bank = new FakePublicatiebank().Respond(HttpMethod.Put, s_partPath, HttpStatusCode.NoContent);
+            var bank = new StubPublicatiebankHandler().Respond(HttpMethod.Put, s_partPath, HttpStatusCode.NoContent);
             using var client = await CreateUploadClientAsync(bank);
 
             using var response = await client.PutAsync(s_partPath, new StringContent("inhoud van het bestandsdeel"));
@@ -68,7 +68,7 @@ namespace ODPC.Test
         [TestMethod]
         public async Task Meldt_fout_als_publicatiebank_het_bestandsdeel_weigert()
         {
-            var bank = new FakePublicatiebank().Respond(HttpMethod.Put, s_partPath, HttpStatusCode.InternalServerError);
+            var bank = new StubPublicatiebankHandler().Respond(HttpMethod.Put, s_partPath, HttpStatusCode.InternalServerError);
             using var client = await CreateUploadClientAsync(bank);
 
             var ex = await Assert.ThrowsExactlyAsync<HttpRequestException>(() => client.PutAsync(s_partPath, new StringContent("x")));
@@ -76,7 +76,7 @@ namespace ODPC.Test
             Assert.AreEqual(HttpStatusCode.InternalServerError, ex.StatusCode);
         }
 
-        private static async Task<HttpClient> CreateUploadClientAsync(FakePublicatiebank bank)
+        private static async Task<HttpClient> CreateUploadClientAsync(StubPublicatiebankHandler bank)
         {
             var builder = WebApplication.CreateBuilder();
             builder.WebHost.UseTestServer();

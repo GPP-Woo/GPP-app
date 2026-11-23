@@ -20,11 +20,11 @@ namespace ODPC.Test
             EigenaarGroep = new EigenaarGroep { identifier = s_groep, weergaveNaam = "Groep" }
         };
 
-        private static async Task<(IActionResult Result, FakePublicatiebank Bank)> PutAsync(
-            Action<FakePublicatiebank> setup, bool isGebruiker = true)
+        private static async Task<(IActionResult Result, StubPublicatiebankHandler Bank)> PutAsync(
+            Action<StubPublicatiebankHandler> setup, bool isGebruiker = true)
         {
             using var context = InMemoryDatabase.GetDbContext();
-            var bank = new FakePublicatiebank();
+            var bank = new StubPublicatiebankHandler();
             setup(bank);
 
             var controller = new PublicatieBijwerkenController(context, bank.ClientFactory, new StubGebruikersgroepService([], isGebruiker));

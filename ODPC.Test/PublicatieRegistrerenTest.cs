@@ -19,14 +19,14 @@ namespace ODPC.Test
             EigenaarGroep = new EigenaarGroep { identifier = Guid.NewGuid().ToString(), weergaveNaam = "Groep" }
         };
 
-        private static PublicatieRegistrerenController CreateController(FakePublicatiebank bank, params string[] toegestaan) =>
+        private static PublicatieRegistrerenController CreateController(StubPublicatiebankHandler bank, params string[] toegestaan) =>
             new(bank.ClientFactory, new StubGebruikersgroepService(toegestaan));
 
         [TestMethod]
         public async Task Registreert_publicatie_in_publicatiebank()
         {
             var created = new Publicatie { Uuid = Guid.NewGuid(), OfficieleTitel = "Titel" };
-            var bank = new FakePublicatiebank().Respond(HttpMethod.Post, "/api/v2/publicaties", HttpStatusCode.Created, created);
+            var bank = new StubPublicatiebankHandler().Respond(HttpMethod.Post, "/api/v2/publicaties", HttpStatusCode.Created, created);
 
             var result = await CreateController(bank, s_organisatie, s_categorie).Post("v2", CreatePublicatie(), default);
 
@@ -40,7 +40,7 @@ namespace ODPC.Test
         [TestMethod]
         public async Task Weigert_publicatie_zonder_eigenaargroep_zonder_publicatiebank_aan_te_roepen()
         {
-            var bank = new FakePublicatiebank();
+            var bank = new StubPublicatiebankHandler();
             var publicatie = CreatePublicatie();
             publicatie.EigenaarGroep = null;
 
@@ -53,7 +53,7 @@ namespace ODPC.Test
         [TestMethod]
         public async Task Weigert_niet_geautoriseerde_informatiecategorie_zonder_publicatiebank_aan_te_roepen()
         {
-            var bank = new FakePublicatiebank();
+            var bank = new StubPublicatiebankHandler();
 
             var result = await CreateController(bank, s_organisatie).Post("v2", CreatePublicatie(), default);
 
@@ -64,7 +64,7 @@ namespace ODPC.Test
         [TestMethod]
         public async Task Geeft_fout_door_als_publicatiebank_faalt()
         {
-            var bank = new FakePublicatiebank().Respond(HttpMethod.Post, "/api/v2/publicaties", HttpStatusCode.InternalServerError);
+            var bank = new StubPublicatiebankHandler().Respond(HttpMethod.Post, "/api/v2/publicaties", HttpStatusCode.InternalServerError);
 
             var ex = await Assert.ThrowsExactlyAsync<HttpRequestException>(() =>
                 CreateController(bank, s_organisatie, s_categorie).Post("v2", CreatePublicatie(), default));
