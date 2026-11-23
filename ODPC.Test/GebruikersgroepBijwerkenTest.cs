@@ -39,11 +39,6 @@ namespace ODPC.Test
         [TestMethod]
         public async Task Put_test()
         {
-            //nog even uitzoeken? 
-            //het aantalgekoppelde waardelijsten matcht niet.
-            //de inmemory database lijkt afwijkend gedrag te vertonen.
-            Assert.Inconclusive("test faalt, maar de applicatie werkt");
-
             using var context = InMemoryDatabase.GetDbContext();
             var groep = RandomGroep();
             var waardelijst = RandomWaardelijst(groep);
