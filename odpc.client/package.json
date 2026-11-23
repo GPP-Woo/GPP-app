@@ -8,9 +8,11 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
+    "test:ci": "vitest run --coverage",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --fix",
+    "lint:ci": "eslint .",
     "format": "prettier --write src/"
   },
   "dependencies": {
@@ -24,6 +26,7 @@
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.13.5",
     "@vitejs/plugin-vue": "^6.0.9",
+    "@vitest/coverage-v8": "^5.1.1",
     "@vitest/eslint-plugin": "^1.1.31",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.9.0",
