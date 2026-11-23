@@ -16,6 +16,13 @@ Standaard wordt bij het draaien van `docker compose up` de laatste versie van he
 
 Als je een specifieke versie van het image van ODRC wil vastpinnen, zet je dit in de enviroment variable `ODRC_VERSION`
 
+## Testen
+
+- Backend: `dotnet test ODPC.Test`
+- Frontend (in `odpc.client`): `npm run lint:ci`, `npm run type-check` en `npm run test:ci`
+
+Dezelfde stappen draaien in de `CI` workflow bij elke push en pull request naar `main` en `release-*.*.x`.
+
 ## Omgevingsvariabelen
 
 | Variabele                  | Uitleg                                                                                                                                                                                                           |
