@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "release-*.*.x" ]
+  pull_request:
+    branches: [ "main", "release-*.*.x" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: odpc.client/package-lock.json
+      - name: Install frontend dependencies (required by the ODPC project reference)
+        run: npm ci
+        working-directory: odpc.client
+      - name: Test
+        run: dotnet test ODPC.Test/ODPC.Test.csproj --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage/backend
+      - name: Coverage summary
+        if: always()
+        run: |
+          file=$(find coverage/backend -name 'coverage.cobertura.xml' | head -n 1)
+          if [ -n "$file" ]; then
+            rate=$(grep -o 'line-rate="[0-9.]*"' "$file" | head -n 1 | grep -o '[0-9.]*')
+            echo "### Backend line coverage: $(awk "BEGIN { printf \"%.1f\", $rate * 100 }")%" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: backend-coverage
+          path: coverage/backend/**/coverage.cobertura.xml
+          if-no-files-found: ignore
+
+  frontend:
+    name: Frontend lint, type-check and tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: odpc.client
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: odpc.client/package-lock.json
+      - run: npm ci
+      - name: Lint
+        run: npm run lint:ci
+      - name: Type-check
+        run: npm run type-check
+      - name: Test
+        run: npm run test:ci
+      - name: Coverage summary
+        if: always()
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "const s=require('./coverage/coverage-summary.json').total;console.log('### Frontend coverage\n\n| Lines | Statements | Functions | Branches |\n|---|---|---|---|\n| '+[s.lines,s.statements,s.functions,s.branches].map(m=>m.pct+'%').join(' | ')+' |')" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: frontend-coverage
+          path: odpc.client/coverage
+          if-no-files-found: ignore
